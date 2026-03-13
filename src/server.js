@@ -154,4 +154,11 @@ app.post('/prospects/bulk', requireApiKey, (req, res) => {
 
 app.get('/health', (req, res) => res.json({ ok: true, prospects: prospects.length, ts: new Date().toISOString() }));
 
+// Serve frontend
+const publicDir = path.join(__dirname, '../public');
+if (fs.existsSync(publicDir)) {
+  app.use(express.static(publicDir));
+  app.get('/', (req, res) => res.sendFile(path.join(publicDir, 'index.html')));
+}
+
 app.listen(PORT, () => console.log(`Apex CRM running on port ${PORT}`));
