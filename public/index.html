@@ -6,58 +6,69 @@
 <title>Apex Affiliates</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--sb:#0f1117;--sbh:#1a1d27;--sba:#1e2230;--sbb:#1e2230;--sbt:#8b8fa8;--sbta:#e2e4ed;--bg:#14161f;--bg2:#1a1d27;--bg3:#1e2230;--bg4:#242838;--bd:#2a2d3d;--t:#e2e4ed;--t2:#9096b0;--t3:#5a5f78;--ac:#4f7ef8;--acb:rgba(79,126,248,.12);--gr:#22c88a;--grb:rgba(34,200,138,.12);--rd:#f0545c;--rdb:rgba(240,84,92,.12);--yw:#f5b731;--ywb:rgba(245,183,49,.12);--pu:#9b6dff;--pub:rgba(155,109,255,.12);--or:#ff8c5a;--orb:rgba(255,140,90,.12);--shd:0 8px 32px rgba(0,0,0,.5);--r:8px;--rl:12px;--sw:220px}
+:root{--sb:#0f1117;--sbh:#1a1d27;--sba:#1e2230;--bd:#2a2d3d;--bg:#14161f;--bg2:#1a1d27;--bg3:#1e2230;--bg4:#242838;--t:#e2e4ed;--t2:#9096b0;--t3:#5a5f78;--ac:#4f7ef8;--acb:rgba(79,126,248,.13);--gr:#22c88a;--grb:rgba(34,200,138,.13);--rd:#f0545c;--rdb:rgba(240,84,92,.13);--yw:#f5b731;--ywb:rgba(245,183,49,.13);--pu:#9b6dff;--pub:rgba(155,109,255,.13);--or:#ff8c5a;--orb:rgba(255,140,90,.13);--r:8px;--rl:12px;--sw:222px;--shd:0 8px 32px rgba(0,0,0,.5)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);font-size:14px;height:100vh;display:flex;overflow:hidden}
-.sb{width:var(--sw);background:var(--sb);border-right:1px solid var(--sbb);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
-.sb-logo{padding:18px 14px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--sbb)}
-.sb-logo-ic{width:30px;height:30px;background:var(--ac);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.sb-logo-t{font-size:14px;font-weight:700;color:var(--t)}
-.sb-logo-s{font-size:10px;color:var(--t3);margin-top:1px}
-.sb-sec{padding:10px 8px 4px}
-.sb-sec-lbl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;padding:0 8px;margin-bottom:3px}
-.ni{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--r);color:var(--sbt);font-size:13px;font-weight:500;cursor:pointer;transition:all .12s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left}
-.ni:hover{background:var(--sbh);color:var(--sbta)}
-.ni.on{background:var(--sba);color:var(--sbta)}
-.ni .ic{font-size:15px;width:18px;text-align:center;flex-shrink:0}
-.sb-ft{margin-top:auto;padding:10px 8px;border-top:1px solid var(--sbb)}
+/* Sidebar */
+.sb{width:var(--sw);background:var(--sb);border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sb-logo{padding:16px 14px 12px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--bd)}
+.sb-logo-ic{width:28px;height:28px;background:var(--ac);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sb-logo-t{font-size:13px;font-weight:700;color:var(--t)}
+.sb-logo-s{font-size:10px;color:var(--t3)}
+.sb-sec{padding:8px 8px 2px}
+.sb-lbl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;padding:0 8px;margin-bottom:2px}
+.ni{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:var(--r);color:#6e7590;font-size:13px;font-weight:500;cursor:pointer;transition:all .1s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left}
+.ni:hover{background:var(--sbh);color:var(--t2)}
+.ni.on{background:var(--sba);color:var(--t)}
+.ni .ic{font-size:14px;width:17px;text-align:center;flex-shrink:0}
+.sb-ft{margin-top:auto;padding:10px 8px;border-top:1px solid var(--bd)}
 .sp{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:var(--r);background:var(--bg3);font-size:11px;color:var(--t3)}
-.sd{width:6px;height:6px;border-radius:50%;background:var(--gr);flex-shrink:0}
-.sd.off{background:var(--rd)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--gr);flex-shrink:0}
+.dot.off{background:var(--rd)}
+/* Layout */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{display:flex;align-items:center;gap:10px;padding:0 20px;height:50px;border-bottom:1px solid var(--bd);background:var(--bg);flex-shrink:0}
-.tb-title{font-size:15px;font-weight:600;color:var(--t)}
-.tb-sub{font-size:12px;color:var(--t3);margin-left:2px}
+.topbar{display:flex;align-items:center;gap:10px;padding:0 20px;height:48px;border-bottom:1px solid var(--bd);background:var(--bg);flex-shrink:0}
+.tb-title{font-size:14px;font-weight:600}
 .tb-sp{flex:1}
-.sw{position:relative}
-.sw svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none}
-.si{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:6px 9px 6px 30px;font-size:13px;font-family:inherit;color:var(--t);outline:none;width:200px}
-.si:focus{border-color:var(--ac)}
-.si::placeholder{color:var(--t3)}
-.tbar{display:flex;align-items:center;gap:7px;padding:9px 20px;border-bottom:1px solid var(--bd);flex-shrink:0}
-.fs{padding:5px 9px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg2);color:var(--t2);outline:none;cursor:pointer}
-.ct{font-size:12px;color:var(--t3);margin-left:4px}
+.swrap{position:relative}
+.swrap svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none}
+.sinp{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:5px 8px 5px 28px;font-size:13px;font-family:inherit;color:var(--t);outline:none;width:190px}
+.sinp:focus{border-color:var(--ac)}
+.sinp::placeholder{color:var(--t3)}
+.tbar{display:flex;align-items:center;gap:6px;padding:8px 20px;border-bottom:1px solid var(--bd);flex-shrink:0;flex-wrap:wrap}
+.fs{padding:4px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg2);color:var(--t2);outline:none;cursor:pointer}
+.fs:focus{border-color:var(--ac)}
+.fs option{background:var(--bg2)}
+.ctag{font-size:12px;color:var(--t3);margin-left:2px}
 .vt{display:flex;gap:2px;margin-left:auto}
 .vb{padding:4px 8px;border:1px solid var(--bd);background:var(--bg2);color:var(--t3);border-radius:6px;font-size:12px;cursor:pointer}
 .vb.on{background:var(--bg4);color:var(--t)}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:var(--r);font-size:13px;font-family:inherit;font-weight:500;cursor:pointer;transition:all .12s;border:none}
-.bp{background:var(--ac);color:#fff}.bp:hover{background:#3d6de5}
-.bg{background:var(--bg2);color:var(--t2);border:1px solid var(--bd)}.bg:hover{background:var(--bg3);color:var(--t)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--r);font-size:13px;font-family:inherit;font-weight:500;cursor:pointer;transition:all .12s;border:none;white-space:nowrap}
+.bp{background:var(--ac);color:#fff}.bp:hover{filter:brightness(1.1)}
+.bg{background:var(--bg3);color:var(--t2);border:1px solid var(--bd)}.bg:hover{background:var(--bg4);color:var(--t)}
 .bd2{background:transparent;color:var(--rd);border:1px solid var(--bd)}.bd2:hover{background:var(--rdb)}
-.bsm{padding:3px 9px;font-size:11px}
-.bxsm{padding:2px 7px;font-size:11px}
+.sm{padding:3px 9px;font-size:12px}
+.xsm{padding:2px 7px;font-size:11px}
 .ca{flex:1;overflow:hidden;display:flex}
 .cs{flex:1;overflow-y:auto}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+/* Badges */
 .badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
-.bd-discovered{background:rgba(90,95,120,.2);color:var(--t3)}
-.bd-contacted{background:var(--acb);color:var(--ac)}
-.bd-responded{background:var(--pub);color:var(--pu)}
+.bd-prospect{background:rgba(90,95,120,.18);color:#7a7f98}
+.bd-outreach_sent{background:var(--acb);color:var(--ac)}
+.bd-lead{background:var(--orb);color:var(--or)}
 .bd-qualified{background:var(--ywb);color:var(--yw)}
+.bd-call_booked{background:var(--pub);color:var(--pu)}
+.bd-follow_up{background:rgba(34,200,138,.1);color:#60d0a0}
 .bd-closed_won{background:var(--grb);color:var(--gr)}
 .bd-closed_lost{background:var(--rdb);color:var(--rd)}
+.bd-proposal{background:var(--acb);color:var(--ac)}
+.bd-negotiation{background:var(--pub);color:var(--pu)}
+.bd-contract_sent{background:var(--ywb);color:var(--yw)}
+.bd-affiliate{background:rgba(79,126,248,.12);color:#7a9ff5}
+.bd-deal{background:var(--grb);color:var(--gr)}
 .bd-p1{background:var(--rdb);color:var(--rd)}
 .bd-p2{background:var(--ywb);color:var(--yw)}
 .bd-p3{background:rgba(90,95,120,.12);color:var(--t3)}
@@ -69,152 +80,153 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);font-siz
 .bd-podcast{background:var(--orb);color:var(--or)}
 .bd-newsletter{background:var(--grb);color:var(--gr)}
 .bd-other{background:rgba(90,95,120,.12);color:var(--t3)}
-/* deal stages */
-.bd-proposal{background:var(--acb);color:var(--ac)}
-.bd-negotiation{background:var(--pub);color:var(--pu)}
-.bd-contract_sent{background:var(--ywb);color:var(--yw)}
-.bd-closed_won{background:var(--grb);color:var(--gr)}
-.bd-closed_lost{background:var(--rdb);color:var(--rd)}
 /* Table */
-.tw{padding:0}
 table{width:100%;border-collapse:collapse}
 thead{position:sticky;top:0;z-index:5}
-th{padding:8px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bd);background:var(--bg2);cursor:pointer;white-space:nowrap}
+th{padding:7px 13px;text-align:left;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bd);background:var(--bg2);cursor:pointer;white-space:nowrap}
 th:hover{color:var(--t2)}
-td{padding:10px 14px;border-bottom:1px solid var(--bd);vertical-align:middle}
-tr:hover td{background:rgba(255,255,255,.018)}
+td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:middle;font-size:13px}
+tr:hover td{background:rgba(255,255,255,.015)}
 .tdn{font-weight:600;color:var(--t)}
 .tdl{color:var(--ac);text-decoration:none;font-size:12px}
 .tdl:hover{text-decoration:underline}
 /* Kanban */
-.kb{display:flex;gap:12px;padding:14px 20px;height:100%;overflow-x:auto;align-items:flex-start}
-.kc{flex:0 0 220px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);display:flex;flex-direction:column;max-height:calc(100vh - 160px)}
-.kh{padding:10px 12px 8px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--bd)}
-.kd{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.kb{display:flex;gap:11px;padding:14px 16px;height:100%;overflow-x:auto;align-items:flex-start}
+.kc{flex:0 0 200px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);display:flex;flex-direction:column;max-height:calc(100vh - 150px)}
+.kh{padding:9px 11px 7px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bd)}
+.kd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .kt{font-size:12px;font-weight:600;color:var(--t2);flex:1}
-.kn{font-size:11px;background:var(--bg3);color:var(--t3);border-radius:10px;padding:1px 7px}
-.kcards{flex:1;overflow-y:auto;padding:8px 8px 4px;display:flex;flex-direction:column;gap:7px}
-.kcard{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:11px;cursor:pointer;transition:all .12s}
-.kcard:hover{border-color:var(--ac);background:var(--bg4)}
-.kcard-n{font-size:13px;font-weight:600;color:var(--t);margin-bottom:3px}
-.kcard-h{font-size:11px;color:var(--t3);margin-bottom:7px}
-.kcard-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px}
-.kcard-aud{font-size:11px;color:var(--t3)}
-.kadd{margin:6px 8px 8px;padding:6px;background:none;border:1px dashed var(--bd);border-radius:var(--r);color:var(--t3);font-size:12px;cursor:pointer;text-align:center;font-family:inherit;width:calc(100% - 16px)}
+.kn{font-size:10px;background:var(--bg3);color:var(--t3);border-radius:10px;padding:1px 6px}
+.kcards{flex:1;overflow-y:auto;padding:7px 7px 3px;display:flex;flex-direction:column;gap:6px}
+.kcard{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:10px;cursor:pointer;transition:all .1s}
+.kcard:hover{border-color:var(--ac)}
+.kcard-n{font-size:12px;font-weight:600;color:var(--t);margin-bottom:2px}
+.kcard-h{font-size:11px;color:var(--t3);margin-bottom:6px}
+.kcard-tags{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:4px}
+.kcard-aud{font-size:10px;color:var(--t3)}
+.kadd{margin:5px 7px 7px;padding:5px;background:none;border:1px dashed var(--bd);border-radius:var(--r);color:var(--t3);font-size:11px;cursor:pointer;text-align:center;font-family:inherit;width:calc(100% - 14px)}
 .kadd:hover{border-color:var(--t2);color:var(--t2);background:var(--bg3)}
-.drag-over{border-color:var(--ac)!important;background:rgba(79,126,248,.05)!important}
+.drag-over{border-color:var(--ac)!important;background:rgba(79,126,248,.04)!important}
 /* Stats */
-.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;padding:20px;padding-bottom:0}
-.sc{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 18px}
-.sv{font-size:28px;font-weight:700;color:var(--t)}
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:18px;padding-bottom:0}
+.sc{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px}
+.sv{font-size:26px;font-weight:700;color:var(--t)}
 .sv.ac{color:var(--ac)}.sv.gr{color:var(--gr)}.sv.yw{color:var(--yw)}
-.sl{font-size:12px;color:var(--t3);margin-top:2px}
-.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 20px}
-.cc{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 18px}
-.ct2{font-size:13px;font-weight:600;color:var(--t2);margin-bottom:12px}
-.br{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:12px}
-.bl{width:90px;color:var(--t3);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bw{flex:1;background:var(--bg3);border-radius:4px;height:6px;overflow:hidden}
-.bf{height:100%;border-radius:4px;background:var(--ac)}
+.sl{font-size:11px;color:var(--t3);margin-top:2px}
+/* Funnel */
+.funnel{padding:16px 18px}
+.funnel h3{font-size:13px;font-weight:600;color:var(--t2);margin-bottom:12px}
+.frow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.fstage{font-size:12px;color:var(--t3);width:110px;flex-shrink:0}
+.fbar{flex:1;background:var(--bg3);border-radius:4px;height:22px;overflow:hidden;position:relative}
+.fbfill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:#fff;transition:width .4s ease;min-width:2px}
+.fcount{font-size:12px;color:var(--t2);width:30px;text-align:right;flex-shrink:0}
+.fpct{font-size:11px;color:var(--t3);width:35px;text-align:right;flex-shrink:0}
+/* Charts */
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 18px}
+.cc{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px}
+.ct2{font-size:13px;font-weight:600;color:var(--t2);margin-bottom:10px}
+.br{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
+.bl{width:85px;color:var(--t3);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bw{flex:1;background:var(--bg3);border-radius:3px;height:5px;overflow:hidden}
+.bf{height:100%;border-radius:3px;background:var(--ac)}
 .bf.gr{background:var(--gr)}
 .bc{color:var(--t3);width:22px;text-align:right;flex-shrink:0}
 /* Detail panel */
-.dp{width:370px;flex-shrink:0;border-left:1px solid var(--bd);background:var(--bg);overflow-y:auto;display:none;flex-direction:column}
+.dp{width:360px;flex-shrink:0;border-left:1px solid var(--bd);background:var(--bg);overflow-y:auto;display:none;flex-direction:column}
 .dp.on{display:flex}
-.dph{padding:14px 16px;border-bottom:1px solid var(--bd)}
-.dph h2{font-size:16px;font-weight:700;color:var(--t);margin-bottom:7px}
-.dph .tags{display:flex;gap:5px;flex-wrap:wrap}
-.dpc{float:right;background:none;border:none;color:var(--t3);cursor:pointer;font-size:17px;padding:2px 5px;border-radius:4px;margin-top:-2px}
+.dph{padding:13px 15px;border-bottom:1px solid var(--bd)}
+.dph h2{font-size:15px;font-weight:700;color:var(--t);margin-bottom:6px;padding-right:24px}
+.dph .tags{display:flex;gap:4px;flex-wrap:wrap}
+.dpc{float:right;background:none;border:none;color:var(--t3);cursor:pointer;font-size:18px;padding:0 4px;border-radius:4px;margin-top:-2px}
 .dpc:hover{background:var(--bg3)}
-.dpb{padding:14px 16px;flex:1}
-.dsec{margin-bottom:18px}
-.dsec h4{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:9px}
-.df{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--bd);gap:8px}
+.dpb{padding:13px 15px;flex:1}
+.dsec{margin-bottom:16px}
+.dsec h4{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px}
+.df{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid var(--bd);gap:8px}
 .df:last-child{border:none}
-.dl{font-size:12px;color:var(--t3);flex-shrink:0;width:95px}
-.dv{font-size:13px;color:var(--t);text-align:right;flex:1}
+.dl{font-size:12px;color:var(--t3);flex-shrink:0;width:90px}
+.dv{font-size:12px;color:var(--t);text-align:right;flex:1;word-break:break-all}
 .dv a{color:var(--ac);text-decoration:none}
-.ssel{width:100%;padding:7px 9px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none;cursor:pointer}
-.nta{width:100%;padding:9px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--bg3);color:var(--t);resize:vertical;min-height:85px;outline:none}
-.nta:focus{border-color:var(--ac)}
+.ssel{width:100%;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none}
+.ssel:focus{border-color:var(--ac)}
+.ssel option{background:var(--bg2)}
+.nta{width:100%;padding:8px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--bg3);color:var(--t);resize:vertical;min-height:80px;outline:none}
+.nta:focus,.nta:hover{border-color:var(--ac)}
 .nta::placeholder{color:var(--t3)}
-.ai{display:flex;gap:7px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px}
+.ai{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:12px}
 .ai:last-child{border:none}
-.ad{width:6px;height:6px;border-radius:50%;background:var(--t3);margin-top:4px;flex-shrink:0}
+.ad{width:5px;height:5px;border-radius:50%;background:var(--t3);margin-top:4px;flex-shrink:0}
 .at{flex:1;color:var(--t3)}
-.atime{font-size:11px;color:var(--t3);flex-shrink:0}
-.dpa{padding:11px 16px;border-top:1px solid var(--bd);display:flex;gap:7px;flex-wrap:wrap}
+.atime{font-size:10px;color:var(--t3);flex-shrink:0}
+.dpa{padding:10px 15px;border-top:1px solid var(--bd);display:flex;gap:6px;flex-wrap:wrap}
 /* Modal */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
 .ov.on{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:var(--shd)}
-.mh{padding:18px 22px 0;display:flex;align-items:center;justify-content:space-between}
-.mt{font-size:16px;font-weight:600;color:var(--t)}
-.mc{background:none;border:none;font-size:20px;color:var(--t3);cursor:pointer;padding:3px 6px;border-radius:5px;line-height:1}
-.mc:hover{background:var(--bg3);color:var(--t)}
-.mb{padding:16px 22px;display:flex;flex-direction:column;gap:13px}
+.mh{padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between}
+.mt{font-size:15px;font-weight:600}
+.mc{background:none;border:none;font-size:20px;color:var(--t3);cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1}
+.mc:hover{background:var(--bg3)}
+.mb{padding:14px 20px;display:flex;flex-direction:column;gap:11px}
 .fi{display:flex;flex-direction:column;gap:4px}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fi label{font-size:12px;font-weight:500;color:var(--t3)}
 .fi input,.fi select,.fi textarea{padding:7px 9px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none}
 .fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--ac)}
 .fi input::placeholder,.fi textarea::placeholder{color:var(--t3)}
-.fi textarea{resize:vertical;min-height:75px}
+.fi textarea{resize:vertical;min-height:70px}
 .fi select option{background:var(--bg2)}
-.mf{padding:4px 22px 18px;display:flex;justify-content:flex-end;gap:8px}
+.mf{padding:4px 20px 16px;display:flex;justify-content:flex-end;gap:7px}
 /* Inbox */
-.iitem{display:flex;align-items:flex-start;gap:11px;padding:13px 20px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s}
+.iitem{display:flex;align-items:flex-start;gap:10px;padding:12px 18px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s}
 .iitem:hover{background:var(--bg2)}
-.iav{width:34px;height:34px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--t2);flex-shrink:0;text-transform:uppercase}
+.iav{width:32px;height:32px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--t2);flex-shrink:0;text-transform:uppercase}
 .ib{flex:1;min-width:0}
-.iname{font-size:13px;font-weight:600;color:var(--t)}
+.iname{font-size:13px;font-weight:600}
 .isubj{font-size:12px;color:var(--t2);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.isnip{font-size:12px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.isnip{font-size:12px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .imeta{text-align:right;flex-shrink:0}
 .itime{font-size:11px;color:var(--t3)}
-.iunread{width:7px;height:7px;border-radius:50%;background:var(--ac);margin:5px 0 0 auto}
-/* Ask Reid */
-.reid-wrap{padding:20px}
-.reid-msg{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:13px 15px;margin-bottom:10px}
-.reid-msg-txt{font-size:13px;color:var(--t);line-height:1.6;margin-bottom:7px}
-.reid-msg-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t3)}
-.reid-status{display:inline-flex;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.iunread{width:6px;height:6px;border-radius:50%;background:var(--ac);margin:4px 0 0 auto}
+/* AI Inbox */
+.ai-box{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin:14px 18px}
+.ai-box h3{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ai-resp{font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+/* Reid */
+.reid-wrap{padding:18px}
+.reid-msg{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;margin-bottom:9px}
+.reid-msg-txt{font-size:13px;color:var(--t);line-height:1.6;margin-bottom:6px}
+.reid-msg-meta{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t3);flex-wrap:wrap}
+.rs{display:inline-flex;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600}
 .rs-pending{background:var(--ywb);color:var(--yw)}
 .rs-done{background:var(--grb);color:var(--gr)}
 .rs-sent{background:var(--acb);color:var(--ac)}
-.reid-compose{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:16px}
-.reid-compose h3{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--t)}
+.reid-compose{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:18px}
+.reid-compose h3{font-size:13px;font-weight:600;margin-bottom:10px}
 /* Playbook */
-.pb-item{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 18px;margin-bottom:10px}
-.pb-title{font-size:14px;font-weight:600;color:var(--t);margin-bottom:6px}
+.pb-item{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;margin-bottom:9px}
+.pb-title{font-size:14px;font-weight:600;margin-bottom:5px}
 .pb-content{font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap}
-.pb-cat{font-size:11px;color:var(--t3);margin-top:8px}
 /* Admin */
-.admin-wrap{padding:20px}
-.admin-section{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:18px 20px;margin-bottom:14px}
-.admin-section h3{font-size:14px;font-weight:600;color:var(--t);margin-bottom:12px}
-.kv{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.admin-section{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 18px;margin-bottom:12px}
+.admin-section h3{font-size:13px;font-weight:600;margin-bottom:10px}
+.kv{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px}
 .kv:last-child{border:none}
 .kv .lbl{color:var(--t3)}
-.kv .val{color:var(--t);font-family:monospace;font-size:12px;background:var(--bg3);padding:2px 8px;border-radius:4px}
-/* Global data */
-.gd-wrap{padding:0}
-/* Import */
-.imp-drop{border:2px dashed var(--bd);border-radius:var(--rl);padding:28px;text-align:center;color:var(--t3);cursor:pointer;transition:all .2s}
-.imp-drop:hover,.imp-drop.dov{border-color:var(--ac);background:var(--acb);color:var(--ac)}
-.imp-drop input{display:none}
+.kv .val{color:var(--t);font-family:monospace;font-size:11px;background:var(--bg3);padding:2px 7px;border-radius:4px}
 /* Toast */
-.toasts{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:7px}
-.toast{padding:9px 14px;border-radius:var(--r);background:var(--bg4);color:var(--t);font-size:13px;border:1px solid var(--bd);box-shadow:var(--shd);animation:tIn .2s ease;max-width:260px}
+.toasts{position:fixed;bottom:18px;right:18px;z-index:999;display:flex;flex-direction:column;gap:6px}
+.toast{padding:8px 13px;border-radius:var(--r);background:var(--bg4);color:var(--t);font-size:13px;border:1px solid var(--bd);box-shadow:var(--shd);animation:tIn .18s ease;max-width:260px}
 .toast.ok{border-color:var(--gr);color:var(--gr)}.toast.err{border-color:var(--rd);color:var(--rd)}
-@keyframes tIn{from{transform:translateX(14px);opacity:0}to{transform:translateX(0);opacity:1}}
-.load{display:flex;align-items:center;justify-content:center;height:160px;color:var(--t3);gap:9px}
-.spin{width:18px;height:18px;border:2px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes tIn{from{transform:translateX(12px);opacity:0}to{transform:translateX(0);opacity:1}}
+.load{display:flex;align-items:center;justify-content:center;height:160px;color:var(--t3);gap:8px}
+.spin{width:16px;height:16px;border:2px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:sp .6s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.es{text-align:center;padding:70px 20px;color:var(--t3)}
-.es .ei{font-size:44px;margin-bottom:12px}
-.es h3{font-size:17px;color:var(--t2);margin-bottom:7px}
-.es p{font-size:13px;margin-bottom:18px}
+.empty{text-align:center;padding:60px 20px;color:var(--t3)}
+.empty .ei{font-size:40px;margin-bottom:10px}
+.empty h3{font-size:16px;color:var(--t2);margin-bottom:6px}
+.empty p{font-size:13px;margin-bottom:16px}
 </style>
 </head>
 <body>
@@ -224,29 +236,28 @@ tr:hover td{background:rgba(255,255,255,.018)}
     <div><div class="sb-logo-t">Apex Affiliates</div><div class="sb-logo-s">Partner CRM</div></div>
   </div>
   <div class="sb-sec">
-    <div class="sb-sec-lbl">Overview</div>
-    <button class="ni on" onclick="go('dashboard')"><span class="ic">⊞</span> Dashboard</button>
-    <button class="ni" onclick="go('analytics')"><span class="ic">📈</span> Analytics</button>
+    <div class="sb-lbl">Overview</div>
+    <button class="ni on" onclick="go('dashboard')"><span class="ic">⊞</span>Dashboard</button>
+    <button class="ni" onclick="go('analytics')"><span class="ic">📈</span>Analytics</button>
   </div>
   <div class="sb-sec">
-    <div class="sb-sec-lbl">Pipeline</div>
-    <button class="ni" onclick="go('pipeline')"><span class="ic">◎</span> New Partner Pipeline</button>
-    <button class="ni" onclick="go('partners')"><span class="ic">👥</span> Current Partners</button>
-    <button class="ni" onclick="go('deals')"><span class="ic">💰</span> Deals</button>
+    <div class="sb-lbl">Pipeline</div>
+    <button class="ni" onclick="go('pipeline')"><span class="ic">◎</span>Pipeline</button>
+    <button class="ni" onclick="go('deals')"><span class="ic">💰</span>Deals</button>
   </div>
   <div class="sb-sec">
-    <div class="sb-sec-lbl">Comms</div>
-    <button class="ni" onclick="go('inbox')"><span class="ic">✉️</span> Inbox</button>
-    <button class="ni" onclick="go('reid')"><span class="ic">🤖</span> Ask Reid</button>
+    <div class="sb-lbl">Comms</div>
+    <button class="ni" onclick="go('inbox')"><span class="ic">✉️</span>Inbox</button>
+    <button class="ni" onclick="go('reid')"><span class="ic">🤖</span>Ask Reid</button>
   </div>
   <div class="sb-sec">
-    <div class="sb-sec-lbl">Data & Tools</div>
-    <button class="ni" onclick="go('globaldata')"><span class="ic">🌐</span> Global Data</button>
-    <button class="ni" onclick="go('playbook')"><span class="ic">📖</span> Playbook</button>
-    <button class="ni" onclick="go('admin')"><span class="ic">⚙️</span> Admin</button>
+    <div class="sb-lbl">Data & Tools</div>
+    <button class="ni" onclick="go('globaldata')"><span class="ic">🌐</span>Global Data</button>
+    <button class="ni" onclick="go('playbook')"><span class="ic">📖</span>Playbook</button>
+    <button class="ni" onclick="go('admin')"><span class="ic">⚙️</span>Admin</button>
   </div>
   <div class="sb-ft">
-    <div class="sp"><div class="sd" id="sdot"></div><span id="stxt" style="font-size:12px">Connecting…</span></div>
+    <div class="sp"><div class="dot" id="sdot"></div><span id="stxt" style="font-size:11px">Connecting…</span></div>
   </div>
 </div>
 
@@ -254,17 +265,21 @@ tr:hover td{background:rgba(255,255,255,.018)}
   <div class="topbar">
     <div class="tb-title" id="pgtitle">Dashboard</div>
     <div class="tb-sp"></div>
-    <div class="sw">
-      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input class="si" id="srch" placeholder="Search…" oninput="applyFilters()">
+    <div class="swrap">
+      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input class="sinp" id="srch" placeholder="Search…" oninput="applyFilters()">
     </div>
-    <button class="btn bp" id="addBtn" onclick="openAdd()">+ Add Partner</button>
+    <button class="btn bp" id="addBtn" onclick="openAdd()" style="display:none">+ Add</button>
   </div>
-  <div class="tbar" id="tbar">
+  <div class="tbar" id="tbar" style="display:none">
+    <select class="fs" id="fType" onchange="applyFilters()">
+      <option value="">All Types</option><option value="affiliate">Affiliate</option><option value="deal">Deal</option>
+    </select>
     <select class="fs" id="fStatus" onchange="applyFilters()">
       <option value="">All Stages</option>
-      <option value="discovered">Discovered</option><option value="contacted">Contacted</option>
-      <option value="responded">Responded</option><option value="qualified">Qualified</option>
+      <option value="prospect">Prospect</option><option value="outreach_sent">Outreach Sent</option>
+      <option value="lead">Lead</option><option value="qualified">Qualified</option>
+      <option value="call_booked">Call Booked</option><option value="follow_up">Follow Up</option>
       <option value="closed_won">Closed Won</option><option value="closed_lost">Closed Lost</option>
     </select>
     <select class="fs" id="fPlatform" onchange="applyFilters()">
@@ -278,54 +293,65 @@ tr:hover td{background:rgba(255,255,255,.018)}
     </select>
     <select class="fs" id="fSort" onchange="applyFilters()">
       <option value="created_at">Newest</option><option value="name">Name A–Z</option>
-      <option value="score">Score</option><option value="audience">Audience</option>
+      <option value="score">Score ↓</option><option value="audience">Audience ↓</option>
     </select>
-    <span class="ct" id="ctag">0 partners</span>
+    <span class="ctag" id="ctag">—</span>
     <div class="vt" id="vtoggle">
       <button class="vb" onclick="setSub('kanban')" id="vkb">⊞ Board</button>
       <button class="vb on" onclick="setSub('table')" id="vtbl">≡ Table</button>
     </div>
   </div>
   <div class="ca">
-    <div class="cs" id="main"><div class="load"><div class="spin"></div> Loading…</div></div>
+    <div class="cs" id="main"><div class="load"><div class="spin"></div>Loading…</div></div>
     <div class="dp" id="dp"></div>
   </div>
 </div>
 
-<!-- ADD MODAL -->
+<!-- ADD/EDIT CONTACT MODAL -->
 <div class="ov" id="addMod">
   <div class="modal">
-    <div class="mh"><div class="mt" id="mTitle">Add Partner</div><button class="mc" onclick="closeMod('addMod')">×</button></div>
+    <div class="mh"><div class="mt" id="mTitle">Add Contact</div><button class="mc" onclick="closeMod('addMod')">×</button></div>
     <div class="mb">
       <div class="fr">
         <div class="fi"><label>Name *</label><input id="fn" placeholder="Name or brand"></div>
         <div class="fi"><label>Handle</label><input id="fh" placeholder="@username"></div>
       </div>
       <div class="fr">
+        <div class="fi"><label>Email</label><input id="fem" type="email" placeholder="email@example.com"></div>
+        <div class="fi"><label>Phone</label><input id="fphone" type="tel" placeholder="+1 555 000 0000"></div>
+      </div>
+      <div class="fr">
+        <div class="fi"><label>Type</label>
+          <select id="ftype"><option value="affiliate">Affiliate Partner</option><option value="deal">Deal / Close</option></select>
+        </div>
         <div class="fi"><label>Platform</label>
           <select id="fp"><option value="">— Select —</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>LinkedIn</option><option>Twitter</option><option>Podcast</option><option>Newsletter</option><option>Other</option></select>
         </div>
-        <div class="fi"><label>Audience</label><input id="faud" type="number" placeholder="e.g. 50000"></div>
       </div>
       <div class="fr">
         <div class="fi"><label>Stage</label>
-          <select id="fst"><option value="discovered">Discovered</option><option value="contacted">Contacted</option><option value="responded">Responded</option><option value="qualified">Qualified</option><option value="closed_won">Closed Won</option><option value="closed_lost">Closed Lost</option></select>
+          <select id="fst">
+            <option value="prospect">Prospect</option><option value="outreach_sent">Outreach Sent</option>
+            <option value="lead">Lead</option><option value="qualified">Qualified</option>
+            <option value="call_booked">Call Booked</option><option value="follow_up">Follow Up</option>
+            <option value="closed_won">Closed Won</option><option value="closed_lost">Closed Lost</option>
+          </select>
         </div>
         <div class="fi"><label>Priority</label>
           <select id="fpri"><option value="1">🔴 High</option><option value="2">🟡 Medium</option><option value="3" selected>⚪ Low</option></select>
         </div>
       </div>
       <div class="fr">
-        <div class="fi"><label>Email</label><input id="fem" type="email" placeholder="email@example.com"></div>
+        <div class="fi"><label>Audience Size</label><input id="faud" type="number" placeholder="50000"></div>
         <div class="fi"><label>Fit Score (0–100)</label><input id="fsc" type="number" min="0" max="100"></div>
       </div>
       <div class="fi"><label>Profile URL</label><input id="furl" placeholder="https://…"></div>
-      <div class="fi"><label>Content Focus</label><input id="fcf" placeholder="e.g. business, productivity"></div>
-      <div class="fi"><label>Notes</label><textarea id="fno" placeholder="Context, next steps…"></textarea></div>
+      <div class="fi"><label>Content Focus / Niche</label><input id="fcf" placeholder="e.g. business, productivity, finance"></div>
+      <div class="fi"><label>Notes</label><textarea id="fno" placeholder="Context, source, next steps…"></textarea></div>
     </div>
     <div class="mf">
       <button class="btn bg" onclick="closeMod('addMod')">Cancel</button>
-      <button class="btn bp" id="savBtn" onclick="saveContact()">Add Partner</button>
+      <button class="btn bp" id="savBtn" onclick="saveContact()">Add Contact</button>
     </div>
   </div>
 </div>
@@ -358,61 +384,91 @@ tr:hover td{background:rgba(255,255,255,.018)}
 const API = window.location.origin;
 const KEY = 'apex-agent-secret-change-me';
 let prospects=[], filtered=[], deals=[], inboxEmails=[], reidMsgs=[], playbook=[];
-let page='dashboard', sub='table', editId=null, editDealId=null, dragId=null, csvData=null;
+let page='dashboard', sub='table', editId=null, editDealId=null, dragId=null;
 
-const STAGES={discovered:{l:'Discovered',e:'🔍',c:'#5a5f78'},contacted:{l:'Contacted',e:'📤',c:'#4f7ef8'},responded:{l:'Responded',e:'💬',c:'#9b6dff'},qualified:{l:'Qualified',e:'⭐',c:'#f5b731'},closed_won:{l:'Closed Won',e:'✅',c:'#22c88a'},closed_lost:{l:'Closed Lost',e:'❌',c:'#f0545c'}};
-const DEAL_STAGES={proposal:{l:'Proposal',c:'#4f7ef8'},negotiation:{l:'Negotiation',c:'#9b6dff'},contract_sent:{l:'Contract Sent',c:'#f5b731'},closed_won:{l:'Closed Won',c:'#22c88a'},closed_lost:{l:'Closed Lost',c:'#f0545c'}};
+const STAGES = {
+  prospect:     {l:'Prospect',     e:'🎯', c:'#5a6070'},
+  outreach_sent:{l:'Outreach Sent',e:'📤', c:'#4f7ef8'},
+  lead:         {l:'Lead',         e:'🔥', c:'#ff8c5a'},
+  qualified:    {l:'Qualified',    e:'⭐', c:'#f5b731'},
+  call_booked:  {l:'Call Booked',  e:'📞', c:'#9b6dff'},
+  follow_up:    {l:'Follow Up',    e:'🔄', c:'#60d0a0'},
+  closed_won:   {l:'Closed Won',   e:'✅', c:'#22c88a'},
+  closed_lost:  {l:'Closed Lost',  e:'❌', c:'#f0545c'},
+};
+const DEAL_STAGES = {
+  proposal:      {l:'Proposal',      c:'#4f7ef8'},
+  negotiation:   {l:'Negotiation',   c:'#9b6dff'},
+  contract_sent: {l:'Contract Sent', c:'#f5b731'},
+  closed_won:    {l:'Closed Won',    c:'#22c88a'},
+  closed_lost:   {l:'Closed Lost',   c:'#f0545c'},
+};
 
-async function req(m,p,b){const o={method:m,headers:{'x-api-key':KEY,'Content-Type':'application/json'}};if(b)o.body=JSON.stringify(b);const r=await fetch(API+p,o);if(!r.ok)throw new Error(await r.text());return r.json();}
+async function req(m,p,b){
+  const o={method:m,headers:{'x-api-key':KEY,'Content-Type':'application/json'}};
+  if(b)o.body=JSON.stringify(b);
+  const r=await fetch(API+p,o);
+  if(!r.ok){const txt=await r.text();throw new Error(txt);}
+  return r.json();
+}
 function toast(msg,t=''){const el=document.createElement('div');el.className='toast '+t;el.textContent=msg;document.getElementById('toasts').appendChild(el);setTimeout(()=>el.remove(),3200);}
-function setStatus(ok){document.getElementById('sdot').className='sd'+(ok?'':' off');document.getElementById('stxt').textContent=ok?'Connected':'Offline';}
+function setStatus(ok){document.getElementById('sdot').className='dot'+(ok?'':' off');document.getElementById('stxt').textContent=ok?'Connected':'Offline';}
 function fmt(n){if(!n)return'—';n=parseInt(n);if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(0)+'K';return n.toLocaleString();}
 function fmtD(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-function fmtC(n){if(!n)return'—';return'$'+Number(n).toLocaleString();}
+function fmtC(n){if(!n&&n!==0)return'—';return'$'+Number(n).toLocaleString();}
 function ago(d){if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
-function sb(s){const st=STAGES[s]||{l:s,e:''};return`<span class="badge bd-${s}">${st.e} ${st.l}</span>`;}
-function db(s){const ds=DEAL_STAGES[s]||{l:s};return`<span class="badge bd-${s}">${ds.l}</span>`;}
-function pb(p){if(!p)return'';return`<span class="badge bd-${(p||'').toLowerCase()}">${p}</span>`;}
-function prib(p){const m={1:['🔴','High','p1'],2:['🟡','Med','p2'],3:['⚪','Low','p3']};const[e,l,c]=m[p]||['⚪','—','p3'];return`<span class="badge bd-${c}">${e} ${l}</span>`;}
+function sb(s){const st=STAGES[s]||{l:s,e:'•'};return`<span class="badge bd-${s}">${st.e} ${st.l}</span>`;}
+function db2(s){const ds=DEAL_STAGES[s]||{l:s};return`<span class="badge bd-${s}">${ds.l}</span>`;}
+function pb(p){if(!p)return'';return`<span class="badge bd-${(p||'').toLowerCase().replace(/\s/g,'')}">${p}</span>`;}
+function tb(t){return t?`<span class="badge bd-${t||'affiliate'}">${t==='deal'?'💰 Deal':'🤝 Affiliate'}</span>`:''}
+function prib(p){const m={1:['🔴','p1'],2:['🟡','p2'],3:['⚪','p3']};const[e,c]=m[p]||['⚪','p3'];return`<span class="badge bd-${c}">${e}</span>`;}
 
 async function loadAll(){
   try{
-    [prospects,deals,inboxEmails,reidMsgs,playbook]=await Promise.all([req('GET','/prospects'),req('GET','/deals'),req('GET','/inbox/emails'),req('GET','/reid/messages'),req('GET','/playbook')]);
-    setStatus(true);applyFilters();
-  }catch(e){setStatus(false);document.getElementById('main').innerHTML=`<div class="es"><div class="ei">⚠️</div><h3>Can't reach server</h3><p style="color:var(--rd)">${e.message}</p></div>`;}
+    [prospects,deals,inboxEmails,reidMsgs,playbook]=await Promise.all([
+      req('GET','/prospects'),req('GET','/deals'),
+      req('GET','/inbox/emails'),req('GET','/reid/messages'),req('GET','/playbook')
+    ]);
+    setStatus(true);applyFilters();render();
+  }catch(e){setStatus(false);document.getElementById('main').innerHTML=`<div class="empty"><div class="ei">⚠️</div><h3>Can't reach server</h3><p style="color:var(--rd)">${e.message}</p><button class="btn bp" onclick="loadAll()">Retry</button></div>`;}
 }
 
 function applyFilters(){
-  const q=document.getElementById('srch').value.toLowerCase();
-  const st=document.getElementById('fStatus').value;
-  const pl=document.getElementById('fPlatform').value;
-  const pr=document.getElementById('fPriority').value;
-  const so=document.getElementById('fSort').value;
+  const q=(document.getElementById('srch')||{}).value?.toLowerCase()||'';
+  const st=(document.getElementById('fStatus')||{}).value||'';
+  const pl=(document.getElementById('fPlatform')||{}).value||'';
+  const pr=(document.getElementById('fPriority')||{}).value||'';
+  const tp=(document.getElementById('fType')||{}).value||'';
+  const so=(document.getElementById('fSort')||{}).value||'created_at';
   filtered=prospects.filter(p=>{
     if(st&&p.status!==st)return false;
     if(pl&&p.platform!==pl)return false;
     if(pr&&String(p.priority)!==pr)return false;
-    if(q){const h=[p.name,p.handle,p.email,p.content_focus,p.notes,p.source].join(' ').toLowerCase();if(!h.includes(q))return false;}
+    if(tp&&(p.type||'affiliate')!==tp)return false;
+    if(q){if(![p.name,p.handle,p.email,p.phone,p.content_focus,p.notes,p.source].join(' ').toLowerCase().includes(q))return false;}
     return true;
   });
-  filtered.sort((a,b)=>{if(so==='name')return a.name.localeCompare(b.name);if(so==='score')return(b.total_score||0)-(a.total_score||0);if(so==='audience')return(b.audience_size||0)-(a.audience_size||0);return new Date(b.created_at)-new Date(a.created_at);});
-  document.getElementById('ctag').textContent=filtered.length+' partner'+(filtered.length!==1?'s':'');
-  render();
+  filtered.sort((a,b)=>{
+    if(so==='name')return a.name.localeCompare(b.name);
+    if(so==='score')return(b.total_score||0)-(a.total_score||0);
+    if(so==='audience')return(b.audience_size||0)-(a.audience_size||0);
+    return new Date(b.created_at)-new Date(a.created_at);
+  });
+  const ctag=document.getElementById('ctag');if(ctag)ctag.textContent=filtered.length+' contact'+(filtered.length!==1?'s':'');
 }
 
 function go(pg){
   page=pg;editId=null;closeDP();
   document.querySelectorAll('.ni').forEach(b=>b.classList.remove('on'));
-  document.querySelectorAll('.ni').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(`'${pg}'`))b.classList.add('on');});
-  const titles={dashboard:'Dashboard',analytics:'Analytics',pipeline:'New Partner Pipeline',partners:'Current Partners',deals:'Deals',inbox:'Inbox',reid:'Ask Reid',globaldata:'Global Data',playbook:'Playbook',admin:'Admin'};
+  document.querySelectorAll('.ni').forEach(b=>{if(b.getAttribute('onclick')?.includes(`'${pg}'`))b.classList.add('on');});
+  const titles={dashboard:'Dashboard',analytics:'Analytics',pipeline:'Pipeline',deals:'Deals',inbox:'Inbox',reid:'Ask Reid',globaldata:'Global Data',playbook:'Playbook',admin:'Admin'};
   document.getElementById('pgtitle').textContent=titles[pg]||pg;
-  const showTbar=['pipeline','partners','globaldata'].includes(pg);
+  const showTbar=['pipeline','globaldata'].includes(pg);
   document.getElementById('tbar').style.display=showTbar?'flex':'none';
-  document.getElementById('addBtn').style.display=['pipeline','partners'].includes(pg)?'flex':'none';
-  document.getElementById('vtoggle').style.display=pg==='partners'?'flex':'none';
-  if(pg==='pipeline'){sub='kanban';updateVbtns();}
-  if(['pipeline','partners','globaldata'].includes(pg))applyFilters();
-  else render();
+  document.getElementById('addBtn').style.display=['pipeline'].includes(pg)?'flex':'none';
+  document.getElementById('vtoggle').style.display=pg==='pipeline'?'flex':'none';
+  if(pg==='pipeline'){if(sub!=='kanban'&&sub!=='table')sub='table';updateVbtns();}
+  applyFilters();render();
 }
 
 function setSub(v){sub=v;updateVbtns();render();}
@@ -421,8 +477,7 @@ function updateVbtns(){['kanban','table'].forEach(v=>{const b=document.getElemen
 function render(){
   if(page==='dashboard')renderDash();
   else if(page==='analytics')renderAnalytics();
-  else if(page==='pipeline')renderKanban();
-  else if(page==='partners'){if(sub==='table')renderTable();else renderKanban();}
+  else if(page==='pipeline'){if(sub==='kanban')renderKanban();else renderTable();}
   else if(page==='deals')renderDeals();
   else if(page==='inbox')renderInbox();
   else if(page==='reid')renderReid();
@@ -431,179 +486,195 @@ function render(){
   else if(page==='admin')renderAdmin();
 }
 
-// ─── DASHBOARD ─────────────────────────────────────────────
+// ─── DASHBOARD ──────────────────────────────────────────────
 function renderDash(){
+  const total=prospects.length;
+  const outreachSent=prospects.filter(p=>['outreach_sent','lead','qualified','call_booked','follow_up','closed_won'].includes(p.status)).length;
+  const responded=prospects.filter(p=>['lead','qualified','call_booked','follow_up','closed_won'].includes(p.status)).length;
   const won=prospects.filter(p=>p.status==='closed_won').length;
-  const contacted=prospects.filter(p=>['contacted','responded','qualified','closed_won'].includes(p.status)).length;
-  const dealWon=deals.filter(d=>d.stage==='closed_won');
-  const totalCom=dealWon.reduce((s,d)=>s+(d.commission_value||0),0);
-  const recent=prospects.slice(0,8);
+  const totalDealVal=deals.reduce((s,d)=>s+(d.value||0),0);
+  const totalCom=deals.reduce((s,d)=>s+(d.commission_value||0),0);
+  const affiliates=prospects.filter(p=>p.type==='affiliate').length;
+  const dealsType=prospects.filter(p=>p.type==='deal').length;
+  const recent=prospects.slice(0,6);
   document.getElementById('main').innerHTML=`
     <div class="sg">
-      <div class="sc"><div class="sv">${prospects.length}</div><div class="sl">Total Prospects</div></div>
-      <div class="sc"><div class="sv ac">${contacted}</div><div class="sl">In Pipeline</div></div>
+      <div class="sc"><div class="sv">${total}</div><div class="sl">Total Prospects</div></div>
+      <div class="sc"><div class="sv ac">${outreachSent}</div><div class="sl">Outreach Sent</div></div>
+      <div class="sc"><div class="sv">${responded}</div><div class="sl">Responded</div></div>
       <div class="sc"><div class="sv gr">${won}</div><div class="sl">Closed Won</div></div>
-      <div class="sc"><div class="sv yw">${deals.length}</div><div class="sl">Active Deals</div></div>
+      <div class="sc"><div class="sv yw">${fmtC(totalDealVal)}</div><div class="sl">Total Deal Value</div></div>
       <div class="sc"><div class="sv gr">${fmtC(totalCom)}</div><div class="sl">Total Commission</div></div>
-      <div class="sc"><div class="sv">${inboxEmails.length}</div><div class="sl">Inbox Emails</div></div>
+      <div class="sc"><div class="sv ac">${affiliates}</div><div class="sl">Potential Affiliates</div></div>
+      <div class="sc"><div class="sv yw">${dealsType}</div><div class="sl">Potential Deals</div></div>
     </div>
-    <div style="padding:14px 20px">
-      <div style="font-size:13px;font-weight:600;color:var(--t2);margin-bottom:12px">Recent Activity</div>
+    <div style="padding:14px 18px">
+      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px">Recent</div>
       <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden">
         ${recent.length?recent.map(p=>`
-          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--bd);cursor:pointer" onclick="go('partners');setTimeout(()=>openDetail('${p.id}'),100)">
-            <div style="width:32px;height:32px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--t2);flex-shrink:0">${(p.name||'?')[0].toUpperCase()}</div>
-            <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--t)">${p.name}</div><div style="font-size:11px;color:var(--t3)">${p.handle?'@'+p.handle:p.platform||''}</div></div>
-            <div>${sb(p.status)}</div>
+          <div style="display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--bd);cursor:pointer" onclick="go('pipeline');setTimeout(()=>openDetail('${p.id}'),50)">
+            <div style="width:30px;height:30px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--t2);flex-shrink:0">${(p.name||'?')[0].toUpperCase()}</div>
+            <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500">${p.name}</div><div style="font-size:11px;color:var(--t3)">${p.handle?'@'+p.handle:p.platform||''}</div></div>
+            ${sb(p.status)} ${tb(p.type)}
             <div style="font-size:11px;color:var(--t3)">${ago(p.created_at)}</div>
-          </div>`).join(''):'<div style="text-align:center;padding:30px;color:var(--t3);font-size:13px">No prospects yet — add your first one</div>'}
+          </div>`).join(''):`<div class="empty" style="padding:28px"><p>No contacts yet — <button class="btn bp sm" onclick="go('pipeline');setTimeout(openAdd,100)">Add First</button></p></div>`}
       </div>
     </div>`;
 }
 
-// ─── ANALYTICS ─────────────────────────────────────────────
+// ─── ANALYTICS ──────────────────────────────────────────────
 async function renderAnalytics(){
-  document.getElementById('main').innerHTML='<div class="load"><div class="spin"></div> Loading…</div>';
+  document.getElementById('main').innerHTML='<div class="load"><div class="spin"></div>Loading…</div>';
   let s;
-  try{s=await req('GET','/stats');}catch(e){document.getElementById('main').innerHTML=`<div class="es"><div class="ei">⚠️</div><h3>Failed</h3><p>${e.message}</p></div>`;return;}
+  try{s=await req('GET','/stats');}catch(e){document.getElementById('main').innerHTML=`<div class="empty"><div class="ei">⚠️</div><h3>Failed</h3><p>${e.message}</p><button class="btn bp" onclick="go('analytics')">Retry</button></div>`;return;}
   const bySt=s.byStatus||[],byPl=s.byPlatform||[];
-  const maxS=Math.max(...bySt.map(x=>x.c),1),maxP=Math.max(...byPl.map(x=>x.c),1);
+  const maxP=Math.max(...byPl.map(x=>x.c),1);
+  const funnelData=[
+    {stage:'Total Prospects',count:s.total||0,color:'#5a6070'},
+    {stage:'Outreach Sent',count:s.outreachSent||0,color:'#4f7ef8'},
+    {stage:'Responded',count:s.responded||0,color:'#ff8c5a'},
+    {stage:'Qualified',count:s.qualified||0,color:'#f5b731'},
+    {stage:'Call Booked',count:s.callBooked||0,color:'#9b6dff'},
+    {stage:'Closed Won',count:s.wonDeals||0,color:'#22c88a'},
+  ];
+  const maxF=Math.max(funnelData[0].count,1);
   document.getElementById('main').innerHTML=`
     <div class="sg">
       <div class="sc"><div class="sv">${s.total||0}</div><div class="sl">Total Prospects</div></div>
       <div class="sc"><div class="sv ac">${s.outreachSent||0}</div><div class="sl">Outreach Sent</div></div>
       <div class="sc"><div class="sv">${s.responded||0}</div><div class="sl">Responded</div></div>
-      <div class="sc"><div class="sv gr">${s.wonDeals||0}</div><div class="sl">Won Deals</div></div>
-      <div class="sc"><div class="sv yw">${fmtC(s.totalDealValue)}</div><div class="sl">Total Deal Value</div></div>
-      <div class="sc"><div class="sv gr">${fmtC(s.totalCommission)}</div><div class="sl">Total Commission</div></div>
+      <div class="sc"><div class="sv gr">${s.wonDeals||0}</div><div class="sl">Closed Won</div></div>
+      <div class="sc"><div class="sv yw">${fmtC(s.totalDealValue)}</div><div class="sl">Deal Value</div></div>
+      <div class="sc"><div class="sv gr">${fmtC(s.totalCommission)}</div><div class="sl">Commission</div></div>
     </div>
     <div class="charts">
-      <div class="cc"><div class="ct2">By Stage</div>${bySt.sort((a,b)=>b.c-a.c).map(x=>`<div class="br"><div class="bl">${STAGES[x.status]?.l||x.status}</div><div class="bw"><div class="bf" style="width:${Math.round(x.c/maxS*100)}%;background:${STAGES[x.status]?.c||'var(--ac)'}"></div></div><div class="bc">${x.c}</div></div>`).join('')}</div>
-      <div class="cc"><div class="ct2">By Platform</div>${byPl.sort((a,b)=>b.c-a.c).slice(0,8).map(x=>`<div class="br"><div class="bl">${x.platform||'Unknown'}</div><div class="bw"><div class="bf gr" style="width:${Math.round(x.c/maxP*100)}%"></div></div><div class="bc">${x.c}</div></div>`).join('')}</div>
+      <div class="cc" style="grid-column:1/-1">
+        <div class="ct2">🔻 Pipeline Funnel</div>
+        ${funnelData.map((f,i)=>{
+          const w=Math.max(Math.round(f.count/maxF*100),f.count?1:0);
+          const pct=i>0&&funnelData[i-1].count>0?Math.round(f.count/funnelData[i-1].count*100)+'%':'—';
+          return`<div class="frow"><div class="fstage">${f.stage}</div><div class="fbar"><div class="fbfill" style="width:${w}%;background:${f.color}">${f.count>0&&w>15?f.count:''}</div></div><div class="fcount">${f.count}</div><div class="fpct">${i>0?pct:''}</div></div>`;
+        }).join('')}
+        <div style="font-size:11px;color:var(--t3);margin-top:8px">% column = conversion from previous stage</div>
+      </div>
+      <div class="cc">
+        <div class="ct2">By Platform</div>
+        ${byPl.sort((a,b)=>b.c-a.c).slice(0,8).map(x=>`<div class="br"><div class="bl">${x.platform||'Unknown'}</div><div class="bw"><div class="bf gr" style="width:${Math.round(x.c/maxP*100)}%"></div></div><div class="bc">${x.c}</div></div>`).join('')||'<div style="color:var(--t3);font-size:12px">No data</div>'}
+      </div>
+      <div class="cc">
+        <div class="ct2">By Stage</div>
+        ${bySt.sort((a,b)=>b.c-a.c).map(x=>{const st=STAGES[x.status]||{l:x.status,c:'#5a6070'};return`<div class="br"><div class="bl">${st.l}</div><div class="bw"><div class="bf" style="width:${Math.round(x.c/Math.max(...bySt.map(y=>y.c),1)*100)}%;background:${st.c}"></div></div><div class="bc">${x.c}</div></div>`;}).join('')||'<div style="color:var(--t3);font-size:12px">No data</div>'}
+      </div>
     </div>`;
 }
 
-// ─── KANBAN ──────────────────────────────────────────────────
+// ─── KANBAN ─────────────────────────────────────────────────
 function renderKanban(){
   const cols=Object.entries(STAGES).map(([key,info])=>{
     const cards=filtered.filter(p=>p.status===key);
-    const ch=cards.map(p=>`
-      <div class="kcard" draggable="true" data-id="${p.id}" ondragstart="ds(event)" onclick="openDetail('${p.id}')">
-        <div class="kcard-n">${p.name}</div>
-        <div class="kcard-h">${p.handle?'@'+p.handle:(p.email||'—')}</div>
-        <div class="kcard-tags">${pb(p.platform)} ${prib(p.priority)}</div>
-        ${p.audience_size?`<div class="kcard-aud">👥 ${fmt(p.audience_size)}</div>`:''}
-      </div>`).join('');
     return`<div class="kc" data-status="${key}" ondragover="dov(event)" ondragleave="dlv(event)" ondrop="drp(event,'${key}')">
       <div class="kh"><div class="kd" style="background:${info.c}"></div><div class="kt">${info.l}</div><div class="kn">${cards.length}</div></div>
-      <div class="kcards">${ch||'<div style="text-align:center;color:var(--t3);font-size:12px;padding:10px">Empty</div>'}</div>
+      <div class="kcards">${cards.map(p=>`
+        <div class="kcard" draggable="true" data-id="${p.id}" ondragstart="ds(event)" onclick="openDetail('${p.id}')">
+          <div class="kcard-n">${p.name}</div>
+          <div class="kcard-h">${p.handle?'@'+p.handle:(p.email||'—')}</div>
+          <div class="kcard-tags">${pb(p.platform)} ${tb(p.type)} ${prib(p.priority)}</div>
+          ${p.audience_size?`<div class="kcard-aud">👥 ${fmt(p.audience_size)}</div>`:''}
+        </div>`).join('')||`<div style="text-align:center;color:var(--t3);font-size:11px;padding:8px">Empty</div>`}
+      </div>
       <button class="kadd" onclick="openAdd('${key}')">+ Add</button>
     </div>`;
   }).join('');
   document.getElementById('main').innerHTML=`<div class="kb">${cols}</div>`;
 }
-function ds(e){dragId=e.currentTarget.dataset.id;setTimeout(()=>{if(e.currentTarget)e.currentTarget.style.opacity='.4';},0);}
-function dov(e){e.preventDefault();e.currentTarget.closest('.kc').classList.add('drag-over');}
-function dlv(e){e.currentTarget.closest('.kc').classList.remove('drag-over');}
+function ds(e){dragId=e.currentTarget.dataset.id;setTimeout(()=>{if(e.currentTarget)e.currentTarget.style.opacity='.35';},0);}
+function dov(e){e.preventDefault();e.currentTarget.closest('.kc')?.classList.add('drag-over');}
+function dlv(e){e.currentTarget.closest('.kc')?.classList.remove('drag-over');}
 async function drp(e,ns){
-  e.preventDefault();e.currentTarget.closest('.kc').classList.remove('drag-over');
+  e.preventDefault();e.currentTarget.closest('.kc')?.classList.remove('drag-over');
   if(!dragId)return;
-  const p=prospects.find(x=>x.id===dragId);
-  if(!p||p.status===ns){dragId=null;return;}
-  try{await req('PATCH','/prospects/'+dragId,{status:ns});p.status=ns;toast('Moved to '+STAGES[ns].l,'ok');applyFilters();if(document.getElementById('dp').classList.contains('on'))openDetail(dragId);}catch{toast('Failed','err');}
+  const p=prospects.find(x=>x.id===dragId);if(!p||p.status===ns){dragId=null;return;}
+  try{await req('PATCH','/prospects/'+dragId,{status:ns});p.status=ns;toast('→ '+STAGES[ns]?.l,'ok');applyFilters();if(document.getElementById('dp').classList.contains('on'))openDetail(dragId);}
+  catch{toast('Move failed','err');}
   dragId=null;
 }
 
-// ─── TABLE ───────────────────────────────────────────────────
+// ─── TABLE ──────────────────────────────────────────────────
 function renderTable(){
-  if(!filtered.length){document.getElementById('main').innerHTML=`<div class="es"><div class="ei">👥</div><h3>${prospects.length?'No matches':'No partners yet'}</h3><p>${prospects.length?'Try adjusting filters.':'Add your first partner.'}</p>${!prospects.length?'<button class="btn bp" onclick="openAdd()">+ Add Partner</button>':''}</div>`;return;}
+  if(!filtered.length){document.getElementById('main').innerHTML=`<div class="empty"><div class="ei">👥</div><h3>${prospects.length?'No matches':'No contacts yet'}</h3><p>${prospects.length?'Try adjusting filters.':'Add your first contact to get started.'}</p>${!prospects.length?'<button class="btn bp" onclick="openAdd()">+ Add Contact</button>':''}</div>`;return;}
   const rows=filtered.map(p=>`
     <tr onclick="openDetail('${p.id}')" style="cursor:pointer">
       <td class="tdn">${p.name}</td>
       <td>${p.handle?`<a class="tdl" href="${p.profile_url||'#'}" target="_blank" onclick="event.stopPropagation()">@${p.handle}</a>`:'—'}</td>
-      <td>${pb(p.platform)}</td><td>${sb(p.status)}</td><td>${prib(p.priority)}</td>
+      <td>${pb(p.platform)}</td>
+      <td>${tb(p.type)}</td>
+      <td>${sb(p.status)}</td>
+      <td>${prib(p.priority)}</td>
       <td style="color:var(--t2)">${fmt(p.audience_size)}</td>
-      <td style="color:var(--t2)">${p.total_score?p.total_score+'%':'—'}</td>
-      <td style="color:var(--t3);font-size:12px">${p.email||'—'}</td>
-      <td style="color:var(--t3);font-size:12px">${ago(p.created_at)}</td>
-      <td onclick="event.stopPropagation()"><button class="btn bg bsm" onclick="openEdit('${p.id}')">Edit</button></td>
+      <td style="color:var(--t3)">${p.email||'—'}</td>
+      <td style="color:var(--t3)">${p.phone||'—'}</td>
+      <td style="color:var(--t3)">${ago(p.created_at)}</td>
+      <td onclick="event.stopPropagation()"><button class="btn bg xsm" onclick="openEdit('${p.id}')">Edit</button></td>
     </tr>`).join('');
-  document.getElementById('main').innerHTML=`<div class="tw"><table><thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Stage</th><th>Priority</th><th>Audience</th><th>Score</th><th>Email</th><th>Added</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  document.getElementById('main').innerHTML=`<table><thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Type</th><th>Stage</th><th>Pri</th><th>Audience</th><th>Email</th><th>Phone</th><th>Added</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-// ─── DEALS ───────────────────────────────────────────────────
+// ─── DEALS ──────────────────────────────────────────────────
 function renderDeals(){
+  const totVal=deals.reduce((s,d)=>s+(d.value||0),0);
+  const totCom=deals.reduce((s,d)=>s+(d.commission_value||0),0);
   const rows=deals.map(d=>`
     <tr>
       <td class="tdn">${d.prospect_name}</td>
-      <td>${db(d.stage)}</td>
+      <td>${db2(d.stage)}</td>
       <td style="color:var(--t)">${fmtC(d.value)}</td>
       <td style="color:var(--gr)">${fmtC(d.commission_value)}</td>
-      <td style="color:var(--t3);font-size:12px">${d.commission_pct||10}%</td>
-      <td style="color:var(--t3);font-size:12px">${fmtD(d.close_date)}</td>
-      <td style="color:var(--t3);font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.notes||'—'}</td>
-      <td><button class="btn bg bsm" onclick="openEditDeal('${d.id}')">Edit</button> <button class="btn bd2 bxsm" onclick="deleteDeal('${d.id}')">✕</button></td>
+      <td style="color:var(--t3)">${d.commission_pct||10}%</td>
+      <td style="color:var(--t3)">${fmtD(d.close_date)}</td>
+      <td style="color:var(--t3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.notes||'—'}</td>
+      <td onclick="event.stopPropagation()"><button class="btn bg xsm" onclick="openEditDeal('${d.id}')">Edit</button> <button class="btn bd2 xsm" onclick="deleteDeal('${d.id}')">✕</button></td>
     </tr>`).join('');
-  const totVal=deals.reduce((s,d)=>s+(d.value||0),0);
-  const totCom=deals.reduce((s,d)=>s+(d.commission_value||0),0);
   document.getElementById('main').innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 0">
-      <div style="display:flex;gap:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px 0">
+      <div style="display:flex;gap:18px">
         <span style="font-size:13px;color:var(--t3)">Total Value: <strong style="color:var(--t)">${fmtC(totVal)}</strong></span>
-        <span style="font-size:13px;color:var(--t3)">Total Commission: <strong style="color:var(--gr)">${fmtC(totCom)}</strong></span>
+        <span style="font-size:13px;color:var(--t3)">Commission: <strong style="color:var(--gr)">${fmtC(totCom)}</strong></span>
       </div>
-      <button class="btn bp" onclick="openAddDeal()">+ Add Deal</button>
+      <button class="btn bp sm" onclick="openAddDeal()">+ Add Deal</button>
     </div>
-    <div style="padding:12px 20px 0">
-      ${deals.length?`<div class="tw"><table><thead><tr><th>Partner</th><th>Stage</th><th>Value</th><th>Commission</th><th>%</th><th>Close Date</th><th>Notes</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="es"><div class="ei">💰</div><h3>No deals yet</h3><p>Add a deal to track revenue.</p><button class="btn bp" onclick="openAddDeal()">+ Add Deal</button></div>'}
-    </div>`;
+    ${deals.length?`<div style="padding:10px 0 0"><table><thead><tr><th>Partner</th><th>Stage</th><th>Value</th><th>Commission</th><th>%</th><th>Close Date</th><th>Notes</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty"><div class="ei">💰</div><h3>No deals yet</h3><p>Add a deal to track revenue and commissions.</p><button class="btn bp" onclick="openAddDeal()">+ Add Deal</button></div>`}`;
 }
-
-function openAddDeal(){
-  editDealId=null;
-  document.getElementById('dmTitle').textContent='Add Deal';
-  document.getElementById('dsavBtn').textContent='Add Deal';
-  ['dname','dval','dclose','dno'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
-  document.getElementById('dpct').value='10';
-  document.getElementById('dst').value='proposal';
-  document.getElementById('dealMod').classList.add('on');
-}
-function openEditDeal(id){
-  const d=deals.find(x=>x.id===id);if(!d)return;
-  editDealId=id;
-  document.getElementById('dmTitle').textContent='Edit Deal';
-  document.getElementById('dsavBtn').textContent='Save Changes';
-  document.getElementById('dname').value=d.prospect_name||'';
-  document.getElementById('dval').value=d.value||'';
-  document.getElementById('dpct').value=d.commission_pct||10;
-  document.getElementById('dst').value=d.stage||'proposal';
-  document.getElementById('dclose').value=d.close_date||'';
-  document.getElementById('dno').value=d.notes||'';
-  document.getElementById('dealMod').classList.add('on');
-}
+function openAddDeal(){editDealId=null;document.getElementById('dmTitle').textContent='Add Deal';document.getElementById('dsavBtn').textContent='Add Deal';['dname','dval','dclose','dno'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});document.getElementById('dpct').value='10';document.getElementById('dst').value='proposal';document.getElementById('dealMod').classList.add('on');}
+function openEditDeal(id){const d=deals.find(x=>x.id===id);if(!d)return;editDealId=id;document.getElementById('dmTitle').textContent='Edit Deal';document.getElementById('dsavBtn').textContent='Save';document.getElementById('dname').value=d.prospect_name||'';document.getElementById('dval').value=d.value||'';document.getElementById('dpct').value=d.commission_pct||10;document.getElementById('dst').value=d.stage||'proposal';document.getElementById('dclose').value=d.close_date||'';document.getElementById('dno').value=d.notes||'';document.getElementById('dealMod').classList.add('on');}
 async function saveDeal(){
-  const name=document.getElementById('dname').value.trim();
-  if(!name){toast('Partner name required','err');return;}
+  const name=document.getElementById('dname').value.trim();if(!name){toast('Name required','err');return;}
   const data={prospect_name:name,value:parseFloat(document.getElementById('dval').value)||0,commission_pct:parseFloat(document.getElementById('dpct').value)||10,stage:document.getElementById('dst').value,close_date:document.getElementById('dclose').value,notes:document.getElementById('dno').value.trim()};
   const btn=document.getElementById('dsavBtn');btn.disabled=true;btn.textContent='Saving…';
   try{
-    if(editDealId){const u=await req('PATCH','/deals/'+editDealId,data);const i=deals.findIndex(x=>x.id===editDealId);if(i>=0)deals[i]={...deals[i],...u};toast('Deal updated','ok');}
-    else{const r=await req('POST','/deals',data);deals.unshift({...data,id:r.id,commission_value:(data.value*data.commission_pct/100),created_at:new Date().toISOString()});toast('Deal added','ok');}
+    if(editDealId){const u=await req('PATCH','/deals/'+editDealId,data);const i=deals.findIndex(x=>x.id===editDealId);if(i>=0)deals[i]={...deals[i],...u};toast('Updated','ok');}
+    else{const r=await req('POST','/deals',data);deals.unshift({...data,id:r.id,commission_value:data.value*data.commission_pct/100,created_at:new Date().toISOString()});toast('Deal added','ok');}
     closeMod('dealMod');renderDeals();
-  }catch(e){toast('Save failed: '+e.message,'err');}
-  finally{btn.disabled=false;btn.textContent=editDealId?'Save Changes':'Add Deal';}
+  }catch(e){toast('Failed: '+e.message,'err');}
+  finally{btn.disabled=false;btn.textContent=editDealId?'Save':'Add Deal';}
 }
-async function deleteDeal(id){
-  if(!confirm('Delete this deal?'))return;
-  try{await req('DELETE','/deals/'+id);deals=deals.filter(d=>d.id!==id);toast('Deleted');renderDeals();}catch{toast('Failed','err');}
-}
+async function deleteDeal(id){if(!confirm('Delete this deal?'))return;try{await req('DELETE','/deals/'+id);deals=deals.filter(d=>d.id!==id);toast('Deleted');renderDeals();}catch{toast('Failed','err');}}
 
-// ─── INBOX ───────────────────────────────────────────────────
+// ─── INBOX ──────────────────────────────────────────────────
 function renderInbox(){
-  const all=[...inboxEmails].sort((a,b)=>new Date(b.date||b.created_at)-new Date(a.date||a.created_at));
-  const header=`<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--bd)"><div style="font-size:13px;color:var(--t3)">${all.length} emails from Reid's account</div><button class="btn bg bsm" onclick="syncInbox()">🔄 Sync Gmail</button></div>`;
-  if(!all.length){document.getElementById('main').innerHTML=header+`<div class="es"><div class="ei">✉️</div><h3>Inbox empty</h3><p>Click "Sync Gmail" to pull emails from Reid's account.</p></div>`;return;}
-  const items=all.map(e=>`
+  const anKey=localStorage.getItem('apex-anthropic-key')||'';
+  const aiSection=`
+    <div class="ai-box">
+      <h3>🧠 AI Inbox Analysis <span style="font-size:11px;color:var(--t3);font-weight:400">— powered by Anthropic</span></h3>
+      <div style="display:flex;gap:7px;align-items:center;margin-bottom:8px">
+        <input id="ankey" type="password" placeholder="Anthropic API key (sk-ant-…)" value="${anKey}" style="flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none" oninput="localStorage.setItem('apex-anthropic-key',this.value)">
+        <button class="btn bp sm" onclick="runAIAnalysis()">Analyze</button>
+        <button class="btn bg sm" onclick="syncGmail()">🔄 Sync Gmail</button>
+      </div>
+      <input id="anprompt" placeholder="Ask anything… (default: what needs my attention?)" style="width:100%;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none;margin-bottom:2px">
+      <div id="ai-resp" class="ai-resp" style="display:none"></div>
+    </div>`;
+  const emails=[...inboxEmails].sort((a,b)=>new Date(b.date||b.created_at)-new Date(a.date||a.created_at));
+  document.getElementById('main').innerHTML=aiSection+(emails.length?emails.map(e=>`
     <div class="iitem" onclick="showEmail('${e.id}')">
       <div class="iav">${(e.from_name||e.from||'?')[0].toUpperCase()}</div>
       <div class="ib">
@@ -611,305 +682,282 @@ function renderInbox(){
         <div class="isubj">${e.subject||'(no subject)'}</div>
         <div class="isnip">${(e.snippet||e.body||'').slice(0,80)}</div>
       </div>
-      <div class="imeta">
-        <div class="itime">${ago(e.date||e.created_at)}</div>
-        ${e.unread?'<div class="iunread"></div>':''}
-      </div>
-    </div>`).join('');
-  document.getElementById('main').innerHTML=header+`<div>${items}</div>`;
+      <div class="imeta"><div class="itime">${ago(e.date||e.created_at)}</div>${e.unread?'<div class="iunread"></div>':''}</div>
+    </div>`).join(''):`<div class="empty"><div class="ei">✉️</div><h3>Inbox empty</h3><p>Click "Sync Gmail" to pull Reid's emails.</p></div>`);
 }
-async function syncInbox(){
-  toast('Syncing Gmail…');
+async function runAIAnalysis(){
+  const key=document.getElementById('ankey')?.value?.trim()||localStorage.getItem('apex-anthropic-key');
+  if(!key){toast('Enter your Anthropic API key first','err');return;}
+  localStorage.setItem('apex-anthropic-key',key);
+  const prompt=document.getElementById('anprompt')?.value?.trim()||'';
+  const resp=document.getElementById('ai-resp');if(!resp)return;
+  resp.style.display='block';resp.textContent='Analyzing…';
   try{
-    const result=await fetch('/inbox/sync',{method:'POST',headers:{'x-api-key':KEY}});
-    const data=await result.json();
-    inboxEmails=await req('GET','/inbox/emails');
-    toast(`Synced ${data.added||0} new emails`,'ok');
-    renderInbox();
-  }catch{toast('Sync triggered — refresh in a moment','ok');}
+    const r=await req('POST','/analyze',{apiKey:key,prompt,context:`Inbox has ${inboxEmails.length} emails. Recent emails: ${inboxEmails.slice(0,3).map(e=>e.subject).join(', ')}`});
+    resp.textContent=r.analysis;
+  }catch(e){resp.textContent='Error: '+e.message;resp.style.color='var(--rd)';}
 }
+async function syncGmail(){toast('Syncing Reid\'s Gmail…');try{await fetch(API+'/inbox/sync',{method:'POST',headers:{'x-api-key':KEY}});setTimeout(async()=>{inboxEmails=await req('GET','/inbox/emails');toast(`Inbox updated (${inboxEmails.length} emails)`,'ok');renderInbox();},2000);}catch{toast('Sync requested — emails will appear shortly','ok');}}
 function showEmail(id){
   const e=inboxEmails.find(x=>x.id===id);if(!e)return;
   const dp=document.getElementById('dp');dp.classList.add('on');
-  dp.innerHTML=`
-    <div class="dph">
-      <button class="dpc" onclick="closeDP()">×</button>
-      <h2 style="font-size:15px">${e.subject||'(no subject)'}</h2>
-      <div class="tags" style="margin-top:6px">
-        <span style="font-size:12px;color:var(--t3)">From: ${e.from_name||''} &lt;${e.from||''}&gt;</span>
-      </div>
-      <div style="font-size:11px;color:var(--t3);margin-top:4px">${fmtD(e.date||e.created_at)}</div>
-    </div>
-    <div class="dpb">
-      <div style="font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap">${e.body||e.snippet||'(no content)'}</div>
-    </div>`;
+  dp.innerHTML=`<div class="dph"><button class="dpc" onclick="closeDP()">×</button><h2>${e.subject||'(no subject)'}</h2><div class="tags"><span style="font-size:11px;color:var(--t3)">From: ${e.from_name||''} &lt;${e.from||''}&gt;</span></div><div style="font-size:11px;color:var(--t3);margin-top:3px">${fmtD(e.date||e.created_at)}</div></div><div class="dpb"><div style="font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap">${e.body||e.snippet||'(empty)'}</div></div>`;
 }
 
-// ─── ASK REID ────────────────────────────────────────────────
+// ─── ASK REID ───────────────────────────────────────────────
 function renderReid(){
-  const msgs=reidMsgs.slice(0,20);
-  const compose=`
-    <div class="reid-compose">
-      <h3>Send instruction to Reid</h3>
-      <textarea class="nta" id="reidInput" placeholder="Tell Reid what to do: 'Send follow-up to @username', 'Draft outreach for top 10 TikTok prospects', etc." style="min-height:100px"></textarea>
-      <div style="margin-top:10px;display:flex;gap:8px">
-        <button class="btn bp" onclick="sendToReid()">Send to Reid</button>
-        <select class="fs" id="reidType"><option value="instruction">Instruction</option><option value="outreach">Outreach Request</option><option value="followup">Follow-up Request</option><option value="research">Research Task</option></select>
-      </div>
-    </div>`;
-  const history=msgs.length?msgs.map(m=>`
-    <div class="reid-msg">
-      <div class="reid-msg-txt">${m.message}</div>
-      <div class="reid-msg-meta">
-        <span class="reid-status rs-${m.status||'pending'}">${m.status||'pending'}</span>
-        <span>${m.type||'instruction'}</span>
-        <span>${ago(m.created_at)}</span>
-        ${m.status==='pending'?`<button class="btn bg bxsm" onclick="markReidDone('${m.id}')">Mark Done</button>`:''}
-      </div>
-    </div>`):'<div style="font-size:13px;color:var(--t3);text-align:center;padding:20px">No instructions sent yet</div>';
   document.getElementById('main').innerHTML=`
     <div class="reid-wrap">
-      ${compose}
-      <div style="font-size:13px;font-weight:600;color:var(--t2);margin:18px 0 10px">Recent Instructions</div>
-      ${history.join('')}
+      <div class="reid-compose">
+        <h3>💬 Send to Reid</h3>
+        <textarea class="nta" id="reidInput" placeholder="Tell Reid what to do — e.g. 'Send follow-up to @username', 'Add this creator: [details]', 'Draft outreach for top 10 TikTok prospects'…" style="min-height:90px"></textarea>
+        <div style="margin-top:8px;display:flex;gap:7px;align-items:center">
+          <button class="btn bp" onclick="sendToReid()">Send to Reid</button>
+          <select class="fs" id="reidType"><option value="instruction">Instruction</option><option value="outreach">Outreach Request</option><option value="followup">Follow-up</option><option value="research">Research Task</option><option value="add_contact">Add to CRM</option></select>
+          <span style="font-size:11px;color:var(--t3)">Reid checks this regularly</span>
+        </div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px">Recent Instructions</div>
+      ${reidMsgs.slice(0,20).map(m=>`
+        <div class="reid-msg">
+          <div class="reid-msg-txt">${m.message}</div>
+          <div class="reid-msg-meta">
+            <span class="rs rs-${m.status||'pending'}">${m.status||'pending'}</span>
+            <span>${m.type||'instruction'}</span>
+            <span>${ago(m.created_at)}</span>
+            ${m.status==='pending'?`<button class="btn bg xsm" onclick="markReidDone('${m.id}')">Mark Done</button>`:''}
+          </div>
+        </div>`).join('')||`<div style="font-size:13px;color:var(--t3);text-align:center;padding:20px">No instructions yet</div>`}
     </div>`;
 }
 async function sendToReid(){
-  const msg=document.getElementById('reidInput').value.trim();
-  if(!msg){toast('Enter an instruction','err');return;}
+  const msg=document.getElementById('reidInput').value.trim();if(!msg){toast('Enter an instruction','err');return;}
   const type=document.getElementById('reidType').value;
-  try{
-    const r=await req('POST','/reid/messages',{message:msg,type});
-    reidMsgs.unshift({id:r.id,message:msg,type,status:'pending',created_at:new Date().toISOString()});
-    document.getElementById('reidInput').value='';
-    toast('Sent to Reid','ok');renderReid();
-  }catch(e){toast('Failed: '+e.message,'err');}
+  try{const r=await req('POST','/reid/messages',{message:msg,type});reidMsgs.unshift({id:r.id,message:msg,type,status:'pending',created_at:new Date().toISOString()});document.getElementById('reidInput').value='';toast('Sent to Reid ✓','ok');renderReid();}
+  catch(e){toast('Failed: '+e.message,'err');}
 }
-async function markReidDone(id){
-  try{await req('PATCH','/reid/messages/'+id,{status:'done'});const m=reidMsgs.find(x=>x.id===id);if(m)m.status='done';toast('Marked done','ok');renderReid();}catch{toast('Failed','err');}
-}
+async function markReidDone(id){try{await req('PATCH','/reid/messages/'+id,{status:'done'});const m=reidMsgs.find(x=>x.id===id);if(m)m.status='done';renderReid();}catch{toast('Failed','err');}}
 
-// ─── GLOBAL DATA ─────────────────────────────────────────────
+// ─── GLOBAL DATA ────────────────────────────────────────────
 function renderGlobalData(){
-  if(!prospects.length){document.getElementById('main').innerHTML=`<div class="es"><div class="ei">🌐</div><h3>No data yet</h3><p>Import a CSV or add contacts to see global data.</p><button class="btn bg" onclick="importCSV()">Import CSV</button></div>`;return;}
+  if(!prospects.length){document.getElementById('main').innerHTML=`<div class="empty"><div class="ei">🌐</div><h3>No data</h3><p>Import a CSV to populate global data.</p><button class="btn bg" onclick="importCSV()">⬆ Import CSV</button></div>`;return;}
   const rows=prospects.map(p=>`
     <tr onclick="openDetail('${p.id}')" style="cursor:pointer">
       <td class="tdn" style="font-size:12px">${p.name}</td>
       <td style="font-size:11px;color:var(--t3)">${p.handle||'—'}</td>
-      <td>${pb(p.platform)}</td><td>${sb(p.status)}</td>
+      <td>${pb(p.platform)}</td><td>${tb(p.type)}</td><td>${sb(p.status)}</td>
       <td style="font-size:12px;color:var(--t2)">${fmt(p.audience_size)}</td>
-      <td style="font-size:12px;color:var(--t2)">${p.total_score?p.total_score+'%':'—'}</td>
-      <td style="font-size:11px;color:var(--t3);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.content_focus||'—'}</td>
+      <td style="font-size:11px;color:var(--t3)">${p.email||'—'}</td>
+      <td style="font-size:11px;color:var(--t3)">${p.phone||'—'}</td>
+      <td style="font-size:11px;color:var(--t3);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.content_focus||'—'}</td>
       <td style="font-size:11px;color:var(--t3)">${p.source||'—'}</td>
-      <td style="font-size:11px;color:var(--t3)">${fmtD(p.created_at)}</td>
     </tr>`).join('');
   document.getElementById('main').innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid var(--bd)">
-      <span style="font-size:12px;color:var(--t3)">${prospects.length} total records</span>
-      <div style="display:flex;gap:7px">
-        <button class="btn bg bsm" onclick="importCSV()">⬆ Import CSV</button>
-        <button class="btn bg bsm" onclick="exportCSV()">⬇ Export</button>
-      </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-bottom:1px solid var(--bd)">
+      <span style="font-size:12px;color:var(--t3)">${prospects.length} records</span>
+      <div style="display:flex;gap:6px"><button class="btn bg sm" onclick="importCSV()">⬆ Import</button><button class="btn bg sm" onclick="exportCSV()">⬇ Export</button></div>
     </div>
-    <div class="tw"><table><thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Stage</th><th>Audience</th><th>Score</th><th>Niche</th><th>Source</th><th>Added</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    <table><thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Type</th><th>Stage</th><th>Audience</th><th>Email</th><th>Phone</th><th>Niche</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-// ─── PLAYBOOK ────────────────────────────────────────────────
+// ─── PLAYBOOK ───────────────────────────────────────────────
 function renderPlaybook(){
-  const defaultEntries=[
-    {id:'__1',title:'Cold Outreach Template',content:`Subject: Partnership Opportunity — {Product}\n\nHey {Name},\n\nI came across your content and love what you're building. We work with creators in your space and I think there's a strong fit with what we offer.\n\nAre you open to a quick 15-min call this week?\n\nBest,\nReid\nApex`,category:'templates'},
-    {id:'__2',title:'Follow-Up Sequence',content:`Day 1: Initial outreach\nDay 4: First follow-up — add value (share relevant content)\nDay 8: Second follow-up — mention urgency or limited spots\nDay 14: Final follow-up — break-up email\n\nIf no response after 14 days, move to "closed lost" and re-engage in 60 days.`,category:'process'},
-    {id:'__3',title:'Qualifying Questions',content:`1. What's your current audience size and engagement rate?\n2. Have you promoted SaaS or B2B products before?\n3. What does your audience care most about?\n4. Are you open to a performance-based commission structure?\n5. What's your typical brand partnership timeline?`,category:'process'},
+  const defaults=[
+    {id:'__1',title:'Cold Outreach Template',content:`Subject: Quick Question\n\nHey [Name],\n\nLove the content — especially [specific thing]. I'm reaching out because we work with creators like you to build a recurring income stream without needing a massive audience.\n\nOur partners earn $X per qualified referral. No pitch required — just share your experience.\n\nWorth a 10-min call this week?\n\n— Reid\nApex`,category:'templates'},
+    {id:'__2',title:'Follow-Up Sequence',content:`Day 0: Initial outreach\nDay 3: Follow-up #1 — add value, share a win\nDay 7: Follow-up #2 — social proof or case study\nDay 12: Follow-up #3 — scarcity/urgency\nDay 18: Break-up email — "closing your file"\n\nIf no response → move to closed_lost, revisit in 60 days.`,category:'process'},
+    {id:'__3',title:'Qualifying Questions',content:`1. Current audience size + engagement rate?\n2. Ever promoted SaaS or B2B products?\n3. What does your audience care most about?\n4. Open to performance-based commission?\n5. Current brand deal timeline?\n6. Monthly revenue from content (ballpark)?`,category:'process'},
+    {id:'__4',title:'Objection Handling',content:`"I don't do paid partnerships" → "This isn't paid — it's commission. You only earn when you refer someone who closes."\n"My audience is small" → "We don't need massive reach. We need the right reach. 1,000 engaged followers > 100K passive ones."\n"I need to think about it" → "Totally fair. What's the main thing you need to know to decide?"`,category:'objections'},
   ];
-  const allEntries=[...defaultEntries,...playbook];
-  const items=allEntries.map(e=>`
-    <div class="pb-item">
-      <div style="display:flex;align-items:start;justify-content:space-between">
-        <div class="pb-title">${e.title}</div>
-        ${!e.id.startsWith('__')?`<button class="btn bd2 bxsm" onclick="deletePlaybook('${e.id}')">✕</button>`:''}
-      </div>
-      <div class="pb-content">${e.content}</div>
-      <div class="pb-cat">📂 ${e.category||'general'}</div>
-    </div>`).join('');
+  const all=[...defaults,...playbook];
   document.getElementById('main').innerHTML=`
-    <div style="padding:20px">
-      <div style="display:flex;justify-content:flex-end;margin-bottom:14px"><button class="btn bp" onclick="addPlaybookEntry()">+ Add Entry</button></div>
-      ${items}
+    <div style="padding:18px">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:14px"><button class="btn bp sm" onclick="addPBEntry()">+ Add Entry</button></div>
+      ${all.map(e=>`
+        <div class="pb-item">
+          <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:5px">
+            <div class="pb-title">${e.title}</div>
+            ${!e.id.startsWith('__')?`<button class="btn bd2 xsm" onclick="deletePB('${e.id}')">✕</button>`:''}
+          </div>
+          <div class="pb-content">${e.content}</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:7px">📂 ${e.category||'general'}</div>
+        </div>`).join('')}
     </div>`;
 }
-async function addPlaybookEntry(){
-  const title=prompt('Entry title:');if(!title)return;
-  const content=prompt('Content:');if(!content)return;
-  const cat=prompt('Category (e.g. templates, process, guides):','general')||'general';
-  try{const r=await req('POST','/playbook',{title,content,category:cat});playbook.push({id:r.id,title,content,category:cat,created_at:new Date().toISOString()});toast('Added','ok');renderPlaybook();}catch{toast('Failed','err');}
-}
-async function deletePlaybook(id){
-  if(!confirm('Delete this entry?'))return;
-  try{await req('DELETE','/playbook/'+id);playbook=playbook.filter(p=>p.id!==id);toast('Deleted');renderPlaybook();}catch{toast('Failed','err');}
-}
+async function addPBEntry(){const title=prompt('Title:');if(!title)return;const content=prompt('Content (paste template, steps, etc.):');if(!content)return;const cat=prompt('Category:','templates')||'general';try{const r=await req('POST','/playbook',{title,content,category:cat});playbook.push({id:r.id,title,content,category:cat,created_at:new Date().toISOString()});toast('Added','ok');renderPlaybook();}catch{toast('Failed','err');}}
+async function deletePB(id){if(!confirm('Delete?'))return;try{await req('DELETE','/playbook/'+id);playbook=playbook.filter(p=>p.id!==id);toast('Deleted');renderPlaybook();}catch{toast('Failed','err');}}
 
-// ─── ADMIN ───────────────────────────────────────────────────
+// ─── ADMIN ──────────────────────────────────────────────────
 function renderAdmin(){
   document.getElementById('main').innerHTML=`
-    <div class="admin-wrap">
+    <div style="padding:18px">
       <div class="admin-section">
-        <h3>System Info</h3>
-        <div class="kv"><span class="lbl">Backend</span><span class="val">${window.location.origin}</span></div>
-        <div class="kv"><span class="lbl">Prospects</span><span class="val">${prospects.length}</span></div>
+        <h3>System</h3>
+        <div class="kv"><span class="lbl">Backend URL</span><span class="val">${window.location.origin}</span></div>
+        <div class="kv"><span class="lbl">Storage</span><span class="val">Railway Volume (persistent)</span></div>
+        <div class="kv"><span class="lbl">Contacts</span><span class="val">${prospects.length}</span></div>
         <div class="kv"><span class="lbl">Deals</span><span class="val">${deals.length}</span></div>
         <div class="kv"><span class="lbl">Inbox Emails</span><span class="val">${inboxEmails.length}</span></div>
-        <div class="kv"><span class="lbl">Reid Messages</span><span class="val">${reidMsgs.length}</span></div>
+        <div class="kv"><span class="lbl">Reid Queue</span><span class="val">${reidMsgs.filter(m=>m.status==='pending').length} pending</span></div>
       </div>
       <div class="admin-section">
-        <h3>Data Management</h3>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn bg" onclick="importCSV()">⬆ Import CSV</button>
-          <button class="btn bg" onclick="exportCSV()">⬇ Export All Data</button>
-          <button class="btn bg" onclick="loadAll()">🔄 Refresh Data</button>
+        <h3>Data</h3>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn bg sm" onclick="importCSV()">⬆ Import CSV</button>
+          <button class="btn bg sm" onclick="exportCSV()">⬇ Export All</button>
+          <button class="btn bg sm" onclick="loadAll()">🔄 Refresh</button>
         </div>
       </div>
       <div class="admin-section">
-        <h3>Gmail Integration</h3>
-        <div class="kv"><span class="lbl">Reid's Account</span><span class="val">reid.foster@apex.host</span></div>
-        <div class="kv"><span class="lbl">Last Sync</span><span class="val">${inboxEmails.length?ago(inboxEmails[0]?.date||inboxEmails[0]?.created_at):'Never'}</span></div>
-        <div style="margin-top:10px"><button class="btn bp" onclick="go('inbox');setTimeout(syncInbox,100)">Sync Inbox Now</button></div>
+        <h3>Gmail (Reid's Account)</h3>
+        <div class="kv"><span class="lbl">Account</span><span class="val">reid.foster@apex.host</span></div>
+        <div class="kv"><span class="lbl">Emails cached</span><span class="val">${inboxEmails.length}</span></div>
+        <div class="kv"><span class="lbl">Last email</span><span class="val">${inboxEmails[0]?ago(inboxEmails[0].date||inboxEmails[0].created_at):'Never'}</span></div>
+        <div style="margin-top:9px"><button class="btn bp sm" onclick="go('inbox');setTimeout(syncGmail,50)">Sync Now</button></div>
+      </div>
+      <div class="admin-section">
+        <h3>AI Analysis (Anthropic)</h3>
+        <div class="kv"><span class="lbl">API Key</span><span class="val">${localStorage.getItem('apex-anthropic-key')?'✅ Set':'Not set'}</span></div>
+        <div style="display:flex;gap:7px;align-items:center;margin-top:9px">
+          <input id="adminKey" type="password" placeholder="sk-ant-…" value="${localStorage.getItem('apex-anthropic-key')||''}" style="flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none">
+          <button class="btn bp sm" onclick="saveAnKey()">Save Key</button>
+        </div>
       </div>
     </div>`;
 }
+function saveAnKey(){const k=document.getElementById('adminKey')?.value?.trim();if(!k)return;localStorage.setItem('apex-anthropic-key',k);toast('Key saved','ok');renderAdmin();}
 
-// ─── CSV IMPORT / EXPORT ─────────────────────────────────────
-function importCSV(){
-  const input=document.createElement('input');input.type='file';input.accept='.csv';
-  input.onchange=e=>handleCSVFile(e.target.files[0]);
-  input.click();
-}
-function parseCSV(txt){
-  const lines=txt.trim().split('\n');
-  const hdrs=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/\s+/g,'_').replace(/['"]/g,''));
-  return lines.slice(1).filter(l=>l.trim()).map(line=>{
-    const vals=line.match(/("(?:[^"]|"")*"|[^,]*)/g)||[];
-    const o={};hdrs.forEach((h,i)=>{o[h]=(vals[i]||'').replace(/^"|"$/g,'').replace(/""/g,'"').trim();});return o;
-  });
-}
-async function handleCSVFile(file){
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=async e=>{
-    const rows=parseCSV(e.target.result);
-    const records=rows.map(r=>({name:r.name||r.handle||r.creator||r.influencer||'',handle:r.handle||r.username||'',platform:r.platform||'',audience_size:parseInt(r.audience_size||r.followers||0)||0,email:r.email||'',profile_url:r.profile_url||r.url||'',status:r.status||'discovered',priority:parseInt(r.priority)||3,fit_score:parseInt(r.fit_score||r.score||r.iap_score||0)||0,notes:r.notes||'',content_focus:r.content_focus||r.niche||'',source:r.source||'csv-import'})).filter(r=>r.name||r.handle);
-    if(!records.length){toast('No valid rows found','err');return;}
-    if(!confirm(`Import ${records.length} records?`))return;
-    try{const res=await req('POST','/prospects/bulk',{records});prospects=await req('GET','/prospects');toast(`Imported ${res.added} contacts`,'ok');applyFilters();}catch(e){toast('Import failed: '+e.message,'err');}
-  };
-  reader.readAsText(file);
-}
-function exportCSV(){
-  const cols=['name','handle','platform','status','priority','audience_size','total_score','email','content_focus','outreach_type','source','notes','profile_url','created_at'];
-  const rows=(filtered.length?filtered:prospects).map(p=>cols.map(c=>{const v=String(p[c]??'').replace(/"/g,'""');return v.includes(',')||v.includes('"')?`"${v}"`:v;}).join(','));
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent([cols.join(','),...rows].join('\n'));
-  a.download='apex-affiliates-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-  toast(`Exported ${rows.length} records`);
-}
-
-// ─── DETAIL PANEL ────────────────────────────────────────────
+// ─── DETAIL PANEL ───────────────────────────────────────────
 async function openDetail(id){
   const p=prospects.find(x=>x.id===id);if(!p)return;
   const dp=document.getElementById('dp');dp.classList.add('on');
-  let activity=[];
-  try{activity=await req('GET',`/prospects/${id}/activity`);}catch{}
+  let activity=[];try{activity=await req('GET',`/prospects/${id}/activity`);}catch{}
   dp.innerHTML=`
     <div class="dph">
       <button class="dpc" onclick="closeDP()">×</button>
       <h2>${p.name}</h2>
-      <div class="tags">${sb(p.status)} ${pb(p.platform)} ${prib(p.priority)}</div>
+      <div class="tags">${sb(p.status)} ${pb(p.platform)} ${tb(p.type)} ${prib(p.priority)}</div>
     </div>
     <div class="dpb">
-      <div class="dsec"><h4>Move Stage</h4><select class="ssel" onchange="quickSt('${id}',this.value)">${Object.entries(STAGES).map(([k,v])=>`<option value="${k}" ${p.status===k?'selected':''}>${v.e} ${v.l}</option>`).join('')}</select></div>
+      <div class="dsec"><h4>Move Stage</h4>
+        <select class="ssel" onchange="quickSt('${id}',this.value)">${Object.entries(STAGES).map(([k,v])=>`<option value="${k}" ${p.status===k?'selected':''}>${v.e} ${v.l}</option>`).join('')}</select>
+      </div>
       <div class="dsec"><h4>Details</h4>
         <div class="df"><span class="dl">Handle</span><span class="dv">${p.handle?`<a href="${p.profile_url||'#'}" target="_blank">@${p.handle}</a>`:'—'}</span></div>
         <div class="df"><span class="dl">Email</span><span class="dv">${p.email||'—'}</span></div>
+        <div class="df"><span class="dl">Phone</span><span class="dv">${p.phone||'—'}</span></div>
         <div class="df"><span class="dl">Audience</span><span class="dv">${fmt(p.audience_size)}</span></div>
-        <div class="df"><span class="dl">Fit Score</span><span class="dv">${p.total_score?p.total_score+'%':'—'}</span></div>
+        <div class="df"><span class="dl">Score</span><span class="dv">${p.total_score?p.total_score+'%':'—'}</span></div>
         <div class="df"><span class="dl">Focus</span><span class="dv">${p.content_focus||'—'}</span></div>
         <div class="df"><span class="dl">Source</span><span class="dv">${p.source||'—'}</span></div>
         <div class="df"><span class="dl">Added</span><span class="dv">${fmtD(p.created_at)}</span></div>
       </div>
       <div class="dsec"><h4>Notes</h4>
-        <textarea class="nta" id="nta_${id}" placeholder="Add notes…">${p.notes||''}</textarea>
-        <button class="btn bg bsm" style="margin-top:6px;width:100%" onclick="saveNotes('${id}')">Save Notes</button>
+        <textarea class="nta" id="nta_${id}" placeholder="Notes, context, next steps…">${p.notes||''}</textarea>
+        <button class="btn bg xsm" style="margin-top:5px;width:100%" onclick="saveNotes('${id}')">Save Notes</button>
       </div>
       <div class="dsec"><h4>Activity</h4>
-        ${activity.length?activity.slice(0,8).map(a=>`<div class="ai"><div class="ad"></div><div class="at">${a.detail}</div><div class="atime">${ago(a.created_at)}</div></div>`).join(''):'<div style="font-size:12px;color:var(--t3)">No activity</div>'}
+        ${activity.slice(0,8).map(a=>`<div class="ai"><div class="ad"></div><div class="at">${a.detail}</div><div class="atime">${ago(a.created_at)}</div></div>`).join('')||'<div style="font-size:12px;color:var(--t3)">No activity</div>'}
       </div>
     </div>
     <div class="dpa">
-      <button class="btn bg bsm" onclick="openEdit('${id}')">✏️ Edit</button>
-      <button class="btn bd2 bsm" onclick="deleteP('${id}')">🗑 Delete</button>
-      ${p.profile_url?`<a href="${p.profile_url}" target="_blank" class="btn bg bsm">🔗 Profile</a>`:''}
+      <button class="btn bg xsm" onclick="openEdit('${id}')">✏️ Edit</button>
+      <button class="btn bd2 xsm" onclick="deleteP('${id}')">🗑 Delete</button>
+      ${p.profile_url?`<a href="${p.profile_url}" target="_blank" class="btn bg xsm">🔗 Profile</a>`:''}
     </div>`;
 }
 function closeDP(){document.getElementById('dp').classList.remove('on');document.getElementById('dp').innerHTML='';}
-async function quickSt(id,st){
-  try{await req('PATCH','/prospects/'+id,{status:st});const p=prospects.find(x=>x.id===id);if(p)p.status=st;toast('Stage updated','ok');applyFilters();}catch{toast('Failed','err');}
-}
-async function saveNotes(id){
-  const n=document.getElementById('nta_'+id)?.value||'';
-  try{await req('PATCH','/prospects/'+id,{notes:n});const p=prospects.find(x=>x.id===id);if(p)p.notes=n;toast('Notes saved','ok');}catch{toast('Failed','err');}
-}
+async function quickSt(id,st){try{await req('PATCH','/prospects/'+id,{status:st});const p=prospects.find(x=>x.id===id);if(p)p.status=st;toast('Stage updated','ok');applyFilters();}catch{toast('Failed','err');}}
+async function saveNotes(id){const n=document.getElementById('nta_'+id)?.value||'';try{await req('PATCH','/prospects/'+id,{notes:n});const p=prospects.find(x=>x.id===id);if(p)p.notes=n;toast('Saved ✓','ok');}catch{toast('Failed','err');}}
 
-// ─── ADD / EDIT ───────────────────────────────────────────────
-function openAdd(st='discovered'){
+// ─── ADD/EDIT ────────────────────────────────────────────────
+function openAdd(st='prospect'){
   editId=null;
-  document.getElementById('mTitle').textContent='Add Partner';
-  document.getElementById('savBtn').textContent='Add Partner';
-  ['fn','fh','fem','faud','fsc','furl','fcf','fno'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
+  document.getElementById('mTitle').textContent='Add Contact';
+  document.getElementById('savBtn').textContent='Add Contact';
+  ['fn','fh','fem','fphone','faud','fsc','furl','fcf','fno'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
   document.getElementById('fst').value=st;
   document.getElementById('fpri').value='3';
   document.getElementById('fp').value='';
+  document.getElementById('ftype').value='affiliate';
   document.getElementById('addMod').classList.add('on');
   setTimeout(()=>document.getElementById('fn').focus(),80);
 }
 function openEdit(id){
   const p=prospects.find(x=>x.id===id);if(!p)return;
   editId=id;
-  document.getElementById('mTitle').textContent='Edit Partner';
+  document.getElementById('mTitle').textContent='Edit Contact';
   document.getElementById('savBtn').textContent='Save Changes';
   document.getElementById('fn').value=p.name||'';
   document.getElementById('fh').value=p.handle||'';
   document.getElementById('fem').value=p.email||'';
+  document.getElementById('fphone').value=p.phone||'';
   document.getElementById('faud').value=p.audience_size||'';
   document.getElementById('fsc').value=p.total_score||'';
   document.getElementById('furl').value=p.profile_url||'';
   document.getElementById('fcf').value=p.content_focus||'';
   document.getElementById('fno').value=p.notes||'';
-  document.getElementById('fst').value=p.status||'discovered';
+  document.getElementById('fst').value=p.status||'prospect';
   document.getElementById('fpri').value=p.priority||3;
   document.getElementById('fp').value=p.platform||'';
+  document.getElementById('ftype').value=p.type||'affiliate';
   document.getElementById('addMod').classList.add('on');
 }
 async function saveContact(){
-  const name=document.getElementById('fn').value.trim();
-  if(!name){toast('Name required','err');return;}
-  const data={name,handle:document.getElementById('fh').value.trim(),email:document.getElementById('fem').value.trim(),platform:document.getElementById('fp').value,audience_size:parseInt(document.getElementById('faud').value)||0,iap_score:parseInt(document.getElementById('fsc').value)||0,profile_url:document.getElementById('furl').value.trim(),content_focus:document.getElementById('fcf').value.trim(),notes:document.getElementById('fno').value.trim(),status:document.getElementById('fst').value,priority:parseInt(document.getElementById('fpri').value)||3};
+  const name=document.getElementById('fn').value.trim();if(!name){toast('Name required','err');return;}
+  const data={name,handle:document.getElementById('fh').value.trim(),email:document.getElementById('fem').value.trim(),phone:document.getElementById('fphone').value.trim(),platform:document.getElementById('fp').value,audience_size:parseInt(document.getElementById('faud').value)||0,iap_score:parseInt(document.getElementById('fsc').value)||0,profile_url:document.getElementById('furl').value.trim(),content_focus:document.getElementById('fcf').value.trim(),notes:document.getElementById('fno').value.trim(),status:document.getElementById('fst').value,priority:parseInt(document.getElementById('fpri').value)||3,type:document.getElementById('ftype').value};
   const btn=document.getElementById('savBtn');btn.disabled=true;btn.textContent='Saving…';
   try{
-    if(editId){const u=await req('PATCH','/prospects/'+editId,data);const i=prospects.findIndex(x=>x.id===editId);if(i>=0)prospects[i]={...prospects[i],...u};toast('Updated!','ok');}
-    else{const r=await req('POST','/prospects',data);prospects.unshift({...data,id:r.id,created_at:new Date().toISOString(),updated_at:new Date().toISOString()});toast('Added!','ok');}
-    closeMod('addMod');applyFilters();if(editId)openDetail(editId);
+    if(editId){const u=await req('PATCH','/prospects/'+editId,data);const i=prospects.findIndex(x=>x.id===editId);if(i>=0)prospects[i]={...prospects[i],...u};toast('Updated ✓','ok');}
+    else{const r=await req('POST','/prospects',data);prospects.unshift({...data,id:r.id,total_score:data.iap_score,created_at:new Date().toISOString(),updated_at:new Date().toISOString()});toast('Added ✓','ok');}
+    closeMod('addMod');applyFilters();render();if(editId)openDetail(editId);
   }catch(e){toast('Failed: '+e.message,'err');}
-  finally{btn.disabled=false;btn.textContent=editId?'Save Changes':'Add Partner';}
+  finally{btn.disabled=false;btn.textContent=editId?'Save Changes':'Add Contact';}
 }
-async function deleteP(id){
-  if(!confirm('Delete this partner? Cannot be undone.'))return;
-  try{await req('DELETE','/prospects/'+id);prospects=prospects.filter(x=>x.id!==id);toast('Deleted');closeDP();applyFilters();}catch{toast('Failed','err');}
-}
+async function deleteP(id){if(!confirm('Delete this contact?'))return;try{await req('DELETE','/prospects/'+id);prospects=prospects.filter(x=>x.id!==id);closeDP();applyFilters();render();toast('Deleted');}catch{toast('Failed','err');}}
 function closeMod(id){document.getElementById(id).classList.remove('on');}
+
+// ─── CSV ─────────────────────────────────────────────────────
+function importCSV(){const i=document.createElement('input');i.type='file';i.accept='.csv';i.onchange=e=>handleCSV(e.target.files[0]);i.click();}
+function parseCSV(txt){
+  const lines=txt.trim().split('\n');
+  const hdrs=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/[\s"']+/g,'_').replace(/[^a-z0-9_]/g,''));
+  return lines.slice(1).filter(l=>l.trim()).map(line=>{
+    const vals=[];let cur='',inQ=false;
+    for(let c of line){if(c==='"')inQ=!inQ;else if(c===','&&!inQ){vals.push(cur.trim());cur='';}else cur+=c;}
+    vals.push(cur.trim());
+    const o={};hdrs.forEach((h,i)=>{o[h]=(vals[i]||'').replace(/^"|"$/g,'').trim();});return o;
+  });
+}
+async function handleCSV(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    const rows=parseCSV(e.target.result);
+    const records=rows.map(r=>({name:r.name||r.handle||r.creator||r.influencer||r.brand||'',handle:r.handle||r.username||'',platform:r.platform||'',email:r.email||'',phone:r.phone||'',audience_size:parseInt(r.audience_size||r.followers||r.follower_count||0)||0,fit_score:parseInt(r.fit_score||r.score||r.iap_score||r.total_score||0)||0,profile_url:r.profile_url||r.url||r.link||'',status:r.status||'prospect',priority:parseInt(r.priority)||3,notes:r.notes||r.note||'',content_focus:r.content_focus||r.niche||r.category||'',source:r.source||'csv-import',type:r.type||'affiliate'})).filter(r=>r.name||r.handle);
+    if(!records.length){toast('No valid rows','err');return;}
+    if(!confirm(`Import ${records.length} contacts?`))return;
+    try{const res=await req('POST','/prospects/bulk',{records});prospects=await req('GET','/prospects');toast(`Imported ${res.added} contacts`,'ok');applyFilters();render();}
+    catch(e){toast('Import failed: '+e.message,'err');}
+  };
+  reader.readAsText(file);
+}
+function exportCSV(){
+  const cols=['name','handle','platform','type','status','priority','audience_size','total_score','email','phone','content_focus','outreach_type','source','notes','profile_url','created_at'];
+  const data=filtered.length?filtered:prospects;
+  const rows=data.map(p=>cols.map(c=>{const v=String(p[c]??'').replace(/"/g,'""');return v.includes(',')||v.includes('"')||v.includes('\n')?`"${v}"`:v;}).join(','));
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent([cols.join(','),...rows].join('\n'));
+  a.download='apex-affiliates-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast(`Exported ${rows.length} records`);
+}
+
+// ─── KEYBOARD SHORTCUTS ──────────────────────────────────────
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){document.querySelectorAll('.ov.on').forEach(m=>m.classList.remove('on'));closeDP();}
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();document.getElementById('srch').focus();}
-  if((e.metaKey||e.ctrlKey)&&e.key==='n'){e.preventDefault();openAdd();}
+  if((e.metaKey||e.ctrlKey)&&e.key==='n'&&!e.target.tagName.match(/INPUT|TEXTAREA/)){e.preventDefault();go('pipeline');setTimeout(openAdd,50);}
 });
+
 go('dashboard');
 loadAll();
 </script>
