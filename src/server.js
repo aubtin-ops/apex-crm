@@ -1,50 +1,43 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const Database = require('better-sqlite3');
-const { v4: uuidv4 } = require('crypto');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3100;
 const API_KEY = process.env.API_KEY || 'apex-agent-secret-change-me';
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../data/apex.db');
 
-// DB setup
-const dbPath = process.env.DB_PATH || path.join(__dirname, '../data/apex.db');
-const fs = require('fs');
-fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+// In-memory store (persists for process lifetime; Railway volumes for persistence)
+let prospects = [];
+let activityLog = [];
+let nextActivityId = 1;
 
-const db = new Database(dbPath);
-db.exec(`
-  CREATE TABLE IF NOT EXISTS prospects (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    email TEXT DEFAULT '',
-    platform TEXT DEFAULT '',
-    profile_url TEXT DEFAULT '',
-    audience_size INTEGER DEFAULT 0,
-    total_score INTEGER DEFAULT 0,
-    outreach_type TEXT DEFAULT 'cold',
-    source TEXT DEFAULT '',
-    notes TEXT DEFAULT '',
-    status TEXT DEFAULT 'discovered',
-    outreach_sent_date TEXT DEFAULT '',
-    response_date TEXT DEFAULT '',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
-  CREATE TABLE IF NOT EXISTS activity_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    prospect_id TEXT,
-    action TEXT,
-    detail TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
-`);
+// Try to load from disk if file exists
+function loadData() {
+  try {
+    if (fs.existsSync(DB_PATH + '.json')) {
+      const raw = JSON.parse(fs.readFileSync(DB_PATH + '.json', 'utf8'));
+      prospects = raw.prospects || [];
+      activityLog = raw.activityLog || [];
+      nextActivityId = raw.nextActivityId || 1;
+      console.log(`Loaded ${prospects.length} prospects from disk`);
+    }
+  } catch (e) { console.log('Starting fresh (no data file)'); }
+}
+
+function saveData() {
+  try {
+    fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+    fs.writeFileSync(DB_PATH + '.json', JSON.stringify({ prospects, activityLog, nextActivityId }, null, 2));
+  } catch (e) { console.error('Save error:', e.message); }
+}
+
+loadData();
 
 app.use(cors());
 app.use(express.json());
 
-// API key middleware
 const requireApiKey = (req, res, next) => {
   const key = req.headers['x-api-key'];
   if (key !== API_KEY) return res.status(401).json({ error: 'Unauthorized' });
@@ -54,57 +47,111 @@ const requireApiKey = (req, res, next) => {
 // --- PROSPECTS ---
 
 app.get('/prospects', requireApiKey, (req, res) => {
-  const rows = db.prepare('SELECT * FROM prospects ORDER BY created_at DESC').all();
-  res.json(rows.map(r => ({ ...r, iap_score: r.total_score || 0 })));
+  const sorted = [...prospects].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  res.json(sorted.map(r => ({ ...r, iap_score: r.total_score || 0 })));
 });
 
 app.post('/prospects', requireApiKey, (req, res) => {
-  const { name, email, platform, profile_url, audience_size, iap_score, outreach_type, source, notes, status } = req.body;
+  const { name, email, platform, profile_url, handle, audience_size, iap_score, outreach_type, source, notes, status, content_focus, fit_score, priority } = req.body;
   if (!name) return res.status(400).json({ error: 'name required' });
   const id = require('crypto').randomUUID();
-  db.prepare(`INSERT INTO prospects (id, name, email, platform, profile_url, audience_size, total_score, outreach_type, source, notes, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-    .run(id, name, email||'', platform||'', profile_url||'', audience_size||0, iap_score||0, outreach_type||'cold', source||'', notes||'', status||'discovered');
-  db.prepare(`INSERT INTO activity_log (prospect_id, action, detail) VALUES (?, 'created', ?)`)
-    .run(id, `Added ${name}`);
+  const now = new Date().toISOString();
+  const prospect = {
+    id, name,
+    email: email || '',
+    platform: platform || '',
+    handle: handle || '',
+    profile_url: profile_url || '',
+    audience_size: audience_size || 0,
+    total_score: iap_score || fit_score || 0,
+    outreach_type: outreach_type || 'cold',
+    source: source || '',
+    notes: notes || '',
+    status: status || 'discovered',
+    content_focus: content_focus || '',
+    priority: priority || 3,
+    outreach_sent_date: '',
+    response_date: '',
+    created_at: now,
+    updated_at: now
+  };
+  prospects.push(prospect);
+  activityLog.push({ id: nextActivityId++, prospect_id: id, action: 'created', detail: `Added ${name}`, created_at: now });
+  saveData();
   res.json({ id, success: true });
 });
 
 app.patch('/prospects/:id', requireApiKey, (req, res) => {
-  const fieldMap = { status: 'status', notes: 'notes', outreach_sent: 'outreach_sent_date', response_date: 'response_date', iap_score: 'total_score', outreach_type: 'outreach_type', name: 'name', email: 'email', platform: 'platform', profile_url: 'profile_url', audience_size: 'audience_size', source: 'source' };
-  const updates = Object.entries(req.body).filter(([k]) => fieldMap[k]).map(([k, v]) => [fieldMap[k], v]);
-  if (!updates.length) return res.status(400).json({ error: 'No valid fields' });
-  updates.push(['updated_at', new Date().toISOString()]);
-  db.prepare(`UPDATE prospects SET ${updates.map(([k]) => `${k} = ?`).join(', ')} WHERE id = ?`)
-    .run(...updates.map(([, v]) => v), req.params.id);
-  db.prepare(`INSERT INTO activity_log (prospect_id, action, detail) VALUES (?, 'updated', ?)`)
-    .run(req.params.id, `Updated: ${Object.keys(req.body).join(', ')}`);
-  const row = db.prepare('SELECT * FROM prospects WHERE id = ?').get(req.params.id);
-  res.json({ ...row, iap_score: row.total_score || 0 });
+  const idx = prospects.findIndex(p => p.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+  const allowedFields = ['status', 'notes', 'outreach_type', 'platform', 'profile_url', 'handle', 'audience_size', 'source', 'name', 'email', 'content_focus', 'priority'];
+  const fieldMap = { iap_score: 'total_score', outreach_sent: 'outreach_sent_date', fit_score: 'total_score' };
+  const updates = {};
+  Object.entries(req.body).forEach(([k, v]) => {
+    if (allowedFields.includes(k)) updates[k] = v;
+    else if (fieldMap[k]) updates[fieldMap[k]] = v;
+  });
+  if (!Object.keys(updates).length) return res.status(400).json({ error: 'No valid fields' });
+  updates.updated_at = new Date().toISOString();
+  prospects[idx] = { ...prospects[idx], ...updates };
+  activityLog.push({ id: nextActivityId++, prospect_id: req.params.id, action: 'updated', detail: `Updated: ${Object.keys(req.body).join(', ')}`, created_at: new Date().toISOString() });
+  saveData();
+  res.json({ ...prospects[idx], iap_score: prospects[idx].total_score || 0 });
 });
 
 app.delete('/prospects/:id', requireApiKey, (req, res) => {
-  db.prepare('DELETE FROM prospects WHERE id = ?').run(req.params.id);
+  prospects = prospects.filter(p => p.id !== req.params.id);
+  saveData();
   res.json({ success: true });
 });
 
-// --- ACTIVITY LOG ---
 app.get('/prospects/:id/activity', requireApiKey, (req, res) => {
-  const rows = db.prepare('SELECT * FROM activity_log WHERE prospect_id = ? ORDER BY created_at DESC LIMIT 50').all(req.params.id);
-  res.json(rows);
+  res.json(activityLog.filter(l => l.prospect_id === req.params.id).slice(-50).reverse());
 });
 
 // --- STATS ---
 app.get('/stats', requireApiKey, (req, res) => {
-  const total = db.prepare('SELECT COUNT(*) as c FROM prospects').get().c;
-  const byStatus = db.prepare('SELECT status, COUNT(*) as c FROM prospects GROUP BY status').all();
-  const byPlatform = db.prepare('SELECT platform, COUNT(*) as c FROM prospects GROUP BY platform').all();
-  const outreachSent = db.prepare("SELECT COUNT(*) as c FROM prospects WHERE outreach_sent_date != ''").get().c;
-  const responded = db.prepare("SELECT COUNT(*) as c FROM prospects WHERE response_date != ''").get().c;
-  res.json({ total, byStatus, byPlatform, outreachSent, responded });
+  const byStatus = {};
+  const byPlatform = {};
+  prospects.forEach(p => {
+    byStatus[p.status] = (byStatus[p.status] || 0) + 1;
+    byPlatform[p.platform || 'unknown'] = (byPlatform[p.platform || 'unknown'] || 0) + 1;
+  });
+  res.json({
+    total: prospects.length,
+    byStatus: Object.entries(byStatus).map(([status, c]) => ({ status, c })),
+    byPlatform: Object.entries(byPlatform).map(([platform, c]) => ({ platform, c })),
+    outreachSent: prospects.filter(p => p.outreach_sent_date).length,
+    responded: prospects.filter(p => p.response_date).length
+  });
 });
 
-// --- HEALTH ---
-app.get('/health', (req, res) => res.json({ ok: true, ts: new Date().toISOString() }));
+// --- BULK IMPORT ---
+app.post('/prospects/bulk', requireApiKey, (req, res) => {
+  const { records } = req.body;
+  if (!Array.isArray(records)) return res.status(400).json({ error: 'records array required' });
+  const now = new Date().toISOString();
+  let added = 0;
+  records.forEach(r => {
+    if (!r.name && !r.handle) return;
+    const existingHandle = r.handle && prospects.find(p => p.handle?.toLowerCase() === r.handle.toLowerCase());
+    if (existingHandle) return;
+    const id = require('crypto').randomUUID();
+    prospects.push({
+      id, name: r.name || r.handle || '',
+      email: r.email || '', platform: r.platform || '', handle: r.handle || '',
+      profile_url: r.profile_url || '', audience_size: r.audience_size || 0,
+      total_score: r.fit_score || r.iap_score || 0, outreach_type: 'cold',
+      source: r.source || '', notes: r.notes || '', status: r.status || 'discovered',
+      content_focus: r.content_focus || '', priority: r.priority || 3,
+      outreach_sent_date: '', response_date: '', created_at: now, updated_at: now
+    });
+    added++;
+  });
+  saveData();
+  res.json({ added, total: prospects.length });
+});
+
+app.get('/health', (req, res) => res.json({ ok: true, prospects: prospects.length, ts: new Date().toISOString() }));
 
 app.listen(PORT, () => console.log(`Apex CRM running on port ${PORT}`));
