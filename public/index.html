@@ -285,8 +285,6 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <option>Potential Affiliate Partner</option>
       <option>Active Affiliate Partner</option>
       <option>Deal/Close</option>
-      <option>Sponsor</option>
-      <option>Other</option>
     </select>
     <select class="fs" id="fStatus" onchange="applyFilters()">
       <option value="">All Stages</option>
@@ -327,8 +325,8 @@ tr:hover td{background:rgba(255,255,255,.015)}
     <div class="mh"><div class="mt" id="mTitle">Add Contact</div><button class="mc" onclick="closeMod('addMod')">×</button></div>
     <div class="mb">
       <div class="fr">
-        <div class="fi"><label>Name / Brand *</label><input id="fn" placeholder="Name or brand"></div>
-        <div class="fi"><label>Handle</label><input id="fh" placeholder="@username"></div>
+        <div class="fi"><label>Name *</label><input id="fn" placeholder="Name or brand"></div>
+        <div class="fi"><label>Profile URL</label><input id="furl" placeholder="https://…"></div>
       </div>
       <div class="fr">
         <div class="fi"><label>Email</label><input id="fem" type="email" placeholder="email@example.com"></div>
@@ -340,8 +338,6 @@ tr:hover td{background:rgba(255,255,255,.015)}
             <option value="Potential Affiliate Partner">Potential Affiliate Partner</option>
             <option value="Active Affiliate Partner">Active Affiliate Partner</option>
             <option value="Deal/Close">Deal / Close</option>
-            <option value="Sponsor">Sponsor</option>
-            <option value="Other">Other</option>
           </select>
         </div>
         <div class="fi"><label>Platform</label>
@@ -364,15 +360,13 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <div class="msep"></div>
       <div class="fr">
         <div class="fi"><label>Deal Value ($)</label><input id="fdv" type="number" placeholder="0" min="0"></div>
-        <div class="fi"><label>Commission %</label><input id="fcp" type="number" placeholder="10" value="10" min="0" max="100"></div>
+        <div class="fi"><label>Audience Size</label>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input id="faud" type="number" placeholder="50000" style="flex:1;min-width:0">
+            <button type="button" class="btn bg xsm" id="fetchAudBtn" onclick="fetchAudience()">Fetch</button>
+          </div>
+        </div>
       </div>
-      <div class="msep"></div>
-      <div class="fr">
-        <div class="fi"><label>Audience Size</label><input id="faud" type="number" placeholder="50000"></div>
-        <div class="fi"><label>Fit Score (0–100)</label><input id="fsc" type="number" min="0" max="100"></div>
-      </div>
-      <div class="fi"><label>Profile URL</label><input id="furl" placeholder="https://…"></div>
-      <div class="fi"><label>Content Focus / Niche</label><input id="fcf" placeholder="e.g. business, productivity, finance"></div>
       <div class="fi"><label>Notes</label><textarea id="fno" placeholder="Context, source, next steps…"></textarea></div>
     </div>
     <div class="mf">
@@ -415,7 +409,7 @@ function fmtC(n){if(!n&&n!==0)return'—';if(n===0)return'$0';return'$'+Number(n
 function ago(d){if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
 function sb(s){const st=STAGES[s]||{l:s,e:'•'};return`<span class="badge bd-${s}">${st.e} ${st.l}</span>`;}
 function pb(p){if(!p)return'';return`<span class="badge bd-${p}">${p}</span>`;}
-function ltb(lt){if(!lt)return'';const colors={'Potential Affiliate Partner':'rgba(79,126,248,.12)','Active Affiliate Partner':'rgba(34,200,138,.12)','Deal/Close':'rgba(245,183,49,.12)','Sponsor':'rgba(155,109,255,.12)','Other':'rgba(90,95,120,.12)'};const textColors={'Potential Affiliate Partner':'#7a9ff5','Active Affiliate Partner':'#22c88a','Deal/Close':'#f5b731','Sponsor':'#9b6dff','Other':'#7a7f98'};const bg=colors[lt]||'rgba(90,95,120,.12)';const tc=textColors[lt]||'#7a7f98';return`<span class="badge" style="background:${bg};color:${tc}">${lt}</span>`;}
+function ltb(lt){if(!lt)return'';const colors={'Potential Affiliate Partner':'rgba(79,126,248,.12)','Active Affiliate Partner':'rgba(34,200,138,.12)','Deal/Close':'rgba(245,183,49,.12)'};const textColors={'Potential Affiliate Partner':'#7a9ff5','Active Affiliate Partner':'#22c88a','Deal/Close':'#f5b731'};const bg=colors[lt]||'rgba(90,95,120,.12)';const tc=textColors[lt]||'#7a7f98';return`<span class="badge" style="background:${bg};color:${tc}">${lt}</span>`;}
 function prib(p){const m={1:['🔴','p1'],2:['🟡','p2'],3:['⚪','p3']};const[e,c]=m[p]||['⚪','p3'];return`<span class="badge bd-${c}">${e}</span>`;}
 function nowStr(){return new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
 
@@ -442,7 +436,7 @@ function applyFilters(){
     if(pl&&p.platform!==pl)return false;
     if(pr&&String(p.priority)!==pr)return false;
     if(lt&&(p.lead_type||'')!==lt)return false;
-    if(q){if(![p.name,p.handle,p.email,p.phone,p.content_focus,p.notes,p.source,p.lead_type].join(' ').toLowerCase().includes(q))return false;}
+    if(q){if(![p.name,p.email,p.phone,p.notes,p.source,p.lead_type,p.profile_url].join(' ').toLowerCase().includes(q))return false;}
     return true;
   });
   filtered.sort((a,b)=>{
@@ -584,8 +578,7 @@ function renderKanban(){
       <div class="kh"><div class="kd" style="background:${info.c}"></div><div class="kt">${info.l}</div><div class="kn">${cards.length}</div></div>
       <div class="kcards">${cards.map(p=>`
         <div class="kcard" draggable="true" data-id="${p.id}" ondragstart="ds(event)" onclick="openDetail('${p.id}')">
-          <div class="kcard-n">${p.name}</div>
-          <div class="kcard-h">${p.handle?'@'+p.handle:(p.email||'—')}</div>
+          <div class="kcard-n">${p.name}${p.profile_url?` <a href="${p.profile_url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--ac);text-decoration:none;font-size:11px">🔗</a>`:''}</div>
           <div class="kcard-tags">${pb(p.platform)} ${prib(p.priority)}</div>
           ${p.deal_value?`<div class="kcard-val">💰 ${fmtC(p.deal_value)}</div>`:''}
           ${p.lead_type?`<div style="font-size:10px;color:var(--t3);margin-top:3px">${p.lead_type}</div>`:''}
@@ -613,20 +606,18 @@ function renderTable(){
   if(!filtered.length){document.getElementById('main').innerHTML=`<div class="empty"><div class="ei">👥</div><h3>${prospects.length?'No matches':'No contacts yet'}</h3><p>${prospects.length?'Try adjusting filters.':'Add your first contact to get started.'}</p>${!prospects.length?'<button class="btn bp" onclick="openAdd()">+ Add Contact</button>':''}</div>`;return;}
   const rows=filtered.map(p=>`
     <tr onclick="openDetail('${p.id}')" style="cursor:pointer">
-      <td class="tdn">${p.name}</td>
-      <td>${p.handle?`<a class="tdl" href="${p.profile_url||'#'}" target="_blank" onclick="event.stopPropagation()">@${p.handle}</a>`:'—'}</td>
+      <td class="tdn">${p.name}${p.profile_url?` <a href="${p.profile_url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--ac);font-size:11px;text-decoration:none">🔗</a>`:''}</td>
       <td>${pb(p.platform)}</td>
       <td style="max-width:160px">${ltb(p.lead_type)}</td>
       <td>${sb(p.status)}</td>
       <td>${prib(p.priority)}</td>
       <td style="color:${p.deal_value?'var(--gr)':'var(--t3)'};font-weight:${p.deal_value?600:400}">${p.deal_value?fmtC(p.deal_value):'—'}</td>
-      <td style="color:var(--t2)">${fmt(p.audience_size)}</td>
       <td style="color:var(--t3)">${p.email||'—'}</td>
       <td style="color:var(--t3)">${p.phone||'—'}</td>
       <td style="color:var(--t3)">${ago(p.created_at)}</td>
       <td onclick="event.stopPropagation()"><button class="btn bg xsm" onclick="openEdit('${p.id}')">Edit</button></td>
     </tr>`).join('');
-  document.getElementById('main').innerHTML=`<table><thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Lead Type</th><th>Stage</th><th>Pri</th><th>Deal Value</th><th>Audience</th><th>Email</th><th>Phone</th><th>Added</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  document.getElementById('main').innerHTML=`<table><thead><tr><th>Name</th><th>Platform</th><th>Lead Type</th><th>Stage</th><th>Pri</th><th>Deal Value</th><th>Email</th><th>Phone</th><th>Added</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 // ─── INBOX ──────────────────────────────────────────────────
@@ -755,8 +746,7 @@ function renderGlobalData(){
   const rows=filtered.length?filtered:prospects;
   const tableRows=rows.map(p=>`
     <tr onclick="openDetail('${p.id}')" style="cursor:pointer">
-      <td class="tdn" style="font-size:12px">${p.name}</td>
-      <td style="font-size:11px;color:var(--t3)">${p.handle||'—'}</td>
+      <td class="tdn" style="font-size:12px">${p.name}${p.profile_url?` <a href="${p.profile_url}" target="_blank" onclick="event.stopPropagation()" style="color:var(--ac);text-decoration:none;font-size:11px">🔗</a>`:''}</td>
       <td>${pb(p.platform)}</td>
       <td style="max-width:140px">${ltb(p.lead_type)}</td>
       <td>${sb(p.status)}</td>
@@ -764,7 +754,6 @@ function renderGlobalData(){
       <td style="font-size:12px;color:var(--t2)">${fmt(p.audience_size)}</td>
       <td style="font-size:11px;color:var(--t3)">${p.email||'—'}</td>
       <td style="font-size:11px;color:var(--t3)">${p.phone||'—'}</td>
-      <td style="font-size:11px;color:var(--t3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.content_focus||'—'}</td>
       <td style="font-size:11px;color:var(--t3)">${p.source||'—'}</td>
     </tr>`).join('');
   document.getElementById('main').innerHTML=`
@@ -772,7 +761,7 @@ function renderGlobalData(){
       <span style="font-size:12px;color:var(--t3)">${rows.length} records</span>
       <div style="display:flex;gap:6px"><button class="btn bg sm" onclick="importCSV()">⬆ Import</button><button class="btn bg sm" onclick="exportCSV()">⬇ Export</button></div>
     </div>
-    <table><thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Lead Type</th><th>Stage</th><th>Deal Value</th><th>Audience</th><th>Email</th><th>Phone</th><th>Niche</th><th>Source</th></tr></thead><tbody>${tableRows}</tbody></table>`;
+    <table><thead><tr><th>Name</th><th>Platform</th><th>Lead Type</th><th>Stage</th><th>Deal Value</th><th>Audience</th><th>Email</th><th>Phone</th><th>Source</th></tr></thead><tbody>${tableRows}</tbody></table>`;
 }
 
 // ─── PLAYBOOK ───────────────────────────────────────────────
@@ -846,7 +835,6 @@ async function openDetail(id){
   const p=prospects.find(x=>x.id===id);if(!p)return;
   const dp=document.getElementById('dp');dp.classList.add('on');
   let activity=[];try{activity=await req('GET',`/prospects/${id}/activity`);}catch{}
-  const commission=p.deal_value&&p.commission_pct?(p.deal_value*p.commission_pct/100):0;
   dp.innerHTML=`
     <div class="dph">
       <button class="dpc" onclick="closeDP()">×</button>
@@ -860,16 +848,13 @@ async function openDetail(id){
       </div>
       ${p.deal_value?`<div class="dsec"><h4>Deal</h4>
         <div class="df"><span class="dl">Value</span><span class="dv" style="color:var(--gr);font-weight:600">${fmtC(p.deal_value)}</span></div>
-        <div class="df"><span class="dl">Commission</span><span class="dv" style="color:var(--gr)">${fmtC(commission)} (${p.commission_pct||10}%)</span></div>
       </div>`:''}
       <div class="dsec"><h4>Contact</h4>
-        <div class="df"><span class="dl">Handle</span><span class="dv">${p.handle?`<a href="${p.profile_url||'#'}" target="_blank">@${p.handle}</a>`:'—'}</span></div>
+        <div class="df"><span class="dl">Profile URL</span><span class="dv">${p.profile_url?`<a href="${p.profile_url}" target="_blank" style="color:var(--ac)">${p.profile_url.replace(/^https?:\/\//,'').slice(0,28)}…</a>`:'—'}</span></div>
         <div class="df"><span class="dl">Email</span><span class="dv">${p.email||'—'}</span></div>
         <div class="df"><span class="dl">Phone</span><span class="dv">${p.phone||'—'}</span></div>
         <div class="df"><span class="dl">Platform</span><span class="dv">${p.platform||'—'}</span></div>
-        <div class="df"><span class="dl">Audience</span><span class="dv">${fmt(p.audience_size)}</span></div>
-        <div class="df"><span class="dl">Score</span><span class="dv">${p.total_score?p.total_score+'%':'—'}</span></div>
-        <div class="df"><span class="dl">Niche</span><span class="dv">${p.content_focus||'—'}</span></div>
+        <div class="df"><span class="dl">Audience</span><span class="dv" style="display:flex;align-items:center;gap:5px;justify-content:flex-end"><span id="dp_aud_${id}">${fmt(p.audience_size)}</span><button class="btn bg xsm" onclick="fetchAudienceDP('${id}','${(p.profile_url||'').replace(/'/g,'\\x27')}')">Fetch</button></span></div>
         <div class="df"><span class="dl">Source</span><span class="dv">${p.source||'—'}</span></div>
         <div class="df"><span class="dl">Added</span><span class="dv">${fmtD(p.created_at)}</span></div>
       </div>
@@ -896,12 +881,11 @@ function openAdd(st='prospect'){
   editId=null;
   document.getElementById('mTitle').textContent='Add Contact';
   document.getElementById('savBtn').textContent='Add Contact';
-  ['fn','fh','fem','fphone','faud','fsc','furl','fcf','fno','fdv'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
+  ['fn','fem','fphone','faud','furl','fno','fdv'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
   document.getElementById('fst').value=st;
   document.getElementById('fpri').value='3';
   document.getElementById('fp').value='';
   document.getElementById('flt').value='Potential Affiliate Partner';
-  document.getElementById('fcp').value='10';
   document.getElementById('addMod').classList.add('on');
   setTimeout(()=>document.getElementById('fn').focus(),80);
 }
@@ -911,40 +895,58 @@ function openEdit(id){
   document.getElementById('mTitle').textContent='Edit Contact';
   document.getElementById('savBtn').textContent='Save Changes';
   document.getElementById('fn').value=p.name||'';
-  document.getElementById('fh').value=p.handle||'';
   document.getElementById('fem').value=p.email||'';
   document.getElementById('fphone').value=p.phone||'';
   document.getElementById('faud').value=p.audience_size||'';
-  document.getElementById('fsc').value=p.total_score||'';
   document.getElementById('furl').value=p.profile_url||'';
-  document.getElementById('fcf').value=p.content_focus||'';
   document.getElementById('fno').value=p.notes||'';
   document.getElementById('fst').value=p.status||'prospect';
   document.getElementById('fpri').value=p.priority||3;
   document.getElementById('fp').value=p.platform||'';
   document.getElementById('flt').value=p.lead_type||'Potential Affiliate Partner';
   document.getElementById('fdv').value=p.deal_value||'';
-  document.getElementById('fcp').value=p.commission_pct||10;
   document.getElementById('addMod').classList.add('on');
+}
+async function fetchAudience(){
+  const url=document.getElementById('furl').value.trim();
+  if(!url){toast('Enter a profile URL first','err');return;}
+  const btn=document.getElementById('fetchAudBtn');
+  const orig=btn.textContent;btn.textContent='…';btn.disabled=true;
+  try{
+    const r=await req('POST','/audience-fetch',{url});
+    if(r.audience_size){
+      document.getElementById('faud').value=r.audience_size;
+      toast('Audience: '+fmt(r.audience_size),'ok');
+    }else{toast('Could not auto-fetch — enter manually');}
+  }catch(e){toast('Fetch failed — enter manually');}
+  btn.textContent=orig;btn.disabled=false;
+}
+async function fetchAudienceDP(id,url){
+  if(!url){toast('No profile URL on this contact','err');return;}
+  try{
+    const r=await req('POST','/audience-fetch',{url});
+    if(r.audience_size){
+      await req('PATCH','/prospects/'+id,{audience_size:r.audience_size});
+      const p=prospects.find(x=>x.id===id);if(p)p.audience_size=r.audience_size;
+      const el=document.getElementById('dp_aud_'+id);if(el)el.textContent=fmt(r.audience_size);
+      toast('Audience: '+fmt(r.audience_size),'ok');
+    }else{toast('Could not auto-fetch — try editing manually');}
+  }catch(e){toast('Fetch failed','err');}
 }
 async function saveContact(){
   const name=document.getElementById('fn').value.trim();if(!name){toast('Name required','err');return;}
   const data={
     name,
-    handle:document.getElementById('fh').value.trim(),
     email:document.getElementById('fem').value.trim(),
     phone:document.getElementById('fphone').value.trim(),
     platform:document.getElementById('fp').value,
     lead_type:document.getElementById('flt').value,
     audience_size:parseInt(document.getElementById('faud').value)||0,
-    iap_score:parseInt(document.getElementById('fsc').value)||0,
     profile_url:document.getElementById('furl').value.trim(),
-    content_focus:document.getElementById('fcf').value.trim(),
     notes:document.getElementById('fno').value.trim(),
     status:document.getElementById('fst').value,
     priority:parseInt(document.getElementById('fpri').value)||3,
     deal_value:parseFloat(document.getElementById('fdv').value)||0,
-    commission_pct:parseFloat(document.getElementById('fcp').value)||10,
   };
   const btn=document.getElementById('savBtn');btn.disabled=true;btn.textContent='Saving…';
   try{

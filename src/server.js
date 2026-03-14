@@ -232,6 +232,46 @@ app.get('/stats', auth, (req,res) => {
   });
 });
 
+// ─── AUDIENCE FETCH ──────────────────────────────────────────────────────────
+app.post('/audience-fetch', auth, async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.json({ audience_size: null, error: 'No URL' });
+  try {
+    const http = require('http');
+    const client = url.startsWith('https') ? https : http;
+    const data = await new Promise((resolve, reject) => {
+      const r = client.get(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
+        timeout: 8000
+      }, (res) => {
+        let body = '';
+        res.on('data', c => body += c);
+        res.on('end', () => resolve(body));
+      });
+      r.on('error', reject);
+      r.on('timeout', () => { r.destroy(); reject(new Error('timeout')); });
+    });
+    let audience_size = null;
+    const tikMatch = data.match(/"followerCount":(\d+)/);
+    if (tikMatch) audience_size = parseInt(tikMatch[1]);
+    const igMatch = data.match(/"edge_followed_by":\{"count":(\d+)\}/) || data.match(/"followers":(\d+)/);
+    if (igMatch && !audience_size) audience_size = parseInt(igMatch[1]);
+    const ytMatch = data.match(/([\d.]+[KMB]?)\s+subscribers/i);
+    if (ytMatch && !audience_size) {
+      const raw = ytMatch[1];
+      if (raw.includes('M')) audience_size = Math.round(parseFloat(raw)*1e6);
+      else if (raw.includes('K')) audience_size = Math.round(parseFloat(raw)*1e3);
+      else if (raw.includes('B')) audience_size = Math.round(parseFloat(raw)*1e9);
+      else audience_size = parseInt(raw);
+    }
+    const genMatch = data.match(/([\d,]+)\s+(?:followers|Followers)/);
+    if (genMatch && !audience_size) audience_size = parseInt(genMatch[1].replace(/,/g,''));
+    res.json({ audience_size, fetched: !!audience_size });
+  } catch(e) {
+    res.json({ audience_size: null, error: e.message, fetched: false });
+  }
+});
+
 // ─── STATIC / HEALTH ─────────────────────────────────────────────────────────
 app.get('/health', (req,res) => res.json({ ok:true, prospects:db.prospects.length, deals:db.deals.length, ts:new Date().toISOString() }));
 
