@@ -6,10 +6,9 @@
 <title>Apex Affiliates</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--sb:#0f1117;--sbh:#1a1d27;--sba:#1e2230;--bd:#2a2d3d;--bg:#14161f;--bg2:#1a1d27;--bg3:#1e2230;--bg4:#242838;--t:#e2e4ed;--t2:#9096b0;--t3:#5a5f78;--ac:#4f7ef8;--acb:rgba(79,126,248,.13);--gr:#22c88a;--grb:rgba(34,200,138,.13);--rd:#f0545c;--rdb:rgba(240,84,92,.13);--yw:#f5b731;--ywb:rgba(245,183,49,.13);--pu:#9b6dff;--pub:rgba(155,109,255,.13);--or:#ff8c5a;--orb:rgba(255,140,90,.13);--r:8px;--rl:12px;--sw:222px;--shd:0 8px 32px rgba(0,0,0,.5)}
+:root{--sb:#0f1117;--sbh:#1a1d27;--sba:#1e2230;--bd:#2a2d3d;--bg:#14161f;--bg2:#1a1d27;--bg3:#1e2230;--bg4:#242838;--t:#e2e4ed;--t2:#9096b0;--t3:#5a5f78;--ac:#4f7ef8;--acb:rgba(79,126,248,.13);--gr:#22c88a;--grb:rgba(34,200,138,.13);--rd:#f0545c;--rdb:rgba(240,84,92,.13);--yw:#f5b731;--ywb:rgba(245,183,49,.13);--pu:#9b6dff;--pub:rgba(155,109,255,.13);--or:#ff8c5a;--orb:rgba(255,140,90,.13);--r:8px;--rl:12px;--sw:228px;--shd:0 8px 32px rgba(0,0,0,.5)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);font-size:14px;height:100vh;display:flex;overflow:hidden}
-/* Sidebar */
 .sb{width:var(--sw);background:var(--sb);border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
 .sb-logo{padding:16px 14px 12px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--bd)}
 .sb-logo-ic{width:28px;height:28px;background:var(--ac);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
@@ -25,7 +24,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);font-siz
 .sp{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:var(--r);background:var(--bg3);font-size:11px;color:var(--t3)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--gr);flex-shrink:0}
 .dot.off{background:var(--rd)}
-/* Layout */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .topbar{display:flex;align-items:center;gap:10px;padding:0 20px;height:48px;border-bottom:1px solid var(--bd);background:var(--bg);flex-shrink:0}
 .tb-title{font-size:14px;font-weight:600}
@@ -54,7 +52,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);font-siz
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
-/* Badges */
 .badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
 .bd-prospect{background:rgba(90,95,120,.18);color:#7a7f98}
 .bd-outreach_sent{background:var(--acb);color:var(--ac)}
@@ -64,23 +61,19 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);font-siz
 .bd-follow_up{background:rgba(34,200,138,.1);color:#60d0a0}
 .bd-closed_won{background:var(--grb);color:var(--gr)}
 .bd-closed_lost{background:var(--rdb);color:var(--rd)}
-.bd-proposal{background:var(--acb);color:var(--ac)}
-.bd-negotiation{background:var(--pub);color:var(--pu)}
-.bd-contract_sent{background:var(--ywb);color:var(--yw)}
 .bd-affiliate{background:rgba(79,126,248,.12);color:#7a9ff5}
 .bd-deal{background:var(--grb);color:var(--gr)}
 .bd-p1{background:var(--rdb);color:var(--rd)}
 .bd-p2{background:var(--ywb);color:var(--yw)}
 .bd-p3{background:rgba(90,95,120,.12);color:var(--t3)}
-.bd-tiktok{background:rgba(105,125,248,.15);color:#8da4f5}
-.bd-instagram{background:rgba(225,100,160,.15);color:#e080b8}
-.bd-youtube{background:rgba(240,80,80,.15);color:#f07070}
-.bd-linkedin{background:rgba(10,102,194,.15);color:#5a9fd4}
-.bd-twitter{background:rgba(29,161,242,.15);color:#52aaed}
-.bd-podcast{background:var(--orb);color:var(--or)}
-.bd-newsletter{background:var(--grb);color:var(--gr)}
-.bd-other{background:rgba(90,95,120,.12);color:var(--t3)}
-/* Table */
+.bd-TikTok,.bd-tiktok{background:rgba(105,125,248,.15);color:#8da4f5}
+.bd-Instagram,.bd-instagram{background:rgba(225,100,160,.15);color:#e080b8}
+.bd-YouTube,.bd-youtube{background:rgba(240,80,80,.15);color:#f07070}
+.bd-LinkedIn,.bd-linkedin{background:rgba(10,102,194,.15);color:#5a9fd4}
+.bd-Twitter,.bd-twitter{background:rgba(29,161,242,.15);color:#52aaed}
+.bd-Podcast,.bd-podcast{background:var(--orb);color:var(--or)}
+.bd-Newsletter,.bd-newsletter{background:var(--grb);color:var(--gr)}
+.bd-Other,.bd-other{background:rgba(90,95,120,.12);color:var(--t3)}
 table{width:100%;border-collapse:collapse}
 thead{position:sticky;top:0;z-index:5}
 th{padding:7px 13px;text-align:left;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bd);background:var(--bg2);cursor:pointer;white-space:nowrap}
@@ -90,7 +83,6 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .tdn{font-weight:600;color:var(--t)}
 .tdl{color:var(--ac);text-decoration:none;font-size:12px}
 .tdl:hover{text-decoration:underline}
-/* Kanban */
 .kb{display:flex;gap:11px;padding:14px 16px;height:100%;overflow-x:auto;align-items:flex-start}
 .kc{flex:0 0 200px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);display:flex;flex-direction:column;max-height:calc(100vh - 150px)}
 .kh{padding:9px 11px 7px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bd)}
@@ -103,27 +95,29 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .kcard-n{font-size:12px;font-weight:600;color:var(--t);margin-bottom:2px}
 .kcard-h{font-size:11px;color:var(--t3);margin-bottom:6px}
 .kcard-tags{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:4px}
-.kcard-aud{font-size:10px;color:var(--t3)}
+.kcard-val{font-size:11px;color:var(--gr);font-weight:600}
 .kadd{margin:5px 7px 7px;padding:5px;background:none;border:1px dashed var(--bd);border-radius:var(--r);color:var(--t3);font-size:11px;cursor:pointer;text-align:center;font-family:inherit;width:calc(100% - 14px)}
 .kadd:hover{border-color:var(--t2);color:var(--t2);background:var(--bg3)}
 .drag-over{border-color:var(--ac)!important;background:rgba(79,126,248,.04)!important}
-/* Stats */
-.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:18px;padding-bottom:0}
-.sc{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px}
-.sv{font-size:26px;font-weight:700;color:var(--t)}
-.sv.ac{color:var(--ac)}.sv.gr{color:var(--gr)}.sv.yw{color:var(--yw)}
-.sl{font-size:11px;color:var(--t3);margin-top:2px}
-/* Funnel */
-.funnel{padding:16px 18px}
-.funnel h3{font-size:13px;font-weight:600;color:var(--t2);margin-bottom:12px}
-.frow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.fstage{font-size:12px;color:var(--t3);width:110px;flex-shrink:0}
-.fbar{flex:1;background:var(--bg3);border-radius:4px;height:22px;overflow:hidden;position:relative}
-.fbfill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:#fff;transition:width .4s ease;min-width:2px}
-.fcount{font-size:12px;color:var(--t2);width:30px;text-align:right;flex-shrink:0}
-.fpct{font-size:11px;color:var(--t3);width:35px;text-align:right;flex-shrink:0}
+/* KPI Dashboard */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;padding:20px;padding-bottom:0}
+.kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 18px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac)}
+.kpi.gr::before{background:var(--gr)}.kpi.yw::before{background:var(--yw)}.kpi.pu::before{background:var(--pu)}.kpi.or::before{background:var(--or)}
+.kpi-val{font-size:28px;font-weight:700;color:var(--t);line-height:1}
+.kpi-val.ac{color:var(--ac)}.kpi-val.gr{color:var(--gr)}.kpi-val.yw{color:var(--yw)}
+.kpi-lbl{font-size:11px;color:var(--t3);margin-top:4px;font-weight:500}
+.kpi-sub{font-size:11px;color:var(--t2);margin-top:2px}
+/* Funnel bar */
+.funnel-bar{padding:16px 20px}
+.funnel-bar h3{font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+.fb-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.fb-lbl{font-size:11px;color:var(--t3);width:110px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fb-track{flex:1;background:var(--bg3);border-radius:3px;height:18px;overflow:hidden}
+.fb-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:700;color:rgba(255,255,255,.9);min-width:2px;transition:width .4s}
+.fb-count{font-size:11px;color:var(--t2);width:28px;text-align:right;flex-shrink:0}
 /* Charts */
-.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 18px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 20px}
 .cc{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px}
 .ct2{font-size:13px;font-weight:600;color:var(--t2);margin-bottom:10px}
 .br{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
@@ -152,7 +146,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .ssel:focus{border-color:var(--ac)}
 .ssel option{background:var(--bg2)}
 .nta{width:100%;padding:8px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--bg3);color:var(--t);resize:vertical;min-height:80px;outline:none}
-.nta:focus,.nta:hover{border-color:var(--ac)}
+.nta:focus{border-color:var(--ac)}
 .nta::placeholder{color:var(--t3)}
 .ai{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:12px}
 .ai:last-child{border:none}
@@ -163,7 +157,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 /* Modal */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
 .ov.on{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:var(--shd)}
+.modal{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);width:560px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:var(--shd)}
 .mh{padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between}
 .mt{font-size:15px;font-weight:600}
 .mc{background:none;border:none;font-size:20px;color:var(--t3);cursor:pointer;padding:2px 6px;border-radius:4px;line-height:1}
@@ -171,6 +165,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .mb{padding:14px 20px;display:flex;flex-direction:column;gap:11px}
 .fi{display:flex;flex-direction:column;gap:4px}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .fi label{font-size:12px;font-weight:500;color:var(--t3)}
 .fi input,.fi select,.fi textarea{padding:7px 9px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none}
 .fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--ac)}
@@ -178,6 +173,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .fi textarea{resize:vertical;min-height:70px}
 .fi select option{background:var(--bg2)}
 .mf{padding:4px 20px 16px;display:flex;justify-content:flex-end;gap:7px}
+.msep{height:1px;background:var(--bd);margin:4px 0}
 /* Inbox */
 .iitem{display:flex;align-items:flex-start;gap:10px;padding:12px 18px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s}
 .iitem:hover{background:var(--bg2)}
@@ -189,21 +185,34 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .imeta{text-align:right;flex-shrink:0}
 .itime{font-size:11px;color:var(--t3)}
 .iunread{width:6px;height:6px;border-radius:50%;background:var(--ac);margin:4px 0 0 auto}
-/* AI Inbox */
-.ai-box{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin:14px 18px}
-.ai-box h3{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.ai-resp{font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
-/* Reid */
-.reid-wrap{padding:18px}
-.reid-msg{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;margin-bottom:9px}
-.reid-msg-txt{font-size:13px;color:var(--t);line-height:1.6;margin-bottom:6px}
-.reid-msg-meta{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t3);flex-wrap:wrap}
-.rs{display:inline-flex;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600}
-.rs-pending{background:var(--ywb);color:var(--yw)}
-.rs-done{background:var(--grb);color:var(--gr)}
-.rs-sent{background:var(--acb);color:var(--ac)}
-.reid-compose{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:18px}
-.reid-compose h3{font-size:13px;font-weight:600;margin-bottom:10px}
+/* Reid Chat */
+.chat-wrap{display:flex;flex-direction:column;height:100%}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.chat-msg{display:flex;align-items:flex-end;gap:8px}
+.chat-msg.user{flex-direction:row-reverse}
+.chat-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.chat-avatar.reid{background:var(--acb);color:var(--ac);border:1px solid var(--bd)}
+.chat-avatar.user{background:var(--bg4);color:var(--t2)}
+.chat-bubble{max-width:75%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.chat-msg.reid .chat-bubble{background:var(--bg3);border:1px solid var(--bd);border-bottom-left-radius:3px;color:var(--t)}
+.chat-msg.user .chat-bubble{background:var(--ac);color:#fff;border-bottom-right-radius:3px}
+.chat-meta{font-size:10px;color:var(--t3);margin-top:2px;text-align:right}
+.chat-msg.reid .chat-meta{text-align:left}
+.chat-input-wrap{padding:12px 18px;border-top:1px solid var(--bd);display:flex;gap:8px;align-items:flex-end}
+.chat-input{flex:1;padding:8px 12px;border:1px solid var(--bd);border-radius:var(--rl);font-size:13px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none;resize:none;min-height:40px;max-height:120px;overflow-y:auto}
+.chat-input:focus{border-color:var(--ac)}
+.chat-input::placeholder{color:var(--t3)}
+.chat-send{padding:8px 14px;background:var(--ac);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-size:13px;font-family:inherit;font-weight:500;flex-shrink:0;align-self:flex-end}
+.chat-send:hover{filter:brightness(1.1)}
+.chat-send:disabled{opacity:.5;cursor:not-allowed}
+.chat-key-bar{padding:8px 18px;border-bottom:1px solid var(--bd);display:flex;gap:7px;align-items:center;background:var(--bg2)}
+.chat-key-bar input{flex:1;padding:5px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none}
+.chat-key-bar input:focus{border-color:var(--ac)}
+.typing{display:flex;gap:3px;align-items:center;padding:4px 0}
+.typing span{width:5px;height:5px;background:var(--t3);border-radius:50%;animation:ty .8s ease infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes ty{0%,80%,100%{transform:scale(0.6);opacity:.5}40%{transform:scale(1);opacity:1}}
 /* Playbook */
 .pb-item{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;margin-bottom:9px}
 .pb-title{font-size:14px;font-weight:600;margin-bottom:5px}
@@ -243,7 +252,6 @@ tr:hover td{background:rgba(255,255,255,.015)}
   <div class="sb-sec">
     <div class="sb-lbl">Pipeline</div>
     <button class="ni" onclick="go('pipeline')"><span class="ic">◎</span>Pipeline</button>
-    <button class="ni" onclick="go('deals')"><span class="ic">💰</span>Deals</button>
   </div>
   <div class="sb-sec">
     <div class="sb-lbl">Comms</div>
@@ -269,11 +277,16 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
       <input class="sinp" id="srch" placeholder="Search…" oninput="applyFilters()">
     </div>
-    <button class="btn bp" id="addBtn" onclick="openAdd()" style="display:none">+ Add</button>
+    <button class="btn bp" id="addBtn" onclick="openAdd()" style="display:none">+ Add Contact</button>
   </div>
   <div class="tbar" id="tbar" style="display:none">
-    <select class="fs" id="fType" onchange="applyFilters()">
-      <option value="">All Types</option><option value="affiliate">Affiliate</option><option value="deal">Deal</option>
+    <select class="fs" id="fLeadType" onchange="applyFilters()">
+      <option value="">All Types</option>
+      <option>Potential Affiliate Partner</option>
+      <option>Active Affiliate Partner</option>
+      <option>Deal/Close</option>
+      <option>Sponsor</option>
+      <option>Other</option>
     </select>
     <select class="fs" id="fStatus" onchange="applyFilters()">
       <option value="">All Stages</option>
@@ -294,6 +307,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
     <select class="fs" id="fSort" onchange="applyFilters()">
       <option value="created_at">Newest</option><option value="name">Name A–Z</option>
       <option value="score">Score ↓</option><option value="audience">Audience ↓</option>
+      <option value="deal_value">Deal Value ↓</option>
     </select>
     <span class="ctag" id="ctag">—</span>
     <div class="vt" id="vtoggle">
@@ -313,7 +327,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
     <div class="mh"><div class="mt" id="mTitle">Add Contact</div><button class="mc" onclick="closeMod('addMod')">×</button></div>
     <div class="mb">
       <div class="fr">
-        <div class="fi"><label>Name *</label><input id="fn" placeholder="Name or brand"></div>
+        <div class="fi"><label>Name / Brand *</label><input id="fn" placeholder="Name or brand"></div>
         <div class="fi"><label>Handle</label><input id="fh" placeholder="@username"></div>
       </div>
       <div class="fr">
@@ -321,8 +335,14 @@ tr:hover td{background:rgba(255,255,255,.015)}
         <div class="fi"><label>Phone</label><input id="fphone" type="tel" placeholder="+1 555 000 0000"></div>
       </div>
       <div class="fr">
-        <div class="fi"><label>Type</label>
-          <select id="ftype"><option value="affiliate">Affiliate Partner</option><option value="deal">Deal / Close</option></select>
+        <div class="fi"><label>Lead Type</label>
+          <select id="flt">
+            <option value="Potential Affiliate Partner">Potential Affiliate Partner</option>
+            <option value="Active Affiliate Partner">Active Affiliate Partner</option>
+            <option value="Deal/Close">Deal / Close</option>
+            <option value="Sponsor">Sponsor</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
         <div class="fi"><label>Platform</label>
           <select id="fp"><option value="">— Select —</option><option>TikTok</option><option>Instagram</option><option>YouTube</option><option>LinkedIn</option><option>Twitter</option><option>Podcast</option><option>Newsletter</option><option>Other</option></select>
@@ -341,6 +361,12 @@ tr:hover td{background:rgba(255,255,255,.015)}
           <select id="fpri"><option value="1">🔴 High</option><option value="2">🟡 Medium</option><option value="3" selected>⚪ Low</option></select>
         </div>
       </div>
+      <div class="msep"></div>
+      <div class="fr">
+        <div class="fi"><label>Deal Value ($)</label><input id="fdv" type="number" placeholder="0" min="0"></div>
+        <div class="fi"><label>Commission %</label><input id="fcp" type="number" placeholder="10" value="10" min="0" max="100"></div>
+      </div>
+      <div class="msep"></div>
       <div class="fr">
         <div class="fi"><label>Audience Size</label><input id="faud" type="number" placeholder="50000"></div>
         <div class="fi"><label>Fit Score (0–100)</label><input id="fsc" type="number" min="0" max="100"></div>
@@ -356,35 +382,12 @@ tr:hover td{background:rgba(255,255,255,.015)}
   </div>
 </div>
 
-<!-- DEAL MODAL -->
-<div class="ov" id="dealMod">
-  <div class="modal">
-    <div class="mh"><div class="mt" id="dmTitle">Add Deal</div><button class="mc" onclick="closeMod('dealMod')">×</button></div>
-    <div class="mb">
-      <div class="fi"><label>Partner Name *</label><input id="dname" placeholder="Partner or company name"></div>
-      <div class="fr">
-        <div class="fi"><label>Deal Value ($)</label><input id="dval" type="number" placeholder="25000"></div>
-        <div class="fi"><label>Commission %</label><input id="dpct" type="number" placeholder="10" value="10"></div>
-      </div>
-      <div class="fi"><label>Stage</label>
-        <select id="dst"><option value="proposal">Proposal</option><option value="negotiation">Negotiation</option><option value="contract_sent">Contract Sent</option><option value="closed_won">Closed Won</option><option value="closed_lost">Closed Lost</option></select>
-      </div>
-      <div class="fi"><label>Expected Close Date</label><input id="dclose" type="date"></div>
-      <div class="fi"><label>Notes</label><textarea id="dno" placeholder="Deal notes…"></textarea></div>
-    </div>
-    <div class="mf">
-      <button class="btn bg" onclick="closeMod('dealMod')">Cancel</button>
-      <button class="btn bp" id="dsavBtn" onclick="saveDeal()">Add Deal</button>
-    </div>
-  </div>
-</div>
-
 <div class="toasts" id="toasts"></div>
 <script>
 const API = window.location.origin;
 const KEY = 'apex-agent-secret-change-me';
-let prospects=[], filtered=[], deals=[], inboxEmails=[], reidMsgs=[], playbook=[];
-let page='dashboard', sub='table', editId=null, editDealId=null, dragId=null;
+let prospects=[], filtered=[], inboxEmails=[], playbook=[], chatHistory=[];
+let page='dashboard', sub='table', editId=null, dragId=null;
 
 const STAGES = {
   prospect:     {l:'Prospect',     e:'🎯', c:'#5a6070'},
@@ -395,13 +398,6 @@ const STAGES = {
   follow_up:    {l:'Follow Up',    e:'🔄', c:'#60d0a0'},
   closed_won:   {l:'Closed Won',   e:'✅', c:'#22c88a'},
   closed_lost:  {l:'Closed Lost',  e:'❌', c:'#f0545c'},
-};
-const DEAL_STAGES = {
-  proposal:      {l:'Proposal',      c:'#4f7ef8'},
-  negotiation:   {l:'Negotiation',   c:'#9b6dff'},
-  contract_sent: {l:'Contract Sent', c:'#f5b731'},
-  closed_won:    {l:'Closed Won',    c:'#22c88a'},
-  closed_lost:   {l:'Closed Lost',   c:'#f0545c'},
 };
 
 async function req(m,p,b){
@@ -415,19 +411,20 @@ function toast(msg,t=''){const el=document.createElement('div');el.className='to
 function setStatus(ok){document.getElementById('sdot').className='dot'+(ok?'':' off');document.getElementById('stxt').textContent=ok?'Connected':'Offline';}
 function fmt(n){if(!n)return'—';n=parseInt(n);if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(0)+'K';return n.toLocaleString();}
 function fmtD(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
-function fmtC(n){if(!n&&n!==0)return'—';return'$'+Number(n).toLocaleString();}
+function fmtC(n){if(!n&&n!==0)return'—';if(n===0)return'$0';return'$'+Number(n).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});}
 function ago(d){if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
 function sb(s){const st=STAGES[s]||{l:s,e:'•'};return`<span class="badge bd-${s}">${st.e} ${st.l}</span>`;}
-function db2(s){const ds=DEAL_STAGES[s]||{l:s};return`<span class="badge bd-${s}">${ds.l}</span>`;}
-function pb(p){if(!p)return'';return`<span class="badge bd-${(p||'').toLowerCase().replace(/\s/g,'')}">${p}</span>`;}
-function tb(t){return t?`<span class="badge bd-${t||'affiliate'}">${t==='deal'?'💰 Deal':'🤝 Affiliate'}</span>`:''}
+function pb(p){if(!p)return'';return`<span class="badge bd-${p}">${p}</span>`;}
+function ltb(lt){if(!lt)return'';const colors={'Potential Affiliate Partner':'rgba(79,126,248,.12)','Active Affiliate Partner':'rgba(34,200,138,.12)','Deal/Close':'rgba(245,183,49,.12)','Sponsor':'rgba(155,109,255,.12)','Other':'rgba(90,95,120,.12)'};const textColors={'Potential Affiliate Partner':'#7a9ff5','Active Affiliate Partner':'#22c88a','Deal/Close':'#f5b731','Sponsor':'#9b6dff','Other':'#7a7f98'};const bg=colors[lt]||'rgba(90,95,120,.12)';const tc=textColors[lt]||'#7a7f98';return`<span class="badge" style="background:${bg};color:${tc}">${lt}</span>`;}
 function prib(p){const m={1:['🔴','p1'],2:['🟡','p2'],3:['⚪','p3']};const[e,c]=m[p]||['⚪','p3'];return`<span class="badge bd-${c}">${e}</span>`;}
+function nowStr(){return new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
 
 async function loadAll(){
   try{
-    [prospects,deals,inboxEmails,reidMsgs,playbook]=await Promise.all([
-      req('GET','/prospects'),req('GET','/deals'),
-      req('GET','/inbox/emails'),req('GET','/reid/messages'),req('GET','/playbook')
+    [prospects,inboxEmails,playbook]=await Promise.all([
+      req('GET','/prospects'),
+      req('GET','/inbox/emails'),
+      req('GET','/playbook')
     ]);
     setStatus(true);applyFilters();render();
   }catch(e){setStatus(false);document.getElementById('main').innerHTML=`<div class="empty"><div class="ei">⚠️</div><h3>Can't reach server</h3><p style="color:var(--rd)">${e.message}</p><button class="btn bp" onclick="loadAll()">Retry</button></div>`;}
@@ -438,20 +435,21 @@ function applyFilters(){
   const st=(document.getElementById('fStatus')||{}).value||'';
   const pl=(document.getElementById('fPlatform')||{}).value||'';
   const pr=(document.getElementById('fPriority')||{}).value||'';
-  const tp=(document.getElementById('fType')||{}).value||'';
+  const lt=(document.getElementById('fLeadType')||{}).value||'';
   const so=(document.getElementById('fSort')||{}).value||'created_at';
   filtered=prospects.filter(p=>{
     if(st&&p.status!==st)return false;
     if(pl&&p.platform!==pl)return false;
     if(pr&&String(p.priority)!==pr)return false;
-    if(tp&&(p.type||'affiliate')!==tp)return false;
-    if(q){if(![p.name,p.handle,p.email,p.phone,p.content_focus,p.notes,p.source].join(' ').toLowerCase().includes(q))return false;}
+    if(lt&&(p.lead_type||'')!==lt)return false;
+    if(q){if(![p.name,p.handle,p.email,p.phone,p.content_focus,p.notes,p.source,p.lead_type].join(' ').toLowerCase().includes(q))return false;}
     return true;
   });
   filtered.sort((a,b)=>{
     if(so==='name')return a.name.localeCompare(b.name);
     if(so==='score')return(b.total_score||0)-(a.total_score||0);
     if(so==='audience')return(b.audience_size||0)-(a.audience_size||0);
+    if(so==='deal_value')return(b.deal_value||0)-(a.deal_value||0);
     return new Date(b.created_at)-new Date(a.created_at);
   });
   const ctag=document.getElementById('ctag');if(ctag)ctag.textContent=filtered.length+' contact'+(filtered.length!==1?'s':'');
@@ -461,11 +459,11 @@ function go(pg){
   page=pg;editId=null;closeDP();
   document.querySelectorAll('.ni').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.ni').forEach(b=>{if(b.getAttribute('onclick')?.includes(`'${pg}'`))b.classList.add('on');});
-  const titles={dashboard:'Dashboard',analytics:'Analytics',pipeline:'Pipeline',deals:'Deals',inbox:'Inbox',reid:'Ask Reid',globaldata:'Global Data',playbook:'Playbook',admin:'Admin'};
+  const titles={dashboard:'Dashboard',analytics:'Analytics',pipeline:'Pipeline',inbox:'Inbox',reid:'Ask Reid',globaldata:'Global Data',playbook:'Playbook',admin:'Admin'};
   document.getElementById('pgtitle').textContent=titles[pg]||pg;
   const showTbar=['pipeline','globaldata'].includes(pg);
   document.getElementById('tbar').style.display=showTbar?'flex':'none';
-  document.getElementById('addBtn').style.display=['pipeline'].includes(pg)?'flex':'none';
+  document.getElementById('addBtn').style.display=pg==='pipeline'?'flex':'none';
   document.getElementById('vtoggle').style.display=pg==='pipeline'?'flex':'none';
   if(pg==='pipeline'){if(sub!=='kanban'&&sub!=='table')sub='table';updateVbtns();}
   applyFilters();render();
@@ -478,7 +476,6 @@ function render(){
   if(page==='dashboard')renderDash();
   else if(page==='analytics')renderAnalytics();
   else if(page==='pipeline'){if(sub==='kanban')renderKanban();else renderTable();}
-  else if(page==='deals')renderDeals();
   else if(page==='inbox')renderInbox();
   else if(page==='reid')renderReid();
   else if(page==='globaldata')renderGlobalData();
@@ -489,33 +486,45 @@ function render(){
 // ─── DASHBOARD ──────────────────────────────────────────────
 function renderDash(){
   const total=prospects.length;
-  const outreachSent=prospects.filter(p=>['outreach_sent','lead','qualified','call_booked','follow_up','closed_won'].includes(p.status)).length;
-  const responded=prospects.filter(p=>['lead','qualified','call_booked','follow_up','closed_won'].includes(p.status)).length;
+  const activeAffiliates=prospects.filter(p=>p.lead_type==='Active Affiliate Partner').length;
+  const potentialAffiliates=prospects.filter(p=>p.lead_type==='Potential Affiliate Partner').length;
+  const totalDealVal=prospects.reduce((s,p)=>s+(p.deal_value||0),0);
+  const totalCom=prospects.reduce((s,p)=>s+(p.deal_value||0)*(p.commission_pct||10)/100,0);
   const won=prospects.filter(p=>p.status==='closed_won').length;
-  const totalDealVal=deals.reduce((s,d)=>s+(d.value||0),0);
-  const totalCom=deals.reduce((s,d)=>s+(d.commission_value||0),0);
-  const affiliates=prospects.filter(p=>p.type==='affiliate').length;
-  const dealsType=prospects.filter(p=>p.type==='deal').length;
-  const recent=prospects.slice(0,6);
+  const outreachSent=prospects.filter(p=>['outreach_sent','lead','qualified','call_booked','follow_up','closed_won'].includes(p.status)).length;
+  const inPipeline=prospects.filter(p=>['lead','qualified','call_booked','follow_up'].includes(p.status)).length;
+  const recent=prospects.slice(0,8);
+  const funnelData=Object.entries(STAGES).map(([key,info])=>({key,label:info.l,color:info.c,count:prospects.filter(p=>p.status===key).length}));
+  const maxF=Math.max(...funnelData.map(f=>f.count),1);
   document.getElementById('main').innerHTML=`
-    <div class="sg">
-      <div class="sc"><div class="sv">${total}</div><div class="sl">Total Prospects</div></div>
-      <div class="sc"><div class="sv ac">${outreachSent}</div><div class="sl">Outreach Sent</div></div>
-      <div class="sc"><div class="sv">${responded}</div><div class="sl">Responded</div></div>
-      <div class="sc"><div class="sv gr">${won}</div><div class="sl">Closed Won</div></div>
-      <div class="sc"><div class="sv yw">${fmtC(totalDealVal)}</div><div class="sl">Total Deal Value</div></div>
-      <div class="sc"><div class="sv gr">${fmtC(totalCom)}</div><div class="sl">Total Commission</div></div>
-      <div class="sc"><div class="sv ac">${affiliates}</div><div class="sl">Potential Affiliates</div></div>
-      <div class="sc"><div class="sv yw">${dealsType}</div><div class="sl">Potential Deals</div></div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-val">${total}</div><div class="kpi-lbl">Total Prospects</div></div>
+      <div class="kpi gr"><div class="kpi-val gr">${activeAffiliates}</div><div class="kpi-lbl">Active Affiliates</div><div class="kpi-sub">${potentialAffiliates} potential</div></div>
+      <div class="kpi yw"><div class="kpi-val yw">${fmtC(totalDealVal)}</div><div class="kpi-lbl">Total Deal Value</div></div>
+      <div class="kpi gr"><div class="kpi-val gr">${fmtC(totalCom)}</div><div class="kpi-lbl">Total Commission</div></div>
+      <div class="kpi"><div class="kpi-val ac">${outreachSent}</div><div class="kpi-lbl">Outreach Sent</div></div>
+      <div class="kpi"><div class="kpi-val">${inPipeline}</div><div class="kpi-lbl">In Pipeline</div><div class="kpi-sub">lead → follow up</div></div>
+      <div class="kpi or"><div class="kpi-val" style="color:var(--or)">${won}</div><div class="kpi-lbl">Closed Won</div></div>
     </div>
-    <div style="padding:14px 18px">
-      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px">Recent</div>
+    <div class="funnel-bar">
+      <h3>Pipeline Breakdown</h3>
+      ${funnelData.map(f=>{const w=Math.max(Math.round(f.count/maxF*100),f.count?2:0);return`<div class="fb-row"><div class="fb-lbl">${f.label}</div><div class="fb-track"><div class="fb-fill" style="width:${w}%;background:${f.color}">${f.count>0&&w>12?f.count:''}</div></div><div class="fb-count">${f.count}</div></div>`;}).join('')}
+    </div>
+    <div style="padding:0 20px 6px">
+      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+        Recent Contacts
+        <button class="btn bg xsm" onclick="go('pipeline')">View All →</button>
+      </div>
       <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden">
         ${recent.length?recent.map(p=>`
           <div style="display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--bd);cursor:pointer" onclick="go('pipeline');setTimeout(()=>openDetail('${p.id}'),50)">
             <div style="width:30px;height:30px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--t2);flex-shrink:0">${(p.name||'?')[0].toUpperCase()}</div>
-            <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500">${p.name}</div><div style="font-size:11px;color:var(--t3)">${p.handle?'@'+p.handle:p.platform||''}</div></div>
-            ${sb(p.status)} ${tb(p.type)}
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:500">${p.name}</div>
+              <div style="font-size:11px;color:var(--t3)">${p.lead_type||p.platform||''}</div>
+            </div>
+            ${sb(p.status)}
+            ${p.deal_value?`<div style="font-size:12px;color:var(--gr);font-weight:600">${fmtC(p.deal_value)}</div>`:''}
             <div style="font-size:11px;color:var(--t3)">${ago(p.created_at)}</div>
           </div>`).join(''):`<div class="empty" style="padding:28px"><p>No contacts yet — <button class="btn bp sm" onclick="go('pipeline');setTimeout(openAdd,100)">Add First</button></p></div>`}
       </div>
@@ -530,7 +539,7 @@ async function renderAnalytics(){
   const bySt=s.byStatus||[],byPl=s.byPlatform||[];
   const maxP=Math.max(...byPl.map(x=>x.c),1);
   const funnelData=[
-    {stage:'Total Prospects',count:s.total||0,color:'#5a6070'},
+    {stage:'Total',count:s.total||0,color:'#5a6070'},
     {stage:'Outreach Sent',count:s.outreachSent||0,color:'#4f7ef8'},
     {stage:'Responded',count:s.responded||0,color:'#ff8c5a'},
     {stage:'Qualified',count:s.qualified||0,color:'#f5b731'},
@@ -539,23 +548,22 @@ async function renderAnalytics(){
   ];
   const maxF=Math.max(funnelData[0].count,1);
   document.getElementById('main').innerHTML=`
-    <div class="sg">
-      <div class="sc"><div class="sv">${s.total||0}</div><div class="sl">Total Prospects</div></div>
-      <div class="sc"><div class="sv ac">${s.outreachSent||0}</div><div class="sl">Outreach Sent</div></div>
-      <div class="sc"><div class="sv">${s.responded||0}</div><div class="sl">Responded</div></div>
-      <div class="sc"><div class="sv gr">${s.wonDeals||0}</div><div class="sl">Closed Won</div></div>
-      <div class="sc"><div class="sv yw">${fmtC(s.totalDealValue)}</div><div class="sl">Deal Value</div></div>
-      <div class="sc"><div class="sv gr">${fmtC(s.totalCommission)}</div><div class="sl">Commission</div></div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-val">${s.total||0}</div><div class="kpi-lbl">Total Prospects</div></div>
+      <div class="kpi gr"><div class="kpi-val gr">${s.activeAffiliates||0}</div><div class="kpi-lbl">Active Affiliates</div></div>
+      <div class="kpi yw"><div class="kpi-val yw">${fmtC(s.totalDealValue)}</div><div class="kpi-lbl">Total Deal Value</div></div>
+      <div class="kpi gr"><div class="kpi-val gr">${fmtC(s.totalCommission)}</div><div class="kpi-lbl">Total Commission</div></div>
+      <div class="kpi"><div class="kpi-val ac">${s.outreachSent||0}</div><div class="kpi-lbl">Outreach Sent</div></div>
+      <div class="kpi or"><div class="kpi-val" style="color:var(--or)">${s.wonDeals||0}</div><div class="kpi-lbl">Closed Won</div></div>
     </div>
     <div class="charts">
       <div class="cc" style="grid-column:1/-1">
-        <div class="ct2">🔻 Pipeline Funnel</div>
+        <div class="ct2">🔻 Conversion Funnel</div>
         ${funnelData.map((f,i)=>{
           const w=Math.max(Math.round(f.count/maxF*100),f.count?1:0);
           const pct=i>0&&funnelData[i-1].count>0?Math.round(f.count/funnelData[i-1].count*100)+'%':'—';
-          return`<div class="frow"><div class="fstage">${f.stage}</div><div class="fbar"><div class="fbfill" style="width:${w}%;background:${f.color}">${f.count>0&&w>15?f.count:''}</div></div><div class="fcount">${f.count}</div><div class="fpct">${i>0?pct:''}</div></div>`;
+          return`<div class="frow" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div class="fstage" style="font-size:12px;color:var(--t3);width:110px;flex-shrink:0">${f.stage}</div><div class="fbar" style="flex:1;background:var(--bg3);border-radius:4px;height:22px;overflow:hidden"><div style="height:100%;border-radius:4px;background:${f.color};display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:#fff;width:${w}%;min-width:2px">${f.count>0&&w>15?f.count:''}</div></div><div style="font-size:12px;color:var(--t2);width:30px;text-align:right">${f.count}</div><div style="font-size:11px;color:var(--t3);width:35px;text-align:right">${i>0?pct:''}</div></div>`;
         }).join('')}
-        <div style="font-size:11px;color:var(--t3);margin-top:8px">% column = conversion from previous stage</div>
       </div>
       <div class="cc">
         <div class="ct2">By Platform</div>
@@ -578,8 +586,9 @@ function renderKanban(){
         <div class="kcard" draggable="true" data-id="${p.id}" ondragstart="ds(event)" onclick="openDetail('${p.id}')">
           <div class="kcard-n">${p.name}</div>
           <div class="kcard-h">${p.handle?'@'+p.handle:(p.email||'—')}</div>
-          <div class="kcard-tags">${pb(p.platform)} ${tb(p.type)} ${prib(p.priority)}</div>
-          ${p.audience_size?`<div class="kcard-aud">👥 ${fmt(p.audience_size)}</div>`:''}
+          <div class="kcard-tags">${pb(p.platform)} ${prib(p.priority)}</div>
+          ${p.deal_value?`<div class="kcard-val">💰 ${fmtC(p.deal_value)}</div>`:''}
+          ${p.lead_type?`<div style="font-size:10px;color:var(--t3);margin-top:3px">${p.lead_type}</div>`:''}
         </div>`).join('')||`<div style="text-align:center;color:var(--t3);font-size:11px;padding:8px">Empty</div>`}
       </div>
       <button class="kadd" onclick="openAdd('${key}')">+ Add</button>
@@ -607,71 +616,32 @@ function renderTable(){
       <td class="tdn">${p.name}</td>
       <td>${p.handle?`<a class="tdl" href="${p.profile_url||'#'}" target="_blank" onclick="event.stopPropagation()">@${p.handle}</a>`:'—'}</td>
       <td>${pb(p.platform)}</td>
-      <td>${tb(p.type)}</td>
+      <td style="max-width:160px">${ltb(p.lead_type)}</td>
       <td>${sb(p.status)}</td>
       <td>${prib(p.priority)}</td>
+      <td style="color:${p.deal_value?'var(--gr)':'var(--t3)'};font-weight:${p.deal_value?600:400}">${p.deal_value?fmtC(p.deal_value):'—'}</td>
       <td style="color:var(--t2)">${fmt(p.audience_size)}</td>
       <td style="color:var(--t3)">${p.email||'—'}</td>
       <td style="color:var(--t3)">${p.phone||'—'}</td>
       <td style="color:var(--t3)">${ago(p.created_at)}</td>
       <td onclick="event.stopPropagation()"><button class="btn bg xsm" onclick="openEdit('${p.id}')">Edit</button></td>
     </tr>`).join('');
-  document.getElementById('main').innerHTML=`<table><thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Type</th><th>Stage</th><th>Pri</th><th>Audience</th><th>Email</th><th>Phone</th><th>Added</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  document.getElementById('main').innerHTML=`<table><thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Lead Type</th><th>Stage</th><th>Pri</th><th>Deal Value</th><th>Audience</th><th>Email</th><th>Phone</th><th>Added</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
-
-// ─── DEALS ──────────────────────────────────────────────────
-function renderDeals(){
-  const totVal=deals.reduce((s,d)=>s+(d.value||0),0);
-  const totCom=deals.reduce((s,d)=>s+(d.commission_value||0),0);
-  const rows=deals.map(d=>`
-    <tr>
-      <td class="tdn">${d.prospect_name}</td>
-      <td>${db2(d.stage)}</td>
-      <td style="color:var(--t)">${fmtC(d.value)}</td>
-      <td style="color:var(--gr)">${fmtC(d.commission_value)}</td>
-      <td style="color:var(--t3)">${d.commission_pct||10}%</td>
-      <td style="color:var(--t3)">${fmtD(d.close_date)}</td>
-      <td style="color:var(--t3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.notes||'—'}</td>
-      <td onclick="event.stopPropagation()"><button class="btn bg xsm" onclick="openEditDeal('${d.id}')">Edit</button> <button class="btn bd2 xsm" onclick="deleteDeal('${d.id}')">✕</button></td>
-    </tr>`).join('');
-  document.getElementById('main').innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px 0">
-      <div style="display:flex;gap:18px">
-        <span style="font-size:13px;color:var(--t3)">Total Value: <strong style="color:var(--t)">${fmtC(totVal)}</strong></span>
-        <span style="font-size:13px;color:var(--t3)">Commission: <strong style="color:var(--gr)">${fmtC(totCom)}</strong></span>
-      </div>
-      <button class="btn bp sm" onclick="openAddDeal()">+ Add Deal</button>
-    </div>
-    ${deals.length?`<div style="padding:10px 0 0"><table><thead><tr><th>Partner</th><th>Stage</th><th>Value</th><th>Commission</th><th>%</th><th>Close Date</th><th>Notes</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty"><div class="ei">💰</div><h3>No deals yet</h3><p>Add a deal to track revenue and commissions.</p><button class="btn bp" onclick="openAddDeal()">+ Add Deal</button></div>`}`;
-}
-function openAddDeal(){editDealId=null;document.getElementById('dmTitle').textContent='Add Deal';document.getElementById('dsavBtn').textContent='Add Deal';['dname','dval','dclose','dno'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});document.getElementById('dpct').value='10';document.getElementById('dst').value='proposal';document.getElementById('dealMod').classList.add('on');}
-function openEditDeal(id){const d=deals.find(x=>x.id===id);if(!d)return;editDealId=id;document.getElementById('dmTitle').textContent='Edit Deal';document.getElementById('dsavBtn').textContent='Save';document.getElementById('dname').value=d.prospect_name||'';document.getElementById('dval').value=d.value||'';document.getElementById('dpct').value=d.commission_pct||10;document.getElementById('dst').value=d.stage||'proposal';document.getElementById('dclose').value=d.close_date||'';document.getElementById('dno').value=d.notes||'';document.getElementById('dealMod').classList.add('on');}
-async function saveDeal(){
-  const name=document.getElementById('dname').value.trim();if(!name){toast('Name required','err');return;}
-  const data={prospect_name:name,value:parseFloat(document.getElementById('dval').value)||0,commission_pct:parseFloat(document.getElementById('dpct').value)||10,stage:document.getElementById('dst').value,close_date:document.getElementById('dclose').value,notes:document.getElementById('dno').value.trim()};
-  const btn=document.getElementById('dsavBtn');btn.disabled=true;btn.textContent='Saving…';
-  try{
-    if(editDealId){const u=await req('PATCH','/deals/'+editDealId,data);const i=deals.findIndex(x=>x.id===editDealId);if(i>=0)deals[i]={...deals[i],...u};toast('Updated','ok');}
-    else{const r=await req('POST','/deals',data);deals.unshift({...data,id:r.id,commission_value:data.value*data.commission_pct/100,created_at:new Date().toISOString()});toast('Deal added','ok');}
-    closeMod('dealMod');renderDeals();
-  }catch(e){toast('Failed: '+e.message,'err');}
-  finally{btn.disabled=false;btn.textContent=editDealId?'Save':'Add Deal';}
-}
-async function deleteDeal(id){if(!confirm('Delete this deal?'))return;try{await req('DELETE','/deals/'+id);deals=deals.filter(d=>d.id!==id);toast('Deleted');renderDeals();}catch{toast('Failed','err');}}
 
 // ─── INBOX ──────────────────────────────────────────────────
 function renderInbox(){
   const anKey=localStorage.getItem('apex-anthropic-key')||'';
   const aiSection=`
-    <div class="ai-box">
-      <h3>🧠 AI Inbox Analysis <span style="font-size:11px;color:var(--t3);font-weight:400">— powered by Anthropic</span></h3>
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;margin:14px 18px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:9px;display:flex;align-items:center;gap:6px">🧠 AI Analysis <span style="font-size:11px;color:var(--t3);font-weight:400">Claude-powered</span></div>
       <div style="display:flex;gap:7px;align-items:center;margin-bottom:8px">
         <input id="ankey" type="password" placeholder="Anthropic API key (sk-ant-…)" value="${anKey}" style="flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none" oninput="localStorage.setItem('apex-anthropic-key',this.value)">
         <button class="btn bp sm" onclick="runAIAnalysis()">Analyze</button>
         <button class="btn bg sm" onclick="syncGmail()">🔄 Sync Gmail</button>
       </div>
       <input id="anprompt" placeholder="Ask anything… (default: what needs my attention?)" style="width:100%;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none;margin-bottom:2px">
-      <div id="ai-resp" class="ai-resp" style="display:none"></div>
+      <div id="ai-resp" style="display:none;font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)"></div>
     </div>`;
   const emails=[...inboxEmails].sort((a,b)=>new Date(b.date||b.created_at)-new Date(a.date||a.created_at));
   document.getElementById('main').innerHTML=aiSection+(emails.length?emails.map(e=>`
@@ -693,7 +663,7 @@ async function runAIAnalysis(){
   const resp=document.getElementById('ai-resp');if(!resp)return;
   resp.style.display='block';resp.textContent='Analyzing…';
   try{
-    const r=await req('POST','/analyze',{apiKey:key,prompt,context:`Inbox has ${inboxEmails.length} emails. Recent emails: ${inboxEmails.slice(0,3).map(e=>e.subject).join(', ')}`});
+    const r=await req('POST','/analyze',{apiKey:key,prompt,context:`Inbox has ${inboxEmails.length} emails. Recent: ${inboxEmails.slice(0,3).map(e=>e.subject).join(', ')}`});
     resp.textContent=r.analysis;
   }catch(e){resp.textContent='Error: '+e.message;resp.style.color='var(--rd)';}
 }
@@ -704,69 +674,114 @@ function showEmail(id){
   dp.innerHTML=`<div class="dph"><button class="dpc" onclick="closeDP()">×</button><h2>${e.subject||'(no subject)'}</h2><div class="tags"><span style="font-size:11px;color:var(--t3)">From: ${e.from_name||''} &lt;${e.from||''}&gt;</span></div><div style="font-size:11px;color:var(--t3);margin-top:3px">${fmtD(e.date||e.created_at)}</div></div><div class="dpb"><div style="font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap">${e.body||e.snippet||'(empty)'}</div></div>`;
 }
 
-// ─── ASK REID ───────────────────────────────────────────────
+// ─── ASK REID — Real Chat ───────────────────────────────────
 function renderReid(){
+  const anKey=localStorage.getItem('apex-anthropic-key')||'';
   document.getElementById('main').innerHTML=`
-    <div class="reid-wrap">
-      <div class="reid-compose">
-        <h3>💬 Send to Reid</h3>
-        <textarea class="nta" id="reidInput" placeholder="Tell Reid what to do — e.g. 'Send follow-up to @username', 'Add this creator: [details]', 'Draft outreach for top 10 TikTok prospects'…" style="min-height:90px"></textarea>
-        <div style="margin-top:8px;display:flex;gap:7px;align-items:center">
-          <button class="btn bp" onclick="sendToReid()">Send to Reid</button>
-          <select class="fs" id="reidType"><option value="instruction">Instruction</option><option value="outreach">Outreach Request</option><option value="followup">Follow-up</option><option value="research">Research Task</option><option value="add_contact">Add to CRM</option></select>
-          <span style="font-size:11px;color:var(--t3)">Reid checks this regularly</span>
-        </div>
+    <div class="chat-wrap">
+      <div class="chat-key-bar">
+        <span style="font-size:11px;color:var(--t3);flex-shrink:0">Anthropic Key:</span>
+        <input type="password" id="reidKey" placeholder="sk-ant-… (required)" value="${anKey}" oninput="localStorage.setItem('apex-anthropic-key',this.value)">
+        <span id="reidKeyStatus" style="font-size:11px;color:${anKey?'var(--gr)':'var(--rd)'};">${anKey?'✓ Set':'Not set'}</span>
       </div>
-      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px">Recent Instructions</div>
-      ${reidMsgs.slice(0,20).map(m=>`
-        <div class="reid-msg">
-          <div class="reid-msg-txt">${m.message}</div>
-          <div class="reid-msg-meta">
-            <span class="rs rs-${m.status||'pending'}">${m.status||'pending'}</span>
-            <span>${m.type||'instruction'}</span>
-            <span>${ago(m.created_at)}</span>
-            ${m.status==='pending'?`<button class="btn bg xsm" onclick="markReidDone('${m.id}')">Mark Done</button>`:''}
+      <div class="chat-msgs" id="chatMsgs">
+        ${chatHistory.length?chatHistory.map(m=>renderChatMsg(m)).join(''):`
+        <div class="chat-msg reid">
+          <div class="chat-avatar reid">R</div>
+          <div>
+            <div class="chat-bubble">hey. reid here. what do you need?</div>
+            <div class="chat-meta">${nowStr()}</div>
           </div>
-        </div>`).join('')||`<div style="font-size:13px;color:var(--t3);text-align:center;padding:20px">No instructions yet</div>`}
+        </div>`}
+      </div>
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="chatIn" placeholder="Message Reid…" onkeydown="chatKey(event)" rows="1"></textarea>
+        <button class="chat-send" id="chatSend" onclick="sendChat()">Send</button>
+      </div>
     </div>`;
+  const msgs=document.getElementById('chatMsgs');if(msgs)msgs.scrollTop=msgs.scrollHeight;
+  const inp=document.getElementById('chatIn');
+  if(inp){inp.addEventListener('input',()=>{inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,120)+'px';});}
 }
-async function sendToReid(){
-  const msg=document.getElementById('reidInput').value.trim();if(!msg){toast('Enter an instruction','err');return;}
-  const type=document.getElementById('reidType').value;
-  try{const r=await req('POST','/reid/messages',{message:msg,type});reidMsgs.unshift({id:r.id,message:msg,type,status:'pending',created_at:new Date().toISOString()});document.getElementById('reidInput').value='';toast('Sent to Reid ✓','ok');renderReid();}
-  catch(e){toast('Failed: '+e.message,'err');}
+function renderChatMsg(m){
+  return`<div class="chat-msg ${m.role}">
+    <div class="chat-avatar ${m.role}">${m.role==='reid'?'R':'A'}</div>
+    <div>
+      <div class="chat-bubble">${m.text}</div>
+      <div class="chat-meta">${m.time||nowStr()}</div>
+    </div>
+  </div>`;
 }
-async function markReidDone(id){try{await req('PATCH','/reid/messages/'+id,{status:'done'});const m=reidMsgs.find(x=>x.id===id);if(m)m.status='done';renderReid();}catch{toast('Failed','err');}}
+function chatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
+async function sendChat(){
+  const inp=document.getElementById('chatIn');
+  if(!inp)return;
+  const msg=inp.value.trim();if(!msg)return;
+  const key=localStorage.getItem('apex-anthropic-key');
+  if(!key){toast('Enter your Anthropic API key first — see the bar at the top','err');return;}
+  inp.value='';inp.style.height='auto';
+  const time=nowStr();
+  chatHistory.push({role:'user',text:msg,time});
+  const msgs=document.getElementById('chatMsgs');
+  if(msgs){msgs.innerHTML+=renderChatMsg({role:'user',text:msg,time});msgs.scrollTop=msgs.scrollHeight;}
+  const btn=document.getElementById('chatSend');if(btn)btn.disabled=true;
+  // Show typing indicator
+  const typingId='typing-'+Date.now();
+  if(msgs){msgs.innerHTML+=`<div class="chat-msg reid" id="${typingId}"><div class="chat-avatar reid">R</div><div><div class="chat-bubble"><div class="typing"><span></span><span></span><span></span></div></div></div></div>`;msgs.scrollTop=msgs.scrollHeight;}
+  const stats={total:prospects.length,active:prospects.filter(p=>p.lead_type==='Active Affiliate Partner').length,stages:Object.entries(STAGES).map(([k])=>({stage:k,count:prospects.filter(p=>p.status===k).length})),totalDealValue:prospects.reduce((s,p)=>s+(p.deal_value||0),0)};
+  try{
+    const r=await req('POST','/analyze',{
+      apiKey:key,
+      prompt:msg,
+      context:`You are Reid Foster, affiliate manager at apex.host. Be direct, lowercase, human. No corporate fluff. CRM data: ${JSON.stringify(stats)}. Conversation history: ${chatHistory.slice(-6).map(m=>m.role+': '+m.text).join('\n')}`
+    });
+    const replyText=r.analysis||'something went wrong on my end, try again';
+    const replyTime=nowStr();
+    chatHistory.push({role:'reid',text:replyText,time:replyTime});
+    const typingEl=document.getElementById(typingId);if(typingEl)typingEl.remove();
+    if(msgs){msgs.innerHTML+=renderChatMsg({role:'reid',text:replyText,time:replyTime});msgs.scrollTop=msgs.scrollHeight;}
+  }catch(e){
+    const typingEl=document.getElementById(typingId);if(typingEl)typingEl.remove();
+    const errText='error: '+e.message;
+    chatHistory.push({role:'reid',text:errText,time:nowStr()});
+    if(msgs){msgs.innerHTML+=renderChatMsg({role:'reid',text:errText,time:nowStr()});msgs.scrollTop=msgs.scrollHeight;}
+  }
+  if(btn)btn.disabled=false;
+}
 
 // ─── GLOBAL DATA ────────────────────────────────────────────
 function renderGlobalData(){
-  if(!prospects.length){document.getElementById('main').innerHTML=`<div class="empty"><div class="ei">🌐</div><h3>No data</h3><p>Import a CSV to populate global data.</p><button class="btn bg" onclick="importCSV()">⬆ Import CSV</button></div>`;return;}
-  const rows=prospects.map(p=>`
+  if(!prospects.length){document.getElementById('main').innerHTML=`<div class="empty"><div class="ei">🌐</div><h3>No data</h3><p>Import a CSV to populate.</p><button class="btn bg" onclick="importCSV()">⬆ Import CSV</button></div>`;return;}
+  const rows=filtered.length?filtered:prospects;
+  const tableRows=rows.map(p=>`
     <tr onclick="openDetail('${p.id}')" style="cursor:pointer">
       <td class="tdn" style="font-size:12px">${p.name}</td>
       <td style="font-size:11px;color:var(--t3)">${p.handle||'—'}</td>
-      <td>${pb(p.platform)}</td><td>${tb(p.type)}</td><td>${sb(p.status)}</td>
+      <td>${pb(p.platform)}</td>
+      <td style="max-width:140px">${ltb(p.lead_type)}</td>
+      <td>${sb(p.status)}</td>
+      <td style="font-size:12px;color:${p.deal_value?'var(--gr)':'var(--t3)'}">${p.deal_value?fmtC(p.deal_value):'—'}</td>
       <td style="font-size:12px;color:var(--t2)">${fmt(p.audience_size)}</td>
       <td style="font-size:11px;color:var(--t3)">${p.email||'—'}</td>
       <td style="font-size:11px;color:var(--t3)">${p.phone||'—'}</td>
-      <td style="font-size:11px;color:var(--t3);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.content_focus||'—'}</td>
+      <td style="font-size:11px;color:var(--t3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.content_focus||'—'}</td>
       <td style="font-size:11px;color:var(--t3)">${p.source||'—'}</td>
     </tr>`).join('');
   document.getElementById('main').innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-bottom:1px solid var(--bd)">
-      <span style="font-size:12px;color:var(--t3)">${prospects.length} records</span>
+      <span style="font-size:12px;color:var(--t3)">${rows.length} records</span>
       <div style="display:flex;gap:6px"><button class="btn bg sm" onclick="importCSV()">⬆ Import</button><button class="btn bg sm" onclick="exportCSV()">⬇ Export</button></div>
     </div>
-    <table><thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Type</th><th>Stage</th><th>Audience</th><th>Email</th><th>Phone</th><th>Niche</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table>`;
+    <table><thead><tr><th>Name</th><th>Handle</th><th>Platform</th><th>Lead Type</th><th>Stage</th><th>Deal Value</th><th>Audience</th><th>Email</th><th>Phone</th><th>Niche</th><th>Source</th></tr></thead><tbody>${tableRows}</tbody></table>`;
 }
 
 // ─── PLAYBOOK ───────────────────────────────────────────────
 function renderPlaybook(){
   const defaults=[
-    {id:'__1',title:'Cold Outreach Template',content:`Subject: Quick Question\n\nHey [Name],\n\nLove the content — especially [specific thing]. I'm reaching out because we work with creators like you to build a recurring income stream without needing a massive audience.\n\nOur partners earn $X per qualified referral. No pitch required — just share your experience.\n\nWorth a 10-min call this week?\n\n— Reid\nApex`,category:'templates'},
-    {id:'__2',title:'Follow-Up Sequence',content:`Day 0: Initial outreach\nDay 3: Follow-up #1 — add value, share a win\nDay 7: Follow-up #2 — social proof or case study\nDay 12: Follow-up #3 — scarcity/urgency\nDay 18: Break-up email — "closing your file"\n\nIf no response → move to closed_lost, revisit in 60 days.`,category:'process'},
-    {id:'__3',title:'Qualifying Questions',content:`1. Current audience size + engagement rate?\n2. Ever promoted SaaS or B2B products?\n3. What does your audience care most about?\n4. Open to performance-based commission?\n5. Current brand deal timeline?\n6. Monthly revenue from content (ballpark)?`,category:'process'},
-    {id:'__4',title:'Objection Handling',content:`"I don't do paid partnerships" → "This isn't paid — it's commission. You only earn when you refer someone who closes."\n"My audience is small" → "We don't need massive reach. We need the right reach. 1,000 engaged followers > 100K passive ones."\n"I need to think about it" → "Totally fair. What's the main thing you need to know to decide?"`,category:'objections'},
+    {id:'__1',title:'Cold Outreach Template',content:`Subject: Quick Question\n\nHey [Name],\n\nLove the content — especially [specific thing]. Reaching out because we work with creators like you to build a recurring income stream.\n\nOur partners earn $X per qualified referral. No pitch required — just share your experience.\n\nWorth a 10-min call?\n\n— Reid\nApex`,category:'templates'},
+    {id:'__2',title:'Follow-Up Sequence',content:`Day 0: Initial outreach\nDay 3: Follow-up #1 — add value\nDay 7: Follow-up #2 — social proof\nDay 12: Follow-up #3 — urgency\nDay 18: Break-up email\n\nNo response → closed_lost, revisit in 60 days.`,category:'process'},
+    {id:'__3',title:'Qualifying Questions',content:`1. Audience size + engagement rate?\n2. Promoted SaaS or B2B before?\n3. What does your audience care most about?\n4. Open to performance-based commission?\n5. Current brand deal timeline?`,category:'process'},
+    {id:'__4',title:'Objection Handling',content:`"I don't do paid partnerships" → "This is commission-based. You earn when you refer someone who closes."\n"My audience is small" → "We don't need massive reach. We need the right reach."\n"I need to think about it" → "Totally fair. What's the main thing holding you back?"`,category:'objections'},
   ];
   const all=[...defaults,...playbook];
   document.getElementById('main').innerHTML=`
@@ -783,7 +798,7 @@ function renderPlaybook(){
         </div>`).join('')}
     </div>`;
 }
-async function addPBEntry(){const title=prompt('Title:');if(!title)return;const content=prompt('Content (paste template, steps, etc.):');if(!content)return;const cat=prompt('Category:','templates')||'general';try{const r=await req('POST','/playbook',{title,content,category:cat});playbook.push({id:r.id,title,content,category:cat,created_at:new Date().toISOString()});toast('Added','ok');renderPlaybook();}catch{toast('Failed','err');}}
+async function addPBEntry(){const title=prompt('Title:');if(!title)return;const content=prompt('Content:');if(!content)return;const cat=prompt('Category:','templates')||'general';try{const r=await req('POST','/playbook',{title,content,category:cat});playbook.push({id:r.id,title,content,category:cat,created_at:new Date().toISOString()});toast('Added','ok');renderPlaybook();}catch{toast('Failed','err');}}
 async function deletePB(id){if(!confirm('Delete?'))return;try{await req('DELETE','/playbook/'+id);playbook=playbook.filter(p=>p.id!==id);toast('Deleted');renderPlaybook();}catch{toast('Failed','err');}}
 
 // ─── ADMIN ──────────────────────────────────────────────────
@@ -792,34 +807,34 @@ function renderAdmin(){
     <div style="padding:18px">
       <div class="admin-section">
         <h3>System</h3>
-        <div class="kv"><span class="lbl">Backend URL</span><span class="val">${window.location.origin}</span></div>
+        <div class="kv"><span class="lbl">Backend</span><span class="val">${window.location.origin}</span></div>
         <div class="kv"><span class="lbl">Storage</span><span class="val">Railway Volume (persistent)</span></div>
         <div class="kv"><span class="lbl">Contacts</span><span class="val">${prospects.length}</span></div>
-        <div class="kv"><span class="lbl">Deals</span><span class="val">${deals.length}</span></div>
         <div class="kv"><span class="lbl">Inbox Emails</span><span class="val">${inboxEmails.length}</span></div>
-        <div class="kv"><span class="lbl">Reid Queue</span><span class="val">${reidMsgs.filter(m=>m.status==='pending').length} pending</span></div>
+      </div>
+      <div class="admin-section">
+        <h3>AI (Anthropic Claude)</h3>
+        <div class="kv"><span class="lbl">API Key</span><span class="val">${localStorage.getItem('apex-anthropic-key')?'✅ Set':'❌ Not set'}</span></div>
+        <div style="display:flex;gap:7px;align-items:center;margin-top:9px">
+          <input id="adminKey" type="password" placeholder="sk-ant-…" value="${localStorage.getItem('apex-anthropic-key')||''}" style="flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none">
+          <button class="btn bp sm" onclick="saveAnKey()">Save</button>
+        </div>
+        <div style="font-size:11px;color:var(--t3);margin-top:6px">Required for Ask Reid chat and AI inbox analysis.</div>
+      </div>
+      <div class="admin-section">
+        <h3>Gmail (Reid's Account)</h3>
+        <div class="kv"><span class="lbl">Account</span><span class="val">reid.foster@apex.host</span></div>
+        <div class="kv"><span class="lbl">Emails cached</span><span class="val">${inboxEmails.length}</span></div>
+        <div style="margin-top:9px;display:flex;gap:7px">
+          <button class="btn bp sm" onclick="go('inbox');setTimeout(syncGmail,50)">Sync Gmail</button>
+          <button class="btn bg sm" onclick="loadAll()">🔄 Refresh All</button>
+        </div>
       </div>
       <div class="admin-section">
         <h3>Data</h3>
         <div style="display:flex;gap:7px;flex-wrap:wrap">
           <button class="btn bg sm" onclick="importCSV()">⬆ Import CSV</button>
           <button class="btn bg sm" onclick="exportCSV()">⬇ Export All</button>
-          <button class="btn bg sm" onclick="loadAll()">🔄 Refresh</button>
-        </div>
-      </div>
-      <div class="admin-section">
-        <h3>Gmail (Reid's Account)</h3>
-        <div class="kv"><span class="lbl">Account</span><span class="val">reid.foster@apex.host</span></div>
-        <div class="kv"><span class="lbl">Emails cached</span><span class="val">${inboxEmails.length}</span></div>
-        <div class="kv"><span class="lbl">Last email</span><span class="val">${inboxEmails[0]?ago(inboxEmails[0].date||inboxEmails[0].created_at):'Never'}</span></div>
-        <div style="margin-top:9px"><button class="btn bp sm" onclick="go('inbox');setTimeout(syncGmail,50)">Sync Now</button></div>
-      </div>
-      <div class="admin-section">
-        <h3>AI Analysis (Anthropic)</h3>
-        <div class="kv"><span class="lbl">API Key</span><span class="val">${localStorage.getItem('apex-anthropic-key')?'✅ Set':'Not set'}</span></div>
-        <div style="display:flex;gap:7px;align-items:center;margin-top:9px">
-          <input id="adminKey" type="password" placeholder="sk-ant-…" value="${localStorage.getItem('apex-anthropic-key')||''}" style="flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none">
-          <button class="btn bp sm" onclick="saveAnKey()">Save Key</button>
         </div>
       </div>
     </div>`;
@@ -831,23 +846,30 @@ async function openDetail(id){
   const p=prospects.find(x=>x.id===id);if(!p)return;
   const dp=document.getElementById('dp');dp.classList.add('on');
   let activity=[];try{activity=await req('GET',`/prospects/${id}/activity`);}catch{}
+  const commission=p.deal_value&&p.commission_pct?(p.deal_value*p.commission_pct/100):0;
   dp.innerHTML=`
     <div class="dph">
       <button class="dpc" onclick="closeDP()">×</button>
       <h2>${p.name}</h2>
-      <div class="tags">${sb(p.status)} ${pb(p.platform)} ${tb(p.type)} ${prib(p.priority)}</div>
+      <div class="tags">${sb(p.status)} ${pb(p.platform)} ${prib(p.priority)}</div>
+      ${p.lead_type?`<div style="margin-top:6px">${ltb(p.lead_type)}</div>`:''}
     </div>
     <div class="dpb">
       <div class="dsec"><h4>Move Stage</h4>
         <select class="ssel" onchange="quickSt('${id}',this.value)">${Object.entries(STAGES).map(([k,v])=>`<option value="${k}" ${p.status===k?'selected':''}>${v.e} ${v.l}</option>`).join('')}</select>
       </div>
-      <div class="dsec"><h4>Details</h4>
+      ${p.deal_value?`<div class="dsec"><h4>Deal</h4>
+        <div class="df"><span class="dl">Value</span><span class="dv" style="color:var(--gr);font-weight:600">${fmtC(p.deal_value)}</span></div>
+        <div class="df"><span class="dl">Commission</span><span class="dv" style="color:var(--gr)">${fmtC(commission)} (${p.commission_pct||10}%)</span></div>
+      </div>`:''}
+      <div class="dsec"><h4>Contact</h4>
         <div class="df"><span class="dl">Handle</span><span class="dv">${p.handle?`<a href="${p.profile_url||'#'}" target="_blank">@${p.handle}</a>`:'—'}</span></div>
         <div class="df"><span class="dl">Email</span><span class="dv">${p.email||'—'}</span></div>
         <div class="df"><span class="dl">Phone</span><span class="dv">${p.phone||'—'}</span></div>
+        <div class="df"><span class="dl">Platform</span><span class="dv">${p.platform||'—'}</span></div>
         <div class="df"><span class="dl">Audience</span><span class="dv">${fmt(p.audience_size)}</span></div>
         <div class="df"><span class="dl">Score</span><span class="dv">${p.total_score?p.total_score+'%':'—'}</span></div>
-        <div class="df"><span class="dl">Focus</span><span class="dv">${p.content_focus||'—'}</span></div>
+        <div class="df"><span class="dl">Niche</span><span class="dv">${p.content_focus||'—'}</span></div>
         <div class="df"><span class="dl">Source</span><span class="dv">${p.source||'—'}</span></div>
         <div class="df"><span class="dl">Added</span><span class="dv">${fmtD(p.created_at)}</span></div>
       </div>
@@ -874,11 +896,12 @@ function openAdd(st='prospect'){
   editId=null;
   document.getElementById('mTitle').textContent='Add Contact';
   document.getElementById('savBtn').textContent='Add Contact';
-  ['fn','fh','fem','fphone','faud','fsc','furl','fcf','fno'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
+  ['fn','fh','fem','fphone','faud','fsc','furl','fcf','fno','fdv'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
   document.getElementById('fst').value=st;
   document.getElementById('fpri').value='3';
   document.getElementById('fp').value='';
-  document.getElementById('ftype').value='affiliate';
+  document.getElementById('flt').value='Potential Affiliate Partner';
+  document.getElementById('fcp').value='10';
   document.getElementById('addMod').classList.add('on');
   setTimeout(()=>document.getElementById('fn').focus(),80);
 }
@@ -899,16 +922,42 @@ function openEdit(id){
   document.getElementById('fst').value=p.status||'prospect';
   document.getElementById('fpri').value=p.priority||3;
   document.getElementById('fp').value=p.platform||'';
-  document.getElementById('ftype').value=p.type||'affiliate';
+  document.getElementById('flt').value=p.lead_type||'Potential Affiliate Partner';
+  document.getElementById('fdv').value=p.deal_value||'';
+  document.getElementById('fcp').value=p.commission_pct||10;
   document.getElementById('addMod').classList.add('on');
 }
 async function saveContact(){
   const name=document.getElementById('fn').value.trim();if(!name){toast('Name required','err');return;}
-  const data={name,handle:document.getElementById('fh').value.trim(),email:document.getElementById('fem').value.trim(),phone:document.getElementById('fphone').value.trim(),platform:document.getElementById('fp').value,audience_size:parseInt(document.getElementById('faud').value)||0,iap_score:parseInt(document.getElementById('fsc').value)||0,profile_url:document.getElementById('furl').value.trim(),content_focus:document.getElementById('fcf').value.trim(),notes:document.getElementById('fno').value.trim(),status:document.getElementById('fst').value,priority:parseInt(document.getElementById('fpri').value)||3,type:document.getElementById('ftype').value};
+  const data={
+    name,
+    handle:document.getElementById('fh').value.trim(),
+    email:document.getElementById('fem').value.trim(),
+    phone:document.getElementById('fphone').value.trim(),
+    platform:document.getElementById('fp').value,
+    lead_type:document.getElementById('flt').value,
+    audience_size:parseInt(document.getElementById('faud').value)||0,
+    iap_score:parseInt(document.getElementById('fsc').value)||0,
+    profile_url:document.getElementById('furl').value.trim(),
+    content_focus:document.getElementById('fcf').value.trim(),
+    notes:document.getElementById('fno').value.trim(),
+    status:document.getElementById('fst').value,
+    priority:parseInt(document.getElementById('fpri').value)||3,
+    deal_value:parseFloat(document.getElementById('fdv').value)||0,
+    commission_pct:parseFloat(document.getElementById('fcp').value)||10,
+  };
   const btn=document.getElementById('savBtn');btn.disabled=true;btn.textContent='Saving…';
   try{
-    if(editId){const u=await req('PATCH','/prospects/'+editId,data);const i=prospects.findIndex(x=>x.id===editId);if(i>=0)prospects[i]={...prospects[i],...u};toast('Updated ✓','ok');}
-    else{const r=await req('POST','/prospects',data);prospects.unshift({...data,id:r.id,total_score:data.iap_score,created_at:new Date().toISOString(),updated_at:new Date().toISOString()});toast('Added ✓','ok');}
+    if(editId){
+      const u=await req('PATCH','/prospects/'+editId,data);
+      const i=prospects.findIndex(x=>x.id===editId);
+      if(i>=0)prospects[i]={...prospects[i],...u};
+      toast('Updated ✓','ok');
+    }else{
+      const r=await req('POST','/prospects',data);
+      prospects.unshift({...data,id:r.id,total_score:data.iap_score,created_at:new Date().toISOString(),updated_at:new Date().toISOString()});
+      toast('Contact added ✓','ok');
+    }
     closeMod('addMod');applyFilters();render();if(editId)openDetail(editId);
   }catch(e){toast('Failed: '+e.message,'err');}
   finally{btn.disabled=false;btn.textContent=editId?'Save Changes':'Add Contact';}
@@ -933,7 +982,7 @@ async function handleCSV(file){
   const reader=new FileReader();
   reader.onload=async e=>{
     const rows=parseCSV(e.target.result);
-    const records=rows.map(r=>({name:r.name||r.handle||r.creator||r.influencer||r.brand||'',handle:r.handle||r.username||'',platform:r.platform||'',email:r.email||'',phone:r.phone||'',audience_size:parseInt(r.audience_size||r.followers||r.follower_count||0)||0,fit_score:parseInt(r.fit_score||r.score||r.iap_score||r.total_score||0)||0,profile_url:r.profile_url||r.url||r.link||'',status:r.status||'prospect',priority:parseInt(r.priority)||3,notes:r.notes||r.note||'',content_focus:r.content_focus||r.niche||r.category||'',source:r.source||'csv-import',type:r.type||'affiliate'})).filter(r=>r.name||r.handle);
+    const records=rows.map(r=>({name:r.name||r.handle||r.creator||r.brand||'',handle:r.handle||r.username||'',platform:r.platform||'',email:r.email||'',phone:r.phone||'',audience_size:parseInt(r.audience_size||r.followers||0)||0,fit_score:parseInt(r.fit_score||r.score||0)||0,profile_url:r.profile_url||r.url||'',status:r.status||'prospect',priority:parseInt(r.priority)||3,notes:r.notes||'',content_focus:r.content_focus||r.niche||'',source:r.source||'csv-import',lead_type:r.lead_type||'Potential Affiliate Partner',deal_value:parseFloat(r.deal_value)||0,commission_pct:parseFloat(r.commission_pct)||10})).filter(r=>r.name||r.handle);
     if(!records.length){toast('No valid rows','err');return;}
     if(!confirm(`Import ${records.length} contacts?`))return;
     try{const res=await req('POST','/prospects/bulk',{records});prospects=await req('GET','/prospects');toast(`Imported ${res.added} contacts`,'ok');applyFilters();render();}
@@ -942,7 +991,7 @@ async function handleCSV(file){
   reader.readAsText(file);
 }
 function exportCSV(){
-  const cols=['name','handle','platform','type','status','priority','audience_size','total_score','email','phone','content_focus','outreach_type','source','notes','profile_url','created_at'];
+  const cols=['name','handle','platform','lead_type','status','priority','deal_value','commission_pct','audience_size','total_score','email','phone','content_focus','source','notes','profile_url','created_at'];
   const data=filtered.length?filtered:prospects;
   const rows=data.map(p=>cols.map(c=>{const v=String(p[c]??'').replace(/"/g,'""');return v.includes(',')||v.includes('"')||v.includes('\n')?`"${v}"`:v;}).join(','));
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent([cols.join(','),...rows].join('\n'));
@@ -950,7 +999,7 @@ function exportCSV(){
   toast(`Exported ${rows.length} records`);
 }
 
-// ─── KEYBOARD SHORTCUTS ──────────────────────────────────────
+// ─── KEYBOARD ────────────────────────────────────────────────
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){document.querySelectorAll('.ov.on').forEach(m=>m.classList.remove('on'));closeDP();}

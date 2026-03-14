@@ -42,17 +42,17 @@ function logActivity(prospect_id, action, detail) {
   db.activityLog.push({ id: db.nextId++, prospect_id, action, detail, created_at: new Date().toISOString() });
 }
 
-// ─── PROSPECTS ────────────────────────────────────────────────
+// ─── PROSPECTS ────────────────────────────────────────────────────────────────
 app.get('/prospects', auth, (req,res) => {
   res.json([...db.prospects].sort((a,b) => new Date(b.created_at)-new Date(a.created_at)));
 });
 
 app.post('/prospects', auth, (req,res) => {
-  const { name, email, phone, platform, profile_url, handle, audience_size, iap_score, fit_score, outreach_type, source, notes, status, content_focus, priority, type } = req.body;
+  const { name, email, phone, platform, profile_url, handle, audience_size, iap_score, fit_score, outreach_type, source, notes, status, content_focus, priority, type, deal_value, commission_pct, lead_type } = req.body;
   if (!name) return res.status(400).json({ error:'name required' });
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
-  const p = { id, name, email:email||'', phone:phone||'', platform:platform||'', handle:handle||'', profile_url:profile_url||'', audience_size:parseInt(audience_size)||0, total_score:parseInt(iap_score||fit_score)||0, outreach_type:outreach_type||'cold', source:source||'', notes:notes||'', status:status||'prospect', content_focus:content_focus||'', priority:parseInt(priority)||3, type:type||'affiliate', outreach_sent_date:'', response_date:'', created_at:now, updated_at:now };
+  const p = { id, name, email:email||'', phone:phone||'', platform:platform||'', handle:handle||'', profile_url:profile_url||'', audience_size:parseInt(audience_size)||0, total_score:parseInt(iap_score||fit_score)||0, outreach_type:outreach_type||'cold', source:source||'', notes:notes||'', status:status||'prospect', content_focus:content_focus||'', priority:parseInt(priority)||3, type:type||'affiliate', deal_value:parseFloat(deal_value)||0, commission_pct:parseFloat(commission_pct)||10, lead_type:lead_type||'Potential Affiliate Partner', outreach_sent_date:'', response_date:'', created_at:now, updated_at:now };
   db.prospects.push(p);
   logActivity(id, 'created', `Added ${name}`);
   save();
@@ -62,7 +62,7 @@ app.post('/prospects', auth, (req,res) => {
 app.patch('/prospects/:id', auth, (req,res) => {
   const idx = db.prospects.findIndex(p => p.id===req.params.id);
   if (idx===-1) return res.status(404).json({ error:'Not found' });
-  const allowed = ['status','notes','outreach_type','platform','profile_url','handle','audience_size','source','name','email','phone','content_focus','priority','type'];
+  const allowed = ['status','notes','outreach_type','platform','profile_url','handle','audience_size','source','name','email','phone','content_focus','priority','type','deal_value','commission_pct','lead_type'];
   const map = { iap_score:'total_score', outreach_sent:'outreach_sent_date', fit_score:'total_score', response_date:'response_date' };
   const updates = {};
   Object.entries(req.body).forEach(([k,v]) => { if(allowed.includes(k)) updates[k]=v; else if(map[k]) updates[map[k]]=v; });
@@ -93,14 +93,14 @@ app.post('/prospects/bulk', auth, (req,res) => {
     if (!r.name && !r.handle) return;
     if (r.handle && db.prospects.find(p => p.handle?.toLowerCase()===r.handle.toLowerCase())) return;
     const id = crypto.randomUUID();
-    db.prospects.push({ id, name:r.name||r.handle||'', email:r.email||'', phone:r.phone||'', platform:r.platform||'', handle:r.handle||'', profile_url:r.profile_url||'', audience_size:parseInt(r.audience_size||r.followers)||0, total_score:parseInt(r.fit_score||r.iap_score||r.score)||0, outreach_type:'cold', source:r.source||'csv-import', notes:r.notes||'', status:r.status||'prospect', content_focus:r.content_focus||r.niche||'', priority:parseInt(r.priority)||3, type:r.type||'affiliate', outreach_sent_date:'', response_date:'', created_at:now, updated_at:now });
+    db.prospects.push({ id, name:r.name||r.handle||'', email:r.email||'', phone:r.phone||'', platform:r.platform||'', handle:r.handle||'', profile_url:r.profile_url||'', audience_size:parseInt(r.audience_size||r.followers)||0, total_score:parseInt(r.fit_score||r.iap_score||r.score)||0, outreach_type:'cold', source:r.source||'csv-import', notes:r.notes||'', status:r.status||'prospect', content_focus:r.content_focus||r.niche||'', priority:parseInt(r.priority)||3, type:r.type||'affiliate', deal_value:parseFloat(r.deal_value)||0, commission_pct:parseFloat(r.commission_pct)||10, lead_type:r.lead_type||'Potential Affiliate Partner', outreach_sent_date:'', response_date:'', created_at:now, updated_at:now });
     added++;
   });
   save();
   res.json({ added, total:db.prospects.length });
 });
 
-// ─── DEALS ───────────────────────────────────────────────────
+// ─── DEALS ───────────────────────────────────────────────────────────────────
 app.get('/deals', auth, (req,res) => res.json([...db.deals].sort((a,b) => new Date(b.created_at)-new Date(a.created_at))));
 
 app.post('/deals', auth, (req,res) => {
@@ -132,7 +132,7 @@ app.delete('/deals/:id', auth, (req,res) => {
   res.json({ success:true });
 });
 
-// ─── INBOX ───────────────────────────────────────────────────
+// ─── INBOX ───────────────────────────────────────────────────────────────────
 app.get('/inbox/emails', auth, (req,res) => res.json([...db.inboxEmails].sort((a,b) => new Date(b.date||b.created_at)-new Date(a.date||a.created_at)).slice(0,200)));
 
 app.post('/inbox/emails', auth, (req,res) => {
@@ -144,19 +144,20 @@ app.post('/inbox/emails', auth, (req,res) => {
   res.json({ added:newEmails.length, total:db.inboxEmails.length });
 });
 
-// ─── AI ANALYZE ──────────────────────────────────────────────
+// ─── AI ANALYZE ──────────────────────────────────────────────────────────────
 app.post('/analyze', auth, async (req,res) => {
-  const { prompt, apiKey, context } = req.body;
+  const { prompt, apiKey, context, systemPrompt: customSystemPrompt } = req.body;
   if (!apiKey) return res.status(400).json({ error:'apiKey required' });
   const stats = {
     total: db.prospects.length,
     byStage: db.prospects.reduce((acc,p) => { acc[p.status]=(acc[p.status]||0)+1; return acc; }, {}),
-    recentProspects: db.prospects.slice(0,10).map(p=>({name:p.name,status:p.status,platform:p.platform,handle:p.handle})),
-    deals: db.deals.length,
-    totalDealValue: db.deals.reduce((s,d)=>s+(d.value||0),0),
+    recentProspects: db.prospects.slice(0,10).map(p=>({name:p.name,status:p.status,platform:p.platform,handle:p.handle,lead_type:p.lead_type})),
+    activeAffiliates: db.prospects.filter(p=>p.lead_type==='Active Affiliate Partner').length,
+    totalDealValue: db.prospects.reduce((s,p)=>s+(p.deal_value||0),0),
+    totalCommission: db.prospects.reduce((s,p)=>s+(p.deal_value||0)*(p.commission_pct||10)/100,0),
     recentEmails: db.inboxEmails.slice(0,5).map(e=>({from:e.from_name||e.from,subject:e.subject,snippet:e.snippet})),
   };
-  const systemPrompt = `You are APEX, an AI business operator analyzing an affiliate partner CRM. Be direct, concise, and actionable. No fluff.`;
+  const systemPrompt = customSystemPrompt || `You are APEX, an AI business operator analyzing an affiliate partner CRM. Be direct, concise, and actionable. No fluff.`;
   const userMsg = `CRM Data:\n${JSON.stringify(stats,null,2)}\n\n${context||''}\n\nQuestion: ${prompt||'What needs my attention right now? What are the top 3 actions I should take?'}`;
   try {
     const body = JSON.stringify({ model:'claude-3-5-sonnet-20241022', max_tokens:800, system:systemPrompt, messages:[{role:'user',content:userMsg}] });
@@ -172,7 +173,7 @@ app.post('/analyze', auth, async (req,res) => {
   } catch(e) { res.status(500).json({ error:e.message }); }
 });
 
-// ─── REID ────────────────────────────────────────────────────
+// ─── REID ────────────────────────────────────────────────────────────────────
 app.get('/reid/messages', auth, (req,res) => res.json([...db.reidMessages].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,100)));
 
 app.post('/reid/messages', auth, (req,res) => {
@@ -190,7 +191,7 @@ app.patch('/reid/messages/:id', auth, (req,res) => {
   res.json(msg);
 });
 
-// ─── PLAYBOOK ────────────────────────────────────────────────
+// ─── PLAYBOOK ────────────────────────────────────────────────────────────────
 app.get('/playbook', auth, (req,res) => res.json(db.playbook));
 app.post('/playbook', auth, (req,res) => {
   const id=crypto.randomUUID(), now=new Date().toISOString();
@@ -205,7 +206,7 @@ app.patch('/playbook/:id', auth, (req,res) => {
 });
 app.delete('/playbook/:id', auth, (req,res)=>{ db.playbook=db.playbook.filter(p=>p.id!==req.params.id); save(); res.json({success:true}); });
 
-// ─── STATS ───────────────────────────────────────────────────
+// ─── STATS ───────────────────────────────────────────────────────────────────
 app.get('/stats', auth, (req,res) => {
   const byStatus={}, byPlatform={}, byType={};
   db.prospects.forEach(p => {
@@ -223,14 +224,15 @@ app.get('/stats', auth, (req,res) => {
     qualified:db.prospects.filter(p=>['qualified','call_booked','follow_up','closed_won'].includes(p.status)).length,
     callBooked:db.prospects.filter(p=>['call_booked','closed_won'].includes(p.status)).length,
     wonDeals:db.prospects.filter(p=>p.status==='closed_won').length,
+    activeAffiliates:db.prospects.filter(p=>p.lead_type==='Active Affiliate Partner').length,
+    totalDealValue:db.prospects.reduce((s,p)=>s+(p.deal_value||0),0),
+    totalCommission:db.prospects.reduce((s,p)=>s+(p.deal_value||0)*(p.commission_pct||10)/100,0),
     deals:db.deals.length,
-    totalDealValue:db.deals.reduce((s,d)=>s+(d.value||0),0),
-    totalCommission:db.deals.reduce((s,d)=>s+(d.commission_value||0),0),
     wonDealCount:db.deals.filter(d=>d.stage==='closed_won').length,
   });
 });
 
-// ─── STATIC / HEALTH ─────────────────────────────────────────
+// ─── STATIC / HEALTH ─────────────────────────────────────────────────────────
 app.get('/health', (req,res) => res.json({ ok:true, prospects:db.prospects.length, deals:db.deals.length, ts:new Date().toISOString() }));
 
 const publicDir = path.join(__dirname,'../public');
