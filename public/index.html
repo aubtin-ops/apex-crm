@@ -229,6 +229,15 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .toast{padding:8px 13px;border-radius:var(--r);background:var(--bg4);color:var(--t);font-size:13px;border:1px solid var(--bd);box-shadow:var(--shd);animation:tIn .18s ease;max-width:260px}
 .toast.ok{border-color:var(--gr);color:var(--gr)}.toast.err{border-color:var(--rd);color:var(--rd)}
 @keyframes tIn{from{transform:translateX(12px);opacity:0}to{transform:translateX(0);opacity:1}}
+.etag{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap}
+.etag-lead{background:var(--orb);color:var(--or)}
+.etag-qualified{background:var(--ywb);color:var(--yw)}
+.etag-call_booked{background:var(--pub);color:var(--pu)}
+.etag-follow_up{background:rgba(34,200,138,.1);color:#60d0a0}
+.etag-closed_won{background:var(--grb);color:var(--gr)}
+.etag-closed_lost{background:var(--rdb);color:var(--rd)}
+.etag-add{background:var(--bg4);color:var(--t3);border:1px dashed var(--bd)}
+.etag-add:hover{border-color:var(--t2);color:var(--t2)}
 .load{display:flex;align-items:center;justify-content:center;height:160px;color:var(--t3);gap:8px}
 .spin{width:16px;height:16px;border:2px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:sp .6s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -640,6 +649,7 @@ function renderInbox(){
         <div class="iname">${e.from_name||e.from||'Unknown'}</div>
         <div class="isubj">${e.subject||'(no subject)'}</div>
         <div class="isnip">${(e.snippet||e.body||'').slice(0,80)}</div>
+        ${(e.tags||[]).length ? `<div style="display:flex;gap:3px;margin-top:3px;flex-wrap:wrap">${(e.tags||[]).map(t=>`<span class="etag ${TAG_CLASSES[t]||''}" style="font-size:10px">${t}</span>`).join('')}</div>` : ''}
       </div>
       <div class="imeta"><div class="itime">${ago(e.date||e.created_at)}</div>${e.unread?'<div class="iunread"></div>':''}</div>
     </div>`).join(''):`<div class="empty"><div class="ei">✉️</div><h3>Inbox empty</h3><p>Click "Sync Gmail" to pull Reid's emails.</p></div>`);
@@ -657,7 +667,7 @@ async function syncGmail(){toast('Syncing Reid\'s Gmail…');try{await fetch(API
 function showEmail(id){
   const e=inboxEmails.find(x=>x.id===id);if(!e)return;
   const dp=document.getElementById('dp');dp.classList.add('on');
-  dp.innerHTML=`<div class="dph"><button class="dpc" onclick="closeDP()">×</button><h2>${e.subject||'(no subject)'}</h2><div class="tags"><span style="font-size:11px;color:var(--t3)">From: ${e.from_name||''} &lt;${e.from||''}&gt;</span></div><div style="font-size:11px;color:var(--t3);margin-top:3px">${fmtD(e.date||e.created_at)}</div></div><div class="dpb"><div style="font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap">${e.body||e.snippet||'(empty)'}</div></div>`;
+  dp.innerHTML=`<div class="dph"><button class="dpc" onclick="closeDP()">×</button><h2>${e.subject||'(no subject)'}</h2><div class="tags"><span style="font-size:11px;color:var(--t3)">From: ${e.from_name||''} &lt;${e.from||''}&gt;</span></div><div style="font-size:11px;color:var(--t3);margin-top:3px">${fmtD(e.date||e.created_at)}</div>${renderEmailTags(e.id, e.tags||[])}</div><div class="dpb"><div style="font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap">${e.body||e.snippet||'(empty)'}</div></div>`;
 }
 
 // ─── ASK REID — Real Chat ───────────────────────────────────
@@ -1014,6 +1024,64 @@ document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();document.getElementById('srch').focus();}
   if((e.metaKey||e.ctrlKey)&&e.key==='n'&&!e.target.tagName.match(/INPUT|TEXTAREA/)){e.preventDefault();go('pipeline');setTimeout(openAdd,50);}
 });
+
+// ─── EMAIL TAGS ──────────────────────────────────────────────
+const TAG_OPTIONS = ['Lead','Qualified','Call Booked','Follow Up','Closed Won','Closed Lost'];
+const TAG_CLASSES = {'Lead':'etag-lead','Qualified':'etag-qualified','Call Booked':'etag-call_booked','Follow Up':'etag-follow_up','Closed Won':'etag-closed_won','Closed Lost':'etag-closed_lost'};
+
+function renderEmailTags(emailId, tags) {
+  const tagHtml = (tags||[]).map(t => `<span class="etag ${TAG_CLASSES[t]||''}" onclick="removeEmailTag('${emailId}','${t}')" title="Click to remove">${t} ×</span>`).join('');
+  const addBtn = `<span class="etag etag-add" onclick="showTagPicker('${emailId}')">+ Tag</span>`;
+  return `<div class="email-tags" id="etags-${emailId}" style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">${tagHtml}${addBtn}</div>`;
+}
+
+function showTagPicker(emailId) {
+  const email = inboxEmails.find(e => e.id === emailId);
+  const existing = email?.tags || [];
+  const available = TAG_OPTIONS.filter(t => !existing.includes(t));
+  if (!available.length) { toast('All tags applied'); return; }
+  const menu = document.createElement('div');
+  menu.style.cssText = 'position:fixed;z-index:200;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--shd);min-width:140px;padding:4px 0';
+  available.forEach(tag => {
+    const item = document.createElement('div');
+    item.style.cssText = 'padding:7px 12px;font-size:12px;cursor:pointer;color:var(--t2)';
+    item.textContent = tag;
+    item.onmouseover = () => item.style.background = 'var(--bg4)';
+    item.onmouseout = () => item.style.background = '';
+    item.onclick = () => { addEmailTag(emailId, tag); document.body.removeChild(menu); };
+    menu.appendChild(item);
+  });
+  const btn = document.querySelector(`#etags-${emailId} .etag-add`);
+  if (btn) { const r = btn.getBoundingClientRect(); menu.style.top = (r.bottom + 4) + 'px'; menu.style.left = r.left + 'px'; }
+  else { menu.style.top = '50%'; menu.style.left = '50%'; }
+  document.body.appendChild(menu);
+  setTimeout(() => document.addEventListener('click', () => { if(document.body.contains(menu)) document.body.removeChild(menu); }, { once: true }), 10);
+}
+
+async function addEmailTag(emailId, tag) {
+  const email = inboxEmails.find(e => e.id === emailId);
+  if (!email) return;
+  const tags = [...new Set([...(email.tags||[]), tag])];
+  try {
+    await req('PATCH', '/inbox/emails/' + emailId + '/tags', { tags });
+    email.tags = tags;
+    const container = document.getElementById('etags-' + emailId);
+    if (container) container.outerHTML = renderEmailTags(emailId, tags);
+    toast(tag + ' tag added', 'ok');
+  } catch(e) { toast('Failed', 'err'); }
+}
+
+async function removeEmailTag(emailId, tag) {
+  const email = inboxEmails.find(e => e.id === emailId);
+  if (!email) return;
+  const tags = (email.tags||[]).filter(t => t !== tag);
+  try {
+    await req('PATCH', '/inbox/emails/' + emailId + '/tags', { tags });
+    email.tags = tags;
+    const container = document.getElementById('etags-' + emailId);
+    if (container) container.outerHTML = renderEmailTags(emailId, tags);
+  } catch(e) { toast('Failed', 'err'); }
+}
 
 go('dashboard');
 loadAll();

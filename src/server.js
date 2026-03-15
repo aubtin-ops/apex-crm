@@ -143,15 +143,31 @@ app.delete('/deals/:id', auth, (req,res) => {
 });
 
 // ─── INBOX ───────────────────────────────────────────────────────────────────
-app.get('/inbox/emails', auth, (req,res) => res.json([...db.inboxEmails].sort((a,b) => new Date(b.date||b.created_at)-new Date(a.date||a.created_at)).slice(0,200)));
+app.get('/inbox/emails', auth, (req,res) => {
+  const emails = [...db.inboxEmails]
+    .sort((a,b) => new Date(b.date||b.created_at)-new Date(a.date||a.created_at))
+    .slice(0,200)
+    .map(e => ({ ...e, tags: Array.isArray(e.tags) ? e.tags : [] }));
+  res.json(emails);
+});
 
 app.post('/inbox/emails', auth, (req,res) => {
   const { emails } = req.body;
   if (!Array.isArray(emails)) return res.status(400).json({ error:'emails array required' });
-  const newEmails = emails.filter(e => !db.inboxEmails.find(ex => ex.id===e.id));
+  const newEmails = emails.filter(e => !db.inboxEmails.find(ex => ex.id===e.id)).map(e => ({ ...e, tags: e.tags || [] }));
   db.inboxEmails = [...newEmails, ...db.inboxEmails].slice(0, 500);
   save();
   res.json({ added:newEmails.length, total:db.inboxEmails.length });
+});
+
+app.patch('/inbox/emails/:id/tags', auth, (req, res) => {
+  const { tags } = req.body;
+  if (!Array.isArray(tags)) return res.status(400).json({ error: 'tags must be array' });
+  const email = db.inboxEmails.find(e => e.id === req.params.id);
+  if (!email) return res.status(404).json({ error: 'Not found' });
+  email.tags = tags;
+  save();
+  res.json({ ok: true, tags });
 });
 
 // ─── AI ANALYZE ──────────────────────────────────────────────────────────────
@@ -399,7 +415,7 @@ app.post('/inbox/sync', auth, async (req, res) => {
     // Upsert into in-memory store
     const byId = {};
     db.inboxEmails.forEach(e => { byId[e.id] = e; });
-    emails.forEach(e => { byId[e.id] = { ...e, from_email: e.from, body: '' }; });
+    emails.forEach(e => { byId[e.id] = { ...e, from_email: e.from, body: '', tags: byId[e.id]?.tags || [] }; });
     db.inboxEmails = Object.values(byId)
       .sort((a, b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at))
       .slice(0, 500);
