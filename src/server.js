@@ -9,14 +9,24 @@ const app = express();
 const PORT = process.env.PORT || 3100;
 const API_KEY = process.env.API_KEY || 'apex-agent-secret-change-me';
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../data/apex.db');
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || '';
 
-let db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], nextId:1 };
+let db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], settings:{}, nextId:1 };
+let googleTokens = null; // { access_token, refresh_token, expiry_date }
 
 function loadData() {
   try {
     if (fs.existsSync(DB_PATH + '.json')) {
       const raw = JSON.parse(fs.readFileSync(DB_PATH + '.json', 'utf8'));
-      db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], nextId:1, ...raw };
+      db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], settings:{}, nextId:1, ...raw };
+      if (!db.settings) db.settings = {};
+      // Restore Google tokens from persistent storage
+      if (db.settings.google_tokens) {
+        googleTokens = db.settings.google_tokens;
+        console.log('Restored Google tokens from storage');
+      }
       console.log(`Loaded: ${db.prospects.length} prospects, ${db.deals.length} deals, ${db.inboxEmails.length} emails`);
     }
   } catch(e) { console.log('Fresh start:', e.message); }
@@ -269,6 +279,134 @@ app.post('/audience-fetch', auth, async (req, res) => {
     res.json({ audience_size, fetched: !!audience_size });
   } catch(e) {
     res.json({ audience_size: null, error: e.message, fetched: false });
+  }
+});
+
+// ─── GOOGLE OAUTH ─────────────────────────────────────────────────────────────
+app.get('/auth/google', (req, res) => {
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+    response_type: 'code',
+    scope: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/calendar email openid',
+    access_type: 'offline',
+    prompt: 'consent',
+    state: 'apex-crm-auth'
+  });
+  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
+});
+
+app.get('/auth/google/callback', async (req, res) => {
+  const { code, error } = req.query;
+  if (error || !code) {
+    return res.send(`<html><body style="font-family:sans-serif;background:#14161f;color:#e2e4ed;padding:40px"><h2>❌ Auth failed: ${error || 'no code'}</h2><p><a href="/" style="color:#4f7ef8">← Back to CRM</a></p></body></html>`);
+  }
+  try {
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        grant_type: 'authorization_code'
+      })
+    });
+    const tokens = await tokenRes.json();
+    if (tokens.error) throw new Error(tokens.error_description || tokens.error);
+    googleTokens = { ...tokens, expiry_date: Date.now() + (tokens.expires_in * 1000) };
+    db.settings.google_tokens = googleTokens;
+    save();
+    res.send(`<html><body style="font-family:sans-serif;background:#14161f;color:#e2e4ed;padding:40px;text-align:center"><h2>✅ Google Connected!</h2><p style="color:#22c88a">Gmail & Calendar authorized successfully.</p><p><a href="/" style="color:#4f7ef8;text-decoration:none;background:#1e2230;padding:10px 20px;border-radius:8px;display:inline-block;margin-top:16px">← Back to CRM</a></p><script>setTimeout(()=>window.location='/',2000)</script></body></html>`);
+  } catch(e) {
+    res.send(`<html><body style="font-family:sans-serif;background:#14161f;color:#e2e4ed;padding:40px"><h2>❌ Token exchange failed</h2><pre style="color:#f0545c">${e.message}</pre><p><a href="/" style="color:#4f7ef8">← Back to CRM</a></p></body></html>`);
+  }
+});
+
+app.get('/auth/google/status', auth, (req, res) => {
+  if (!googleTokens && db.settings.google_tokens) googleTokens = db.settings.google_tokens;
+  res.json({ connected: !!googleTokens, expired: googleTokens ? Date.now() > googleTokens.expiry_date : false });
+});
+
+app.get('/auth/google/disconnect', auth, (req, res) => {
+  googleTokens = null;
+  delete db.settings.google_tokens;
+  save();
+  res.json({ ok: true });
+});
+
+app.post('/inbox/sync', auth, async (req, res) => {
+  if (!googleTokens && db.settings.google_tokens) googleTokens = db.settings.google_tokens;
+  if (!googleTokens) return res.status(401).json({ error: 'Google not connected. Connect in Admin.' });
+
+  // Refresh token if expired
+  if (Date.now() > googleTokens.expiry_date && googleTokens.refresh_token) {
+    try {
+      const refreshRes = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: GOOGLE_CLIENT_ID,
+          client_secret: GOOGLE_CLIENT_SECRET,
+          refresh_token: googleTokens.refresh_token,
+          grant_type: 'refresh_token'
+        })
+      });
+      const refreshed = await refreshRes.json();
+      if (!refreshed.error) {
+        googleTokens = { ...googleTokens, ...refreshed, expiry_date: Date.now() + (refreshed.expires_in * 1000) };
+        db.settings.google_tokens = googleTokens;
+        save();
+      }
+    } catch(e) { console.error('Token refresh failed:', e.message); }
+  }
+
+  try {
+    const listRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=20&labelIds=INBOX', {
+      headers: { Authorization: `Bearer ${googleTokens.access_token}` }
+    });
+    const listData = await listRes.json();
+    if (listData.error) return res.status(400).json({ error: listData.error.message });
+
+    const messages = listData.messages || [];
+    const emails = [];
+
+    for (const msg of messages.slice(0, 10)) {
+      try {
+        const msgRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date`, {
+          headers: { Authorization: `Bearer ${googleTokens.access_token}` }
+        });
+        const msgData = await msgRes.json();
+        const headers = msgData.payload?.headers || [];
+        const get = (name) => headers.find(h => h.name === name)?.value || '';
+        const fromRaw = get('From');
+        const fromMatch = fromRaw.match(/^(.*?)\s*<(.+)>$/) || [null, fromRaw, fromRaw];
+        emails.push({
+          id: msg.id,
+          from_name: (fromMatch[1] || '').trim().replace(/"/g, ''),
+          from: fromMatch[2] || fromRaw,
+          subject: get('Subject') || '(no subject)',
+          snippet: msgData.snippet || '',
+          date: get('Date'),
+          unread: (msgData.labelIds || []).includes('UNREAD'),
+          created_at: new Date().toISOString()
+        });
+      } catch(e) { /* skip */ }
+    }
+
+    // Upsert into in-memory store
+    const byId = {};
+    db.inboxEmails.forEach(e => { byId[e.id] = e; });
+    emails.forEach(e => { byId[e.id] = { ...e, from_email: e.from, body: '' }; });
+    db.inboxEmails = Object.values(byId)
+      .sort((a, b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at))
+      .slice(0, 500);
+    save();
+
+    res.json({ ok: true, synced: emails.length });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
   }
 });
 
