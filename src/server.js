@@ -209,7 +209,33 @@ Subject: [subject line]
 [email body]
 ---
 
-When analyzing the inbox, flag: urgent replies needed, warm leads, anyone who asked a question.`;
+When analyzing the inbox, flag: urgent replies needed, warm leads, anyone who asked a question.
+
+CREATING CONTACTS:
+When the user asks you to add someone to the CRM, or when you have enough info to create a contact, include an action block in your response (invisible to the user, handled by the system):
+
+<<ACTION:create_contact>>
+{
+  "name": "Full Name or Brand",
+  "email": "email if known",
+  "phone": "phone if known",
+  "platform": "Instagram|TikTok|YouTube|LinkedIn|Twitter|Podcast|Newsletter|Other",
+  "lead_type": "Potential Affiliate Partner|Active Affiliate Partner|Deal/Close",
+  "profile_url": "url if known",
+  "audience_size": 0,
+  "deal_value": 0,
+  "status": "prospect",
+  "priority": 3,
+  "notes": "any relevant context"
+}
+<<END_ACTION>>
+
+Only include fields you actually know. Always include name. After the action block, confirm naturally: "added [name] to the pipeline as a prospect."
+
+You can also UPDATE a contact's stage if the user says something like "move X to qualified" — use:
+<<ACTION:update_contact>>
+{"name": "Name", "status": "qualified"}
+<<END_ACTION>>`;
 
 app.post('/analyze', auth, async (req, res) => {
   const { prompt, context } = req.body;

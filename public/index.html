@@ -748,6 +748,7 @@ function renderReid(){
       </div>
       <div style="padding:0 18px 10px;display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn bg xsm" onclick="quickChat('Draft a cold outreach email to a TikTok creator in the business space')">✍️ Draft outreach</button>
+        <button class="btn bg xsm" onclick="quickChat('Add a contact: [Name], [Platform], [Profile URL]')">➕ Add contact</button>
         <button class="btn bg xsm" onclick="quickChat('What\'s a good subject line for reaching out to an Instagram creator about Apex?')">📧 Subject line</button>
         <button class="btn bg xsm" onclick="quickChat('Analyze my inbox and tell me what needs a reply')">📬 Inbox check</button>
         <button class="btn bg xsm" onclick="quickChat('Write a follow-up for someone who hasn\'t responded in 5 days')">🔄 Follow-up</button>
@@ -786,7 +787,8 @@ async function sendChat(){
     const r=await req('POST','/analyze',{
       prompt:fullPrompt
     });
-    const replyText=r.analysis||'something went wrong on my end, try again';
+    let replyText=r.analysis||'something went wrong on my end, try again';
+    replyText=await executeReidActions(replyText);
     const replyTime=nowStr();
     chatHistory.push({role:'reid',text:replyText,time:replyTime});
     const typingEl=document.getElementById(typingId);if(typingEl)typingEl.remove();
@@ -1145,6 +1147,53 @@ async function removeEmailTag(emailId, tag) {
     const container = document.getElementById('etags-' + emailId);
     if (container) container.outerHTML = renderEmailTags(emailId, tags);
   } catch(e) { toast('Failed', 'err'); }
+}
+
+async function executeReidActions(responseText) {
+  const actionRegex = /<<ACTION:(\w+)>>([\s\S]*?)<<END_ACTION>>/g;
+  let match;
+  let cleanText = responseText;
+  const actions = [];
+  while ((match = actionRegex.exec(responseText)) !== null) {
+    actions.push({ type: match[1], data: match[2].trim() });
+    cleanText = cleanText.replace(match[0], '').trim();
+  }
+  for (const action of actions) {
+    try {
+      const data = JSON.parse(action.data);
+      if (action.type === 'create_contact') {
+        const r = await req('POST', '/prospects', {
+          name: data.name || 'Unknown',
+          email: data.email || '',
+          phone: data.phone || '',
+          platform: data.platform || '',
+          lead_type: data.lead_type || 'Potential Affiliate Partner',
+          profile_url: data.profile_url || '',
+          audience_size: data.audience_size || 0,
+          deal_value: data.deal_value || 0,
+          status: data.status || 'prospect',
+          priority: data.priority || 3,
+          notes: data.notes || '',
+          iap_score: 0
+        });
+        prospects.unshift({ ...data, id: r.id, total_score: 0, created_at: new Date().toISOString() });
+        applyFilters();
+        toast('✅ ' + (data.name || 'Contact') + ' added to pipeline', 'ok');
+      }
+      if (action.type === 'update_contact') {
+        const p = prospects.find(x => x.name?.toLowerCase().includes(data.name?.toLowerCase()));
+        if (p) {
+          await req('PATCH', '/prospects/' + p.id, data);
+          Object.assign(p, data);
+          applyFilters();
+          toast('Updated ' + p.name, 'ok');
+        }
+      }
+    } catch(e) {
+      console.error('Reid action failed:', action.type, e.message);
+    }
+  }
+  return cleanText;
 }
 
 function quickChat(msg) {
