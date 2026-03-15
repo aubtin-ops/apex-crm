@@ -737,7 +737,7 @@ function renderReid(){
         <div class="chat-msg reid">
           <div class="chat-avatar reid">R</div>
           <div>
-            <div class="chat-bubble">hey. reid here. what do you need?</div>
+            <div class="chat-bubble">hey. reid here. drop me an email to review, or ask me to draft outreach for someone in the pipeline.</div>
             <div class="chat-meta">${nowStr()}</div>
           </div>
         </div>`}
@@ -745,6 +745,12 @@ function renderReid(){
       <div class="chat-input-wrap">
         <textarea class="chat-input" id="chatIn" placeholder="Message Reid…" onkeydown="chatKey(event)" rows="1"></textarea>
         <button class="chat-send" id="chatSend" onclick="sendChat()">Send</button>
+      </div>
+      <div style="padding:0 18px 10px;display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn bg xsm" onclick="quickChat('Draft a cold outreach email to a TikTok creator in the business space')">✍️ Draft outreach</button>
+        <button class="btn bg xsm" onclick="quickChat('What\'s a good subject line for reaching out to an Instagram creator about Apex?')">📧 Subject line</button>
+        <button class="btn bg xsm" onclick="quickChat('Analyze my inbox and tell me what needs a reply')">📬 Inbox check</button>
+        <button class="btn bg xsm" onclick="quickChat('Write a follow-up for someone who hasn\'t responded in 5 days')">🔄 Follow-up</button>
       </div>
     </div>`;
   const msgs=document.getElementById('chatMsgs');if(msgs)msgs.scrollTop=msgs.scrollHeight;
@@ -775,10 +781,10 @@ async function sendChat(){
   const typingId='typing-'+Date.now();
   if(msgs){msgs.innerHTML+=`<div class="chat-msg reid" id="${typingId}"><div class="chat-avatar reid">R</div><div><div class="chat-bubble"><div class="typing"><span></span><span></span><span></span></div></div></div></div>`;msgs.scrollTop=msgs.scrollHeight;}
   const stats={total:prospects.length,active:prospects.filter(p=>p.lead_type==='Active Affiliate Partner').length,stages:Object.entries(STAGES).map(([k])=>({stage:k,count:prospects.filter(p=>p.status===k).length})),totalDealValue:prospects.reduce((s,p)=>s+(p.deal_value||0),0)};
+  const fullPrompt=`[CRM Context: ${prospects.length} total prospects, ${stats.active} active affiliates, $${stats.totalDealValue} total deal value]\n\n${chatHistory.slice(-6).map(m=>(m.role==='user'?'Aubtin':'Reid')+': '+m.text).join('\n')}\n\nAubtin: ${msg}`;
   try{
     const r=await req('POST','/analyze',{
-      prompt:msg,
-      context:`You are Reid Foster, affiliate manager at apex.host. Be direct, lowercase, human. No corporate fluff. CRM data: ${JSON.stringify(stats)}. Conversation history: ${chatHistory.slice(-6).map(m=>m.role+': '+m.text).join('\n')}`
+      prompt:fullPrompt
     });
     const replyText=r.analysis||'something went wrong on my end, try again';
     const replyTime=nowStr();
@@ -1139,6 +1145,11 @@ async function removeEmailTag(emailId, tag) {
     const container = document.getElementById('etags-' + emailId);
     if (container) container.outerHTML = renderEmailTags(emailId, tags);
   } catch(e) { toast('Failed', 'err'); }
+}
+
+function quickChat(msg) {
+  const inp = document.getElementById('chatIn');
+  if (inp) { inp.value = msg; inp.dispatchEvent(new Event('input')); sendChat(); }
 }
 
 function filterByChannel(platform){
