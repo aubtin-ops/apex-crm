@@ -241,11 +241,22 @@ app.get('/stats', auth, (req,res) => {
     byPlatform[p.platform||'Unknown']=(byPlatform[p.platform||'Unknown']||0)+1;
     byType[p.type||'affiliate']=(byType[p.type||'affiliate']||0)+1;
   });
+  // Channel breakdown with stage distribution
+  const channelMap = {};
+  db.prospects.forEach(p => {
+    if (!p.platform || p.platform === '') return;
+    if (!channelMap[p.platform]) channelMap[p.platform] = { platform: p.platform, total: 0, stages: {}, dealValue: 0 };
+    channelMap[p.platform].total += 1;
+    channelMap[p.platform].stages[p.status] = (channelMap[p.platform].stages[p.status] || 0) + 1;
+    channelMap[p.platform].dealValue += (p.deal_value || 0);
+  });
+  const byChannel = Object.values(channelMap).sort((a,b) => b.total - a.total);
   res.json({
     total:db.prospects.length,
     byStatus:Object.entries(byStatus).map(([status,c])=>({status,c})),
     byPlatform:Object.entries(byPlatform).map(([platform,c])=>({platform,c})),
     byType:Object.entries(byType).map(([type,c])=>({type,c})),
+    byChannel,
     outreachSent:db.prospects.filter(p=>['outreach_sent','lead','qualified','call_booked','follow_up','closed_won'].includes(p.status)).length,
     responded:db.prospects.filter(p=>['lead','qualified','call_booked','follow_up','closed_won'].includes(p.status)).length,
     qualified:db.prospects.filter(p=>['qualified','call_booked','follow_up','closed_won'].includes(p.status)).length,

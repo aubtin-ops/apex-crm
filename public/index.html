@@ -499,6 +499,17 @@ function renderDash(){
   const recent=prospects.slice(0,8);
   const funnelData=Object.entries(STAGES).map(([key,info])=>({key,label:info.l,color:info.c,count:prospects.filter(p=>p.status===key).length}));
   const maxF=Math.max(...funnelData.map(f=>f.count),1);
+  // Channel breakdown computed locally
+  const _chMap={};
+  prospects.forEach(p=>{
+    if(!p.platform||p.platform==='')return;
+    const ch=p.platform;
+    if(!_chMap[ch])_chMap[ch]={platform:ch,total:0,stages:{},dealValue:0};
+    _chMap[ch].total+=1;
+    _chMap[ch].stages[p.status]=(_chMap[ch].stages[p.status]||0)+1;
+    _chMap[ch].dealValue+=(p.deal_value||0);
+  });
+  const byChannel=Object.values(_chMap).sort((a,b)=>b.total-a.total);
   document.getElementById('main').innerHTML=`
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-val">${total}</div><div class="kpi-lbl">Total Prospects</div></div>
@@ -512,6 +523,24 @@ function renderDash(){
     <div class="funnel-bar">
       <h3>Pipeline Breakdown</h3>
       ${funnelData.map(f=>{const w=Math.max(Math.round(f.count/maxF*100),f.count?2:0);return`<div class="fb-row"><div class="fb-lbl">${f.label}</div><div class="fb-track"><div class="fb-fill" style="width:${w}%;background:${f.color}">${f.count>0&&w>12?f.count:''}</div></div><div class="fb-count">${f.count}</div></div>`;}).join('')}
+    </div>
+    <div style="padding:0 20px 14px">
+      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px">Pipeline by Channel</div>
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden">
+        ${byChannel.length?byChannel.map(ch=>{
+          const pct=Math.round(ch.total/Math.max(total,1)*100);
+          const wonCount=ch.stages['closed_won']||0;
+          return`<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--bd);cursor:pointer" onclick="filterByChannel('${ch.platform}')">
+            <span class="badge bd-${ch.platform}">${ch.platform}</span>
+            <div style="flex:1;background:var(--bg3);border-radius:3px;height:6px;overflow:hidden">
+              <div style="width:${pct}%;height:100%;background:var(--ac);border-radius:3px"></div>
+            </div>
+            <div style="font-size:12px;color:var(--t2);width:20px;text-align:right">${ch.total}</div>
+            ${ch.dealValue?`<div style="font-size:11px;color:var(--gr);width:55px;text-align:right">${fmtC(ch.dealValue)}</div>`:'<div style="width:55px"></div>'}
+            ${wonCount?`<div style="font-size:10px;color:var(--gr)">✅ ${wonCount} won</div>`:''}
+          </div>`;
+        }).join(''):'<div style="padding:20px;text-align:center;color:var(--t3);font-size:12px">No channel data yet — add contacts with platform info</div>'}
+      </div>
     </div>
     <div style="padding:0 20px 6px">
       <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
@@ -575,6 +604,35 @@ async function renderAnalytics(){
       <div class="cc">
         <div class="ct2">By Stage</div>
         ${bySt.sort((a,b)=>b.c-a.c).map(x=>{const st=STAGES[x.status]||{l:x.status,c:'#5a6070'};return`<div class="br"><div class="bl">${st.l}</div><div class="bw"><div class="bf" style="width:${Math.round(x.c/Math.max(...bySt.map(y=>y.c),1)*100)}%;background:${st.c}"></div></div><div class="bc">${x.c}</div></div>`;}).join('')||'<div style="color:var(--t3);font-size:12px">No data</div>'}
+      </div>
+    </div>
+    <div style="padding:0 20px 16px">
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden">
+        <div style="padding:10px 14px;border-bottom:1px solid var(--bd);font-size:12px;font-weight:600;color:var(--t2)">Channel Performance</div>
+        ${(s.byChannel||[]).length?`<table style="width:100%">
+          <thead>
+            <tr>
+              <th>Channel</th><th>Total</th><th>Active</th><th>Won</th><th>Deal Value</th><th>Conv %</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${(s.byChannel||[]).map(ch=>{
+              const won=ch.stages?.closed_won||0;
+              const lost=ch.stages?.closed_lost||0;
+              const prospectCnt=ch.stages?.prospect||0;
+              const active=ch.total-lost-prospectCnt;
+              const convPct=ch.total>0?Math.round(won/ch.total*100):0;
+              return`<tr>
+                <td><span class="badge bd-${ch.platform}">${ch.platform}</span></td>
+                <td style="font-size:12px">${ch.total}</td>
+                <td style="font-size:12px;color:var(--ac)">${Math.max(active,0)}</td>
+                <td style="font-size:12px;color:var(--gr)">${won}</td>
+                <td style="font-size:12px;color:${ch.dealValue?'var(--gr)':'var(--t3)'}">${ch.dealValue?fmtC(ch.dealValue):'—'}</td>
+                <td style="font-size:12px;color:${convPct>10?'var(--gr)':convPct>5?'var(--yw)':'var(--t3)'}">${convPct}%</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>`:'<div style="padding:20px;text-align:center;color:var(--t3);font-size:12px">No channel data yet — add contacts with platform info</div>'}
       </div>
     </div>`;
 }
@@ -1081,6 +1139,14 @@ async function removeEmailTag(emailId, tag) {
     const container = document.getElementById('etags-' + emailId);
     if (container) container.outerHTML = renderEmailTags(emailId, tags);
   } catch(e) { toast('Failed', 'err'); }
+}
+
+function filterByChannel(platform){
+  go('pipeline');
+  setTimeout(()=>{
+    const el=document.getElementById('fPlatform');
+    if(el){el.value=platform;applyFilters();render();}
+  },50);
 }
 
 go('dashboard');
