@@ -169,7 +169,7 @@ app.post('/analyze', auth, async (req,res) => {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-3-5-haiku-20241022',
+        model: 'claude-haiku-4-5',
         max_tokens: 1024,
         system: context || 'You are Reid Foster, affiliate manager at apex.host. Be direct, lowercase, no corporate fluff.',
         messages: [{ role: 'user', content: prompt || 'Hello' }]
