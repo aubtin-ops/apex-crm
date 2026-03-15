@@ -622,16 +622,14 @@ function renderTable(){
 
 // ─── INBOX ──────────────────────────────────────────────────
 function renderInbox(){
-  const anKey=localStorage.getItem('apex-anthropic-key')||'';
   const aiSection=`
     <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;margin:14px 18px">
       <div style="font-size:13px;font-weight:600;margin-bottom:9px;display:flex;align-items:center;gap:6px">🧠 AI Analysis <span style="font-size:11px;color:var(--t3);font-weight:400">Claude-powered</span></div>
       <div style="display:flex;gap:7px;align-items:center;margin-bottom:8px">
-        <input id="ankey" type="password" placeholder="Anthropic API key (sk-ant-…)" value="${anKey}" style="flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none" oninput="localStorage.setItem('apex-anthropic-key',this.value)">
+        <input id="anprompt" placeholder="Ask anything… (default: what needs my attention?)" style="flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none">
         <button class="btn bp sm" onclick="runAIAnalysis()">Analyze</button>
-        <button class="btn bg sm" onclick="syncGmailNow()">🔄 Sync Gmail</button>
+        <button class="btn bg sm" onclick="syncGmailNow ? syncGmailNow() : syncGmail()">🔄 Sync Gmail</button>
       </div>
-      <input id="anprompt" placeholder="Ask anything… (default: what needs my attention?)" style="width:100%;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none;margin-bottom:2px">
       <div id="ai-resp" style="display:none;font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)"></div>
     </div>`;
   const emails=[...inboxEmails].sort((a,b)=>new Date(b.date||b.created_at)-new Date(a.date||a.created_at));
@@ -647,14 +645,11 @@ function renderInbox(){
     </div>`).join(''):`<div class="empty"><div class="ei">✉️</div><h3>Inbox empty</h3><p>Click "Sync Gmail" to pull Reid's emails.</p></div>`);
 }
 async function runAIAnalysis(){
-  const key=document.getElementById('ankey')?.value?.trim()||localStorage.getItem('apex-anthropic-key');
-  if(!key){toast('Enter your Anthropic API key first','err');return;}
-  localStorage.setItem('apex-anthropic-key',key);
   const prompt=document.getElementById('anprompt')?.value?.trim()||'';
   const resp=document.getElementById('ai-resp');if(!resp)return;
   resp.style.display='block';resp.textContent='Analyzing…';
   try{
-    const r=await req('POST','/analyze',{apiKey:key,prompt,context:`Inbox has ${inboxEmails.length} emails. Recent: ${inboxEmails.slice(0,3).map(e=>e.subject).join(', ')}`});
+    const r=await req('POST','/analyze',{prompt,context:`Inbox has ${inboxEmails.length} emails. Recent: ${inboxEmails.slice(0,3).map(e=>e.subject).join(', ')}`});
     resp.textContent=r.analysis;
   }catch(e){resp.textContent='Error: '+e.message;resp.style.color='var(--rd)';}
 }
@@ -667,14 +662,8 @@ function showEmail(id){
 
 // ─── ASK REID — Real Chat ───────────────────────────────────
 function renderReid(){
-  const anKey=localStorage.getItem('apex-anthropic-key')||'';
   document.getElementById('main').innerHTML=`
     <div class="chat-wrap">
-      <div class="chat-key-bar">
-        <span style="font-size:11px;color:var(--t3);flex-shrink:0">Anthropic Key:</span>
-        <input type="password" id="reidKey" placeholder="sk-ant-… (required)" value="${anKey}" oninput="localStorage.setItem('apex-anthropic-key',this.value)">
-        <span id="reidKeyStatus" style="font-size:11px;color:${anKey?'var(--gr)':'var(--rd)'};">${anKey?'✓ Set':'Not set'}</span>
-      </div>
       <div class="chat-msgs" id="chatMsgs">
         ${chatHistory.length?chatHistory.map(m=>renderChatMsg(m)).join(''):`
         <div class="chat-msg reid">
@@ -708,8 +697,6 @@ async function sendChat(){
   const inp=document.getElementById('chatIn');
   if(!inp)return;
   const msg=inp.value.trim();if(!msg)return;
-  const key=localStorage.getItem('apex-anthropic-key');
-  if(!key){toast('Enter your Anthropic API key first — see the bar at the top','err');return;}
   inp.value='';inp.style.height='auto';
   const time=nowStr();
   chatHistory.push({role:'user',text:msg,time});
@@ -722,7 +709,6 @@ async function sendChat(){
   const stats={total:prospects.length,active:prospects.filter(p=>p.lead_type==='Active Affiliate Partner').length,stages:Object.entries(STAGES).map(([k])=>({stage:k,count:prospects.filter(p=>p.status===k).length})),totalDealValue:prospects.reduce((s,p)=>s+(p.deal_value||0),0)};
   try{
     const r=await req('POST','/analyze',{
-      apiKey:key,
       prompt:msg,
       context:`You are Reid Foster, affiliate manager at apex.host. Be direct, lowercase, human. No corporate fluff. CRM data: ${JSON.stringify(stats)}. Conversation history: ${chatHistory.slice(-6).map(m=>m.role+': '+m.text).join('\n')}`
     });
@@ -804,13 +790,9 @@ async function renderAdmin(){
         <div class="kv"><span class="lbl">Inbox Emails</span><span class="val">${inboxEmails.length}</span></div>
       </div>
       <div class="admin-section">
-        <h3>AI (Anthropic Claude)</h3>
-        <div class="kv"><span class="lbl">API Key</span><span class="val">${localStorage.getItem('apex-anthropic-key')?'✅ Set':'❌ Not set'}</span></div>
-        <div style="display:flex;gap:7px;align-items:center;margin-top:9px">
-          <input id="adminKey" type="password" placeholder="sk-ant-…" value="${localStorage.getItem('apex-anthropic-key')||''}" style="flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none">
-          <button class="btn bp sm" onclick="saveAnKey()">Save</button>
-        </div>
-        <div style="font-size:11px;color:var(--t3);margin-top:6px">Required for Ask Reid chat and AI inbox analysis.</div>
+        <h3>AI (Claude)</h3>
+        <div class="kv"><span class="lbl">Status</span><span class="val" style="color:var(--gr)">✅ Configured server-side</span></div>
+        <div style="font-size:11px;color:var(--t3);margin-top:6px">Anthropic API key stored securely in Railway environment.</div>
       </div>
       <div class="admin-section">
         <h3>Google (Gmail + Calendar)</h3>

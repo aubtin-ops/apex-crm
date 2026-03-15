@@ -156,31 +156,32 @@ app.post('/inbox/emails', auth, (req,res) => {
 
 // ─── AI ANALYZE ──────────────────────────────────────────────────────────────
 app.post('/analyze', auth, async (req,res) => {
-  const { prompt, apiKey, context, systemPrompt: customSystemPrompt } = req.body;
-  if (!apiKey) return res.status(400).json({ error:'apiKey required' });
-  const stats = {
-    total: db.prospects.length,
-    byStage: db.prospects.reduce((acc,p) => { acc[p.status]=(acc[p.status]||0)+1; return acc; }, {}),
-    recentProspects: db.prospects.slice(0,10).map(p=>({name:p.name,status:p.status,platform:p.platform,handle:p.handle,lead_type:p.lead_type})),
-    activeAffiliates: db.prospects.filter(p=>p.lead_type==='Active Affiliate Partner').length,
-    totalDealValue: db.prospects.reduce((s,p)=>s+(p.deal_value||0),0),
-    totalCommission: db.prospects.reduce((s,p)=>s+(p.deal_value||0)*(p.commission_pct||10)/100,0),
-    recentEmails: db.inboxEmails.slice(0,5).map(e=>({from:e.from_name||e.from,subject:e.subject,snippet:e.snippet})),
-  };
-  const systemPrompt = customSystemPrompt || `You are APEX, an AI business operator analyzing an affiliate partner CRM. Be direct, concise, and actionable. No fluff.`;
-  const userMsg = `CRM Data:\n${JSON.stringify(stats,null,2)}\n\n${context||''}\n\nQuestion: ${prompt||'What needs my attention right now? What are the top 3 actions I should take?'}`;
+  const { prompt, context } = req.body;
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  if (!anthropicKey) return res.status(500).json({ error: 'Anthropic API key not configured on server.' });
+
   try {
-    const body = JSON.stringify({ model:'claude-3-5-sonnet-20241022', max_tokens:800, system:systemPrompt, messages:[{role:'user',content:userMsg}] });
-    const result = await new Promise((resolve,reject) => {
-      const reqO = https.request({ hostname:'api.anthropic.com', path:'/v1/messages', method:'POST', headers:{'content-type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','content-length':Buffer.byteLength(body)} }, (r) => {
-        let data=''; r.on('data',c=>data+=c); r.on('end',()=>{ try{resolve(JSON.parse(data));}catch{reject(new Error('Parse error'));} });
-      });
-      reqO.on('error',reject);
-      reqO.write(body); reqO.end();
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': anthropicKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 1024,
+        system: context || 'You are Reid Foster, affiliate manager at apex.host. Be direct, lowercase, no corporate fluff.',
+        messages: [{ role: 'user', content: prompt || 'Hello' }]
+      })
     });
-    if (result.error) return res.status(400).json({ error:result.error.message });
-    res.json({ analysis:result.content?.[0]?.text||'No response' });
-  } catch(e) { res.status(500).json({ error:e.message }); }
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    const analysis = data.content?.[0]?.text || 'No response';
+    res.json({ analysis });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ─── REID ────────────────────────────────────────────────────────────────────
