@@ -13,14 +13,15 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || '';
 
-let db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], settings:{}, nextId:1 };
+let db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], emailDrafts:[], settings:{}, nextId:1 };
 let googleTokens = null; // { access_token, refresh_token, expiry_date }
 
 function loadData() {
   try {
     if (fs.existsSync(DB_PATH + '.json')) {
       const raw = JSON.parse(fs.readFileSync(DB_PATH + '.json', 'utf8'));
-      db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], settings:{}, nextId:1, ...raw };
+      db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], emailDrafts:[], settings:{}, nextId:1, ...raw };
+      if (!db.emailDrafts) db.emailDrafts = [];
       if (!db.settings) db.settings = {};
       // Restore Google tokens from persistent storage
       if (db.settings.google_tokens) {
@@ -382,7 +383,7 @@ app.get('/auth/google', (req, res) => {
     client_id: GOOGLE_CLIENT_ID,
     redirect_uri: GOOGLE_REDIRECT_URI,
     response_type: 'code',
-    scope: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/calendar email openid',
+    scope: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/calendar email openid',
     access_type: 'offline',
     prompt: 'consent',
     state: 'apex-crm-auth'
@@ -457,7 +458,7 @@ app.post('/inbox/sync', auth, async (req, res) => {
   }
 
   try {
-    const listRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=20&labelIds=INBOX', {
+    const listRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&labelIds=INBOX', {
       headers: { Authorization: `Bearer ${googleTokens.access_token}` }
     });
     const listData = await listRes.json();
@@ -466,39 +467,249 @@ app.post('/inbox/sync', auth, async (req, res) => {
     const messages = listData.messages || [];
     const emails = [];
 
-    for (const msg of messages.slice(0, 10)) {
+    for (const msg of messages.slice(0, 30)) {
       try {
-        const msgRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date`, {
+        const msgRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
           headers: { Authorization: `Bearer ${googleTokens.access_token}` }
         });
         const msgData = await msgRes.json();
         const headers = msgData.payload?.headers || [];
-        const get = (name) => headers.find(h => h.name === name)?.value || '';
+        const get = (name) => headers.find(h => h.name.toLowerCase() === name.toLowerCase())?.value || '';
         const fromRaw = get('From');
         const fromMatch = fromRaw.match(/^(.*?)\s*<(.+)>$/) || [null, fromRaw, fromRaw];
+        // Extract body from payload
+        let body = '';
+        function extractBody(part) {
+          if (part.body?.data) {
+            const decoded = Buffer.from(part.body.data, 'base64url').toString('utf8');
+            if (part.mimeType === 'text/plain') body = decoded;
+            else if (!body && part.mimeType === 'text/html') body = decoded.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+          }
+          if (part.parts) part.parts.forEach(extractBody);
+        }
+        extractBody(msgData.payload || {});
         emails.push({
           id: msg.id,
+          thread_id: msgData.threadId || '',
           from_name: (fromMatch[1] || '').trim().replace(/"/g, ''),
           from: fromMatch[2] || fromRaw,
+          to: get('To'),
           subject: get('Subject') || '(no subject)',
           snippet: msgData.snippet || '',
+          body: body || msgData.snippet || '',
           date: get('Date'),
           unread: (msgData.labelIds || []).includes('UNREAD'),
+          labels: msgData.labelIds || [],
           created_at: new Date().toISOString()
         });
       } catch(e) { /* skip */ }
     }
 
-    // Upsert into in-memory store
+    // Upsert into in-memory store — preserve existing tags and reid_processed flag
     const byId = {};
     db.inboxEmails.forEach(e => { byId[e.id] = e; });
-    emails.forEach(e => { byId[e.id] = { ...e, from_email: e.from, body: '', tags: byId[e.id]?.tags || [] }; });
+    emails.forEach(e => {
+      const existing = byId[e.id] || {};
+      byId[e.id] = { ...e, from_email: e.from, tags: existing.tags || [], reid_processed: existing.reid_processed || false, reid_draft_id: existing.reid_draft_id || null };
+    });
     db.inboxEmails = Object.values(byId)
       .sort((a, b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at))
       .slice(0, 500);
     save();
 
     res.json({ ok: true, synced: emails.length });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── REID AUTO-PROCESS INBOX ─────────────────────────────────────────────────
+app.post('/inbox/auto-process', auth, async (req, res) => {
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  if (!anthropicKey) return res.status(500).json({ error: 'Anthropic API key not configured.' });
+
+  // Find unprocessed emails
+  const unprocessed = db.inboxEmails.filter(e => !e.reid_processed);
+  if (!unprocessed.length) return res.json({ processed: 0, message: 'All emails already processed' });
+
+  const prospectList = db.prospects.map(p => `${p.name} <${p.email}> — ${p.status} — ${p.platform}`).join('\n');
+  let processed = 0;
+
+  for (const email of unprocessed.slice(0, 15)) {
+    try {
+      const prompt = `Process this email from the inbox. Do TWO things:
+
+1. TAG IT: Pick the best CRM tag from: Lead, Qualified, Call Booked, Follow Up, Closed Won, Closed Lost, Ignore. "Ignore" means spam/newsletter/automated.
+2. DRAFT A REPLY: Write a reply in Aubtin's voice (short, direct, Dan Martell style). If it's spam/newsletter, set draft to "SKIP".
+
+EMAIL:
+From: ${email.from_name} <${email.from}>
+Subject: ${email.subject}
+Date: ${email.date}
+Body: ${(email.body || email.snippet || '').slice(0, 1500)}
+
+KNOWN CRM CONTACTS:
+${prospectList || '(none yet)'}
+
+Respond ONLY in this exact JSON format, nothing else:
+{"tag":"Lead","draft_subject":"Re: ${email.subject}","draft_body":"the reply text","priority":"high","summary":"one line summary of what this email is about","should_reply":true}
+
+If should_reply is false (spam, newsletter, no-reply), set draft_body to "" and tag to "Ignore".
+Priority: "high" = needs response today, "medium" = within 2 days, "low" = whenever.`;
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': anthropicKey, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({ model: 'claude-haiku-4-5', max_tokens: 1024, system: REID_SYSTEM_PROMPT, messages: [{ role: 'user', content: prompt }] })
+      });
+      const data = await response.json();
+      const text = data.content?.[0]?.text || '';
+
+      // Parse JSON from response
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) { email.reid_processed = true; continue; }
+
+      const result = JSON.parse(jsonMatch[0]);
+
+      // Auto-tag the email
+      if (result.tag && result.tag !== 'Ignore') {
+        email.tags = [...new Set([...(email.tags || []), result.tag])];
+      }
+      email.reid_processed = true;
+      email.reid_priority = result.priority || 'medium';
+      email.reid_summary = result.summary || '';
+
+      // Create draft if should_reply
+      if (result.should_reply && result.draft_body) {
+        const draftId = crypto.randomUUID();
+        db.emailDrafts.push({
+          id: draftId,
+          email_id: email.id,
+          thread_id: email.thread_id || '',
+          to: email.from,
+          to_name: email.from_name || '',
+          subject: result.draft_subject || `Re: ${email.subject}`,
+          body: result.draft_body,
+          status: 'draft', // draft | approved | sent
+          priority: result.priority || 'medium',
+          created_at: new Date().toISOString()
+        });
+        email.reid_draft_id = draftId;
+      }
+
+      // Auto-link to CRM prospect if email matches
+      const matchingProspect = db.prospects.find(p =>
+        p.email && email.from && p.email.toLowerCase() === email.from.toLowerCase()
+      );
+      if (matchingProspect) {
+        email.prospect_id = matchingProspect.id;
+        email.prospect_name = matchingProspect.name;
+      }
+
+      processed++;
+    } catch(e) {
+      console.error('Auto-process error:', e.message);
+      email.reid_processed = true;
+    }
+  }
+
+  save();
+  res.json({ processed, total_unprocessed: db.inboxEmails.filter(e => !e.reid_processed).length });
+});
+
+// ─── DRAFTS ─────────────────────────────────────────────────────────────────
+app.get('/inbox/drafts', auth, (req, res) => {
+  res.json([...db.emailDrafts].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+});
+
+app.patch('/inbox/drafts/:id', auth, (req, res) => {
+  const draft = db.emailDrafts.find(d => d.id === req.params.id);
+  if (!draft) return res.status(404).json({ error: 'Draft not found' });
+  const { body, subject, status } = req.body;
+  if (body !== undefined) draft.body = body;
+  if (subject !== undefined) draft.subject = subject;
+  if (status !== undefined) draft.status = status;
+  draft.updated_at = new Date().toISOString();
+  save();
+  res.json(draft);
+});
+
+app.delete('/inbox/drafts/:id', auth, (req, res) => {
+  const draft = db.emailDrafts.find(d => d.id === req.params.id);
+  if (draft) {
+    const email = db.inboxEmails.find(e => e.reid_draft_id === draft.id);
+    if (email) email.reid_draft_id = null;
+  }
+  db.emailDrafts = db.emailDrafts.filter(d => d.id !== req.params.id);
+  save();
+  res.json({ ok: true });
+});
+
+// ─── SEND EMAIL VIA GMAIL ───────────────────────────────────────────────────
+async function refreshGoogleToken() {
+  if (!googleTokens) return false;
+  if (Date.now() < googleTokens.expiry_date) return true;
+  if (!googleTokens.refresh_token) return false;
+  try {
+    const refreshRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: GOOGLE_CLIENT_ID, client_secret: GOOGLE_CLIENT_SECRET,
+        refresh_token: googleTokens.refresh_token, grant_type: 'refresh_token'
+      })
+    });
+    const refreshed = await refreshRes.json();
+    if (refreshed.error) return false;
+    googleTokens = { ...googleTokens, ...refreshed, expiry_date: Date.now() + (refreshed.expires_in * 1000) };
+    db.settings.google_tokens = googleTokens;
+    save();
+    return true;
+  } catch(e) { return false; }
+}
+
+app.post('/inbox/send/:draftId', auth, async (req, res) => {
+  if (!googleTokens && db.settings.google_tokens) googleTokens = db.settings.google_tokens;
+  if (!googleTokens) return res.status(401).json({ error: 'Google not connected' });
+
+  const draft = db.emailDrafts.find(d => d.id === req.params.draftId);
+  if (!draft) return res.status(404).json({ error: 'Draft not found' });
+
+  const tokenOk = await refreshGoogleToken();
+  if (!tokenOk) return res.status(401).json({ error: 'Google token refresh failed — reconnect in Admin' });
+
+  // Build raw email
+  const rawEmail = [
+    `To: ${draft.to}`,
+    `Subject: ${draft.subject}`,
+    `Content-Type: text/plain; charset=utf-8`,
+    ``,
+    draft.body
+  ].join('\r\n');
+
+  const encodedEmail = Buffer.from(rawEmail).toString('base64url');
+
+  try {
+    const sendRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${googleTokens.access_token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ raw: encodedEmail, threadId: draft.thread_id || undefined })
+    });
+    const sendData = await sendRes.json();
+    if (sendData.error) throw new Error(sendData.error.message);
+
+    draft.status = 'sent';
+    draft.sent_at = new Date().toISOString();
+    draft.gmail_message_id = sendData.id;
+
+    // Log activity if linked to prospect
+    const email = db.inboxEmails.find(e => e.reid_draft_id === draft.id);
+    if (email?.prospect_id) {
+      logActivity(email.prospect_id, 'email_sent', `Reid sent reply to ${draft.to}: "${draft.subject}"`);
+    }
+
+    save();
+    res.json({ ok: true, message_id: sendData.id });
   } catch(e) {
     res.status(500).json({ error: e.message });
   }

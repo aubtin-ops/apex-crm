@@ -245,6 +245,32 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .empty .ei{font-size:40px;margin-bottom:10px}
 .empty h3{font-size:16px;color:var(--t2);margin-bottom:6px}
 .empty p{font-size:13px;margin-bottom:16px}
+/* Reid Inbox */
+.reid-inbox-bar{display:flex;align-items:center;gap:8px;padding:12px 18px;border-bottom:1px solid var(--bd);background:var(--bg2)}
+.reid-inbox-stats{display:flex;gap:12px;font-size:12px;color:var(--t3)}
+.reid-inbox-stats .stat{display:flex;align-items:center;gap:4px}
+.reid-inbox-stats .stat .num{font-weight:700;color:var(--t)}
+.inbox-email{border-bottom:1px solid var(--bd);transition:background .1s}
+.inbox-email:hover{background:var(--bg2)}
+.inbox-header{display:flex;align-items:flex-start;gap:10px;padding:12px 18px;cursor:pointer}
+.inbox-draft{background:rgba(79,126,248,.04);border-top:1px solid var(--bd);padding:10px 18px 10px 60px}
+.inbox-draft-label{font-size:11px;font-weight:600;color:var(--ac);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.inbox-draft-body{font-size:13px;color:var(--t2);line-height:1.6;white-space:pre-wrap;max-height:80px;overflow:hidden;transition:max-height .2s}
+.inbox-draft-body.expanded{max-height:none}
+.inbox-draft-actions{display:flex;gap:6px;margin-top:8px;align-items:center}
+.inbox-priority{font-size:10px;font-weight:600;padding:2px 6px;border-radius:10px;text-transform:uppercase}
+.inbox-priority.high{background:var(--rdb);color:var(--rd)}
+.inbox-priority.medium{background:var(--ywb);color:var(--yw)}
+.inbox-priority.low{background:rgba(90,95,120,.12);color:var(--t3)}
+.inbox-summary{font-size:11px;color:var(--t3);margin-top:2px;font-style:italic}
+.inbox-prospect-link{font-size:10px;background:var(--acb);color:var(--ac);padding:2px 6px;border-radius:10px;text-decoration:none;cursor:pointer}
+.inbox-filter-bar{display:flex;gap:6px;padding:8px 18px;border-bottom:1px solid var(--bd);align-items:center;flex-wrap:wrap}
+.inbox-filter-btn{padding:4px 10px;border:1px solid var(--bd);background:var(--bg2);color:var(--t3);border-radius:20px;font-size:11px;cursor:pointer;font-family:inherit}
+.inbox-filter-btn:hover{border-color:var(--t2);color:var(--t2)}
+.inbox-filter-btn.on{background:var(--acb);color:var(--ac);border-color:var(--ac)}
+.processing-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.processing-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:30px 40px;text-align:center;box-shadow:var(--shd)}
+.processing-card .spin{width:24px;height:24px;margin:0 auto 12px}
 </style>
 </head>
 <body>
@@ -264,7 +290,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
   </div>
   <div class="sb-sec">
     <div class="sb-lbl">Comms</div>
-    <button class="ni" onclick="go('inbox')"><span class="ic">✉️</span>Inbox</button>
+    <button class="ni" onclick="go('inbox')"><span class="ic">✉️</span>Inbox<span id="inboxBadge" style="display:none;margin-left:auto;background:var(--ac);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center"></span></button>
     <button class="ni" onclick="go('reid')"><span class="ic">🤖</span>Ask Reid</button>
   </div>
   <div class="sb-sec">
@@ -389,7 +415,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 <script>
 const API = window.location.origin;
 const KEY = 'apex-agent-secret-change-me';
-let prospects=[], filtered=[], inboxEmails=[], playbook=[], chatHistory=[];
+let prospects=[], filtered=[], inboxEmails=[], playbook=[], chatHistory=[], emailDrafts=[];
 let page='dashboard', sub='table', editId=null, dragId=null;
 
 const STAGES = {
@@ -424,12 +450,13 @@ function nowStr(){return new Date().toLocaleTimeString('en-US',{hour:'numeric',m
 
 async function loadAll(){
   try{
-    [prospects,inboxEmails,playbook]=await Promise.all([
+    [prospects,inboxEmails,playbook,emailDrafts]=await Promise.all([
       req('GET','/prospects'),
       req('GET','/inbox/emails'),
-      req('GET','/playbook')
+      req('GET','/playbook'),
+      req('GET','/inbox/drafts')
     ]);
-    setStatus(true);applyFilters();render();
+    setStatus(true);applyFilters();updateInboxBadge();render();
   }catch(e){setStatus(false);document.getElementById('main').innerHTML=`<div class="empty"><div class="ei">⚠️</div><h3>Can't reach server</h3><p style="color:var(--rd)">${e.message}</p><button class="btn bp" onclick="loadAll()">Retry</button></div>`;}
 }
 
@@ -688,44 +715,261 @@ function renderTable(){
 }
 
 // ─── INBOX ──────────────────────────────────────────────────
+let inboxFilter = 'all'; // all, unread, drafts, high, sent
+
+function updateInboxBadge() {
+  const unread = inboxEmails.filter(e => e.unread).length;
+  const badge = document.getElementById('inboxBadge');
+  if (badge) {
+    badge.style.display = unread > 0 ? 'inline-block' : 'none';
+    badge.textContent = unread;
+  }
+}
+
 function renderInbox(){
-  const aiSection=`
-    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;margin:14px 18px">
-      <div style="font-size:13px;font-weight:600;margin-bottom:9px;display:flex;align-items:center;gap:6px">🧠 AI Analysis <span style="font-size:11px;color:var(--t3);font-weight:400">Claude-powered</span></div>
-      <div style="display:flex;gap:7px;align-items:center;margin-bottom:8px">
-        <input id="anprompt" placeholder="Ask anything… (default: what needs my attention?)" style="flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none">
-        <button class="btn bp sm" onclick="runAIAnalysis()">Analyze</button>
-        <button class="btn bg sm" onclick="syncGmailNow ? syncGmailNow() : syncGmail()">🔄 Sync Gmail</button>
+  updateInboxBadge();
+  const unreadCount = inboxEmails.filter(e => e.unread).length;
+  const draftCount = emailDrafts.filter(d => d.status === 'draft').length;
+  const highCount = inboxEmails.filter(e => e.reid_priority === 'high').length;
+  const sentCount = emailDrafts.filter(d => d.status === 'sent').length;
+  const unprocessedCount = inboxEmails.filter(e => !e.reid_processed).length;
+
+  let emails = [...inboxEmails].sort((a,b) => new Date(b.date||b.created_at) - new Date(a.date||a.created_at));
+
+  // Apply filter
+  if (inboxFilter === 'unread') emails = emails.filter(e => e.unread);
+  else if (inboxFilter === 'drafts') emails = emails.filter(e => emailDrafts.some(d => d.email_id === e.id && d.status === 'draft'));
+  else if (inboxFilter === 'high') emails = emails.filter(e => e.reid_priority === 'high');
+  else if (inboxFilter === 'sent') emails = emails.filter(e => emailDrafts.some(d => d.email_id === e.id && d.status === 'sent'));
+
+  const reidBar = `
+    <div class="reid-inbox-bar">
+      <div style="display:flex;align-items:center;gap:6px;flex:1">
+        <span style="font-size:14px">🤖</span>
+        <span style="font-size:13px;font-weight:600">Reid's Inbox</span>
+        <div class="reid-inbox-stats">
+          <div class="stat"><span class="num">${unreadCount}</span> unread</div>
+          <div class="stat"><span class="num" style="color:var(--ac)">${draftCount}</span> drafts ready</div>
+          <div class="stat"><span class="num" style="color:var(--rd)">${highCount}</span> high priority</div>
+          <div class="stat"><span class="num" style="color:var(--gr)">${sentCount}</span> sent</div>
+        </div>
       </div>
-      <div id="ai-resp" style="display:none;font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)"></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn bg sm" onclick="syncAndProcess()" id="syncProcessBtn">🔄 Sync Gmail</button>
+        <button class="btn bp sm" onclick="reidProcessInbox()" id="processBtn" ${unprocessedCount === 0 ? 'disabled style="opacity:.5"' : ''}>🧠 Reid Process${unprocessedCount > 0 ? ' ('+unprocessedCount+')' : ''}</button>
+      </div>
     </div>`;
-  const emails=[...inboxEmails].sort((a,b)=>new Date(b.date||b.created_at)-new Date(a.date||a.created_at));
-  document.getElementById('main').innerHTML=aiSection+(emails.length?emails.map(e=>`
-    <div class="iitem" onclick="showEmail('${e.id}')">
-      <div class="iav">${(e.from_name||e.from||'?')[0].toUpperCase()}</div>
-      <div class="ib">
-        <div class="iname">${e.from_name||e.from||'Unknown'}</div>
-        <div class="isubj">${e.subject||'(no subject)'}</div>
-        <div class="isnip">${(e.snippet||e.body||'').slice(0,80)}</div>
-        ${(e.tags||[]).length ? `<div style="display:flex;gap:3px;margin-top:3px;flex-wrap:wrap">${(e.tags||[]).map(t=>`<span class="etag ${TAG_CLASSES[t]||''}" style="font-size:10px">${t}</span>`).join('')}</div>` : ''}
+
+  const filterBar = `
+    <div class="inbox-filter-bar">
+      <button class="inbox-filter-btn ${inboxFilter==='all'?'on':''}" onclick="setInboxFilter('all')">All (${inboxEmails.length})</button>
+      <button class="inbox-filter-btn ${inboxFilter==='unread'?'on':''}" onclick="setInboxFilter('unread')">Unread (${unreadCount})</button>
+      <button class="inbox-filter-btn ${inboxFilter==='drafts'?'on':''}" onclick="setInboxFilter('drafts')">Drafts (${draftCount})</button>
+      <button class="inbox-filter-btn ${inboxFilter==='high'?'on':''}" onclick="setInboxFilter('high')">High Priority (${highCount})</button>
+      <button class="inbox-filter-btn ${inboxFilter==='sent'?'on':''}" onclick="setInboxFilter('sent')">Sent (${sentCount})</button>
+    </div>`;
+
+  const emailList = emails.length ? emails.map(e => {
+    const draft = emailDrafts.find(d => d.email_id === e.id && d.status === 'draft');
+    const sentDraft = emailDrafts.find(d => d.email_id === e.id && d.status === 'sent');
+    return `
+    <div class="inbox-email">
+      <div class="inbox-header" onclick="showEmail('${e.id}')">
+        <div class="iav" style="${e.unread ? 'border:2px solid var(--ac)' : ''}">${(e.from_name||e.from||'?')[0].toUpperCase()}</div>
+        <div class="ib" style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px">
+            <div class="iname" style="${e.unread ? 'color:var(--t);font-weight:700' : ''}">${e.from_name||e.from||'Unknown'}</div>
+            ${e.reid_priority ? `<span class="inbox-priority ${e.reid_priority}">${e.reid_priority}</span>` : ''}
+            ${e.prospect_name ? `<span class="inbox-prospect-link" onclick="event.stopPropagation();go('pipeline');setTimeout(()=>{const p=prospects.find(x=>x.name==='${(e.prospect_name||'').replace(/'/g,"\\'")}');if(p)openDetail(p.id);},50)">${e.prospect_name}</span>` : ''}
+          </div>
+          <div class="isubj" style="${e.unread ? 'color:var(--t);font-weight:500' : ''}">${e.subject||'(no subject)'}</div>
+          ${e.reid_summary ? `<div class="inbox-summary">${e.reid_summary}</div>` : `<div class="isnip">${(e.snippet||e.body||'').slice(0,80)}</div>`}
+          <div style="display:flex;gap:3px;margin-top:3px;flex-wrap:wrap;align-items:center">
+            ${(e.tags||[]).map(t=>`<span class="etag ${TAG_CLASSES[t]||''}" style="font-size:10px">${t}</span>`).join('')}
+            ${sentDraft ? '<span style="font-size:10px;color:var(--gr);font-weight:600">✅ Replied</span>' : ''}
+            ${!e.reid_processed ? '<span style="font-size:10px;color:var(--t3)">⏳ Pending</span>' : ''}
+          </div>
+        </div>
+        <div class="imeta">
+          <div class="itime">${ago(e.date||e.created_at)}</div>
+          ${e.unread ? '<div class="iunread"></div>' : ''}
+        </div>
       </div>
-      <div class="imeta"><div class="itime">${ago(e.date||e.created_at)}</div>${e.unread?'<div class="iunread"></div>':''}</div>
-    </div>`).join(''):`<div class="empty"><div class="ei">✉️</div><h3>Inbox empty</h3><p>Click "Sync Gmail" to pull Reid's emails.</p></div>`);
+      ${draft ? `
+      <div class="inbox-draft">
+        <div class="inbox-draft-label">🤖 Reid's Draft Reply <span style="font-size:10px;color:var(--t3);font-weight:400">to ${draft.to_name || draft.to}</span></div>
+        <div class="inbox-draft-body" id="draft-body-${draft.id}" onclick="this.classList.toggle('expanded')">${escHtml(draft.body)}</div>
+        <div class="inbox-draft-actions">
+          <button class="btn bp xsm" onclick="approveDraft('${draft.id}')">✅ Approve & Send</button>
+          <button class="btn bg xsm" onclick="editDraft('${draft.id}')">✏️ Edit</button>
+          <button class="btn bd2 xsm" onclick="deleteDraft('${draft.id}')">✕ Discard</button>
+        </div>
+      </div>` : ''}
+    </div>`;
+  }).join('') : `<div class="empty"><div class="ei">✉️</div><h3>${inboxFilter !== 'all' ? 'No emails match this filter' : 'Inbox empty'}</h3><p>${inboxFilter !== 'all' ? 'Try a different filter.' : 'Click "Sync Gmail" to pull emails, then "Reid Process" to auto-draft replies.'}</p></div>`;
+
+  document.getElementById('main').innerHTML = reidBar + filterBar + emailList;
 }
-async function runAIAnalysis(){
-  const prompt=document.getElementById('anprompt')?.value?.trim()||'';
-  const resp=document.getElementById('ai-resp');if(!resp)return;
-  resp.style.display='block';resp.textContent='Analyzing…';
-  try{
-    const r=await req('POST','/analyze',{prompt,context:`Inbox has ${inboxEmails.length} emails. Recent: ${inboxEmails.slice(0,3).map(e=>e.subject).join(', ')}`});
-    resp.textContent=r.analysis;
-  }catch(e){resp.textContent='Error: '+e.message;resp.style.color='var(--rd)';}
+
+function escHtml(str) { return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function setInboxFilter(f) { inboxFilter = f; renderInbox(); }
+
+async function syncAndProcess() {
+  const btn = document.getElementById('syncProcessBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Syncing…'; }
+  try {
+    await req('POST', '/inbox/sync', {});
+    inboxEmails = await req('GET', '/inbox/emails');
+    toast(`Synced ${inboxEmails.length} emails`, 'ok');
+    renderInbox();
+  } catch(e) { toast('Sync failed: ' + e.message, 'err'); }
+  if (btn) { btn.disabled = false; btn.textContent = '🔄 Sync Gmail'; }
 }
-async function syncGmail(){toast('Syncing Reid\'s Gmail…');try{await fetch(API+'/inbox/sync',{method:'POST',headers:{'x-api-key':KEY}});setTimeout(async()=>{inboxEmails=await req('GET','/inbox/emails');toast(`Inbox updated (${inboxEmails.length} emails)`,'ok');renderInbox();},2000);}catch{toast('Sync requested — emails will appear shortly','ok');}}
+
+async function reidProcessInbox() {
+  const unprocessed = inboxEmails.filter(e => !e.reid_processed).length;
+  if (!unprocessed) { toast('All emails already processed'); return; }
+
+  // Show processing overlay
+  const ov = document.createElement('div');
+  ov.className = 'processing-overlay';
+  ov.id = 'processingOv';
+  ov.innerHTML = `<div class="processing-card"><div class="spin" style="border-width:3px"></div><div style="font-size:15px;font-weight:600;margin-bottom:4px">Reid is processing…</div><div style="font-size:12px;color:var(--t3)" id="processStatus">Analyzing ${unprocessed} emails, drafting replies…</div></div>`;
+  document.body.appendChild(ov);
+
+  try {
+    const r = await req('POST', '/inbox/auto-process', {});
+    document.getElementById('processStatus').textContent = `Done! Processed ${r.processed} emails.`;
+    // Reload data
+    [inboxEmails, emailDrafts] = await Promise.all([req('GET', '/inbox/emails'), req('GET', '/inbox/drafts')]);
+    setTimeout(() => { ov.remove(); renderInbox(); toast(`Reid processed ${r.processed} emails`, 'ok'); }, 1200);
+  } catch(e) {
+    ov.remove();
+    toast('Processing failed: ' + e.message, 'err');
+  }
+}
+
+async function approveDraft(draftId) {
+  if (!confirm('Send this email?')) return;
+  try {
+    await req('POST', '/inbox/send/' + draftId, {});
+    const d = emailDrafts.find(x => x.id === draftId);
+    if (d) d.status = 'sent';
+    toast('Email sent!', 'ok');
+    renderInbox();
+  } catch(e) { toast('Send failed: ' + e.message, 'err'); }
+}
+
+function editDraft(draftId) {
+  const draft = emailDrafts.find(d => d.id === draftId);
+  if (!draft) return;
+  const dp = document.getElementById('dp');
+  dp.classList.add('on');
+  dp.innerHTML = `
+    <div class="dph">
+      <button class="dpc" onclick="closeDP()">×</button>
+      <h2>Edit Draft</h2>
+      <div style="font-size:11px;color:var(--t3);margin-top:3px">To: ${draft.to_name || ''} &lt;${draft.to}&gt;</div>
+    </div>
+    <div class="dpb">
+      <div class="dsec">
+        <h4>Subject</h4>
+        <input id="editDraftSubj" value="${escHtml(draft.subject)}" style="width:100%;padding:7px 9px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;font-family:inherit;background:var(--bg3);color:var(--t);outline:none">
+      </div>
+      <div class="dsec">
+        <h4>Body</h4>
+        <textarea id="editDraftBody" class="nta" style="min-height:200px">${escHtml(draft.body)}</textarea>
+      </div>
+    </div>
+    <div class="dpa">
+      <button class="btn bp" onclick="saveDraftEdit('${draftId}')">Save</button>
+      <button class="btn bp" style="background:var(--gr)" onclick="saveDraftEdit('${draftId}',true)">Save & Send</button>
+      <button class="btn bg" onclick="closeDP()">Cancel</button>
+    </div>`;
+}
+
+async function saveDraftEdit(draftId, andSend = false) {
+  const subject = document.getElementById('editDraftSubj')?.value || '';
+  const body = document.getElementById('editDraftBody')?.value || '';
+  try {
+    await req('PATCH', '/inbox/drafts/' + draftId, { subject, body });
+    const d = emailDrafts.find(x => x.id === draftId);
+    if (d) { d.subject = subject; d.body = body; }
+    toast('Draft saved', 'ok');
+    if (andSend) {
+      await req('POST', '/inbox/send/' + draftId, {});
+      if (d) d.status = 'sent';
+      toast('Email sent!', 'ok');
+    }
+    closeDP();
+    renderInbox();
+  } catch(e) { toast('Failed: ' + e.message, 'err'); }
+}
+
+async function deleteDraft(draftId) {
+  if (!confirm('Discard this draft?')) return;
+  try {
+    await req('DELETE', '/inbox/drafts/' + draftId);
+    emailDrafts = emailDrafts.filter(d => d.id !== draftId);
+    const email = inboxEmails.find(e => e.reid_draft_id === draftId);
+    if (email) email.reid_draft_id = null;
+    renderInbox();
+    toast('Draft discarded');
+  } catch(e) { toast('Failed', 'err'); }
+}
+
 function showEmail(id){
-  const e=inboxEmails.find(x=>x.id===id);if(!e)return;
-  const dp=document.getElementById('dp');dp.classList.add('on');
-  dp.innerHTML=`<div class="dph"><button class="dpc" onclick="closeDP()">×</button><h2>${e.subject||'(no subject)'}</h2><div class="tags"><span style="font-size:11px;color:var(--t3)">From: ${e.from_name||''} &lt;${e.from||''}&gt;</span></div><div style="font-size:11px;color:var(--t3);margin-top:3px">${fmtD(e.date||e.created_at)}</div>${renderEmailTags(e.id, e.tags||[])}</div><div class="dpb"><div style="font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap">${e.body||e.snippet||'(empty)'}</div></div>`;
+  const e = inboxEmails.find(x => x.id === id); if (!e) return;
+  const draft = emailDrafts.find(d => d.email_id === id);
+  const dp = document.getElementById('dp');
+  dp.classList.add('on');
+  dp.innerHTML = `
+    <div class="dph">
+      <button class="dpc" onclick="closeDP()">×</button>
+      <h2>${e.subject || '(no subject)'}</h2>
+      <div class="tags"><span style="font-size:11px;color:var(--t3)">From: ${e.from_name || ''} &lt;${e.from || ''}&gt;</span></div>
+      <div style="font-size:11px;color:var(--t3);margin-top:3px">${fmtD(e.date || e.created_at)}</div>
+      ${e.reid_priority ? `<div style="margin-top:4px"><span class="inbox-priority ${e.reid_priority}">${e.reid_priority} priority</span></div>` : ''}
+      ${e.reid_summary ? `<div style="font-size:12px;color:var(--t2);margin-top:4px;font-style:italic">${e.reid_summary}</div>` : ''}
+      ${e.prospect_name ? `<div style="margin-top:4px"><span class="inbox-prospect-link">${e.prospect_name} — in CRM</span></div>` : ''}
+      ${renderEmailTags(e.id, e.tags || [])}
+    </div>
+    <div class="dpb">
+      <div class="dsec">
+        <h4>Message</h4>
+        <div style="font-size:13px;color:var(--t2);line-height:1.7;white-space:pre-wrap">${e.body || e.snippet || '(empty)'}</div>
+      </div>
+      ${draft ? `
+      <div class="dsec" style="background:rgba(79,126,248,.06);border-radius:var(--r);padding:10px;margin-top:8px">
+        <h4 style="color:var(--ac)">🤖 Reid's Draft Reply</h4>
+        <div style="font-size:11px;color:var(--t3);margin-bottom:6px">Subject: ${draft.subject}</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.6;white-space:pre-wrap">${escHtml(draft.body)}</div>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          ${draft.status === 'sent' ? '<span style="color:var(--gr);font-size:12px;font-weight:600">✅ Sent</span>' : `
+          <button class="btn bp xsm" onclick="approveDraft('${draft.id}')">✅ Send</button>
+          <button class="btn bg xsm" onclick="editDraft('${draft.id}')">✏️ Edit</button>
+          <button class="btn bd2 xsm" onclick="deleteDraft('${draft.id}')">✕ Discard</button>`}
+        </div>
+      </div>` : `
+      <div style="margin-top:8px">
+        <button class="btn bg sm" onclick="reidDraftSingle('${e.id}')">🤖 Ask Reid to Draft Reply</button>
+      </div>`}
+    </div>`;
+}
+
+async function reidDraftSingle(emailId) {
+  toast('Reid is drafting…');
+  try {
+    // Temporarily mark as unprocessed to let auto-process handle it
+    const email = inboxEmails.find(e => e.id === emailId);
+    if (email) email.reid_processed = false;
+    await req('POST', '/inbox/auto-process', {});
+    [inboxEmails, emailDrafts] = await Promise.all([req('GET', '/inbox/emails'), req('GET', '/inbox/drafts')]);
+    showEmail(emailId);
+    renderInbox();
+    toast('Draft ready!', 'ok');
+  } catch(e) { toast('Failed: ' + e.message, 'err'); }
 }
 
 // ─── ASK REID — Real Chat ───────────────────────────────────
@@ -907,7 +1151,8 @@ async function syncGmailNow(){
   try {
     const r = await req('POST', '/inbox/sync', {});
     toast(`Synced ${r.synced} emails`, 'ok');
-    inboxEmails = await req('GET', '/inbox/emails');
+    [inboxEmails, emailDrafts] = await Promise.all([req('GET', '/inbox/emails'), req('GET', '/inbox/drafts')]);
+    updateInboxBadge();
     if (page === 'inbox') renderInbox();
   } catch(e) { toast('Sync failed: ' + e.message, 'err'); }
 }
