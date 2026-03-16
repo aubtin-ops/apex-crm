@@ -750,6 +750,7 @@ function renderInbox(){
       <div style="display:flex;align-items:center;gap:6px;flex:1">
         <span style="font-size:14px">🤖</span>
         <span style="font-size:13px;font-weight:600">Reid's Inbox</span>
+        <span id="autoSyncBadge" style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--bg4);color:var(--t3)"></span>
         <div class="reid-inbox-stats">
           <div class="stat"><span class="num">${unreadCount}</span> unread</div>
           <div class="stat"><span class="num" style="color:var(--ac)">${draftCount}</span> drafts ready</div>
@@ -816,6 +817,14 @@ function renderInbox(){
   }).join('') : `<div class="empty"><div class="ei">✉️</div><h3>${inboxFilter !== 'all' ? 'No emails match this filter' : 'Inbox empty'}</h3><p>${inboxFilter !== 'all' ? 'Try a different filter.' : 'Click "Sync Gmail" to pull emails, then "Reid Process" to auto-draft replies.'}</p></div>`;
 
   document.getElementById('main').innerHTML = reidBar + filterBar + emailList;
+  // Load auto-sync status badge
+  req('GET','/settings/auto-sync').then(s=>{
+    const b=document.getElementById('autoSyncBadge');
+    if(b) {
+      if(s.enabled) { b.style.background='var(--grb)';b.style.color='var(--gr)';b.textContent='Auto-sync: every '+s.interval_minutes+'m'; }
+      else { b.textContent='Auto-sync off'; }
+    }
+  }).catch(()=>{});
 }
 
 function escHtml(str) { return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -1123,7 +1132,10 @@ async function deletePB(id){if(!confirm('Delete?'))return;try{await req('DELETE'
 // ─── ADMIN ──────────────────────────────────────────────────
 async function renderAdmin(){
   let googleStatus = { connected: false, expired: false };
+  let autoSync = { enabled: false, interval_minutes: 10, auto_process: true, last_sync: null, last_result: null };
   try { googleStatus = await req('GET', '/auth/google/status'); } catch(e) {}
+  try { autoSync = await req('GET', '/settings/auto-sync'); } catch(e) {}
+  const lastResult = autoSync.last_result;
   document.getElementById('main').innerHTML=`
     <div style="padding:18px">
       <div class="admin-section">
@@ -1155,8 +1167,49 @@ async function renderAdmin(){
           <div style="margin-top:9px">
             <a href="/auth/google" class="btn bp sm" style="text-decoration:none">🔗 Connect Google Account</a>
           </div>
-          <div style="font-size:11px;color:var(--t3);margin-top:6px">Authorizes Gmail read access for Inbox sync.</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:6px">Authorizes Gmail read + send access for Inbox.</div>
         `}
+      </div>
+      <div class="admin-section">
+        <h3>Reid Auto-Sync</h3>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:10px">Reid automatically syncs Gmail and processes new emails on a schedule. No manual clicks needed.</div>
+        <div class="kv">
+          <span class="lbl">Auto-Sync</span>
+          <span>
+            <button class="btn ${autoSync.enabled ? 'bp' : 'bg'} xsm" onclick="toggleAutoSync(${!autoSync.enabled})" id="autoSyncToggle">
+              ${autoSync.enabled ? '✅ Enabled' : '❌ Disabled'}
+            </button>
+          </span>
+        </div>
+        <div class="kv">
+          <span class="lbl">Interval</span>
+          <span style="display:flex;align-items:center;gap:6px">
+            <select class="fs" id="autoSyncInterval" onchange="updateAutoSyncInterval()" style="min-width:100px">
+              <option value="2" ${autoSync.interval_minutes===2?'selected':''}>2 min</option>
+              <option value="5" ${autoSync.interval_minutes===5?'selected':''}>5 min</option>
+              <option value="10" ${autoSync.interval_minutes===10?'selected':''}>10 min</option>
+              <option value="15" ${autoSync.interval_minutes===15?'selected':''}>15 min</option>
+              <option value="30" ${autoSync.interval_minutes===30?'selected':''}>30 min</option>
+              <option value="60" ${autoSync.interval_minutes===60?'selected':''}>1 hour</option>
+            </select>
+          </span>
+        </div>
+        <div class="kv">
+          <span class="lbl">Auto-Process</span>
+          <span>
+            <button class="btn ${autoSync.auto_process ? 'bp' : 'bg'} xsm" onclick="toggleAutoProcess(${!autoSync.auto_process})">
+              ${autoSync.auto_process ? '🧠 On — Reid tags & drafts' : '⏸ Off — sync only'}
+            </button>
+          </span>
+        </div>
+        ${autoSync.last_sync ? `
+        <div class="kv">
+          <span class="lbl">Last Sync</span>
+          <span class="val" style="color:${lastResult?.status === 'ok' ? 'var(--gr)' : 'var(--rd)'}">
+            ${lastResult?.status === 'ok' ? `✅ ${lastResult.synced} synced, ${lastResult.processed} processed` : `❌ ${lastResult?.error || 'unknown error'}`}
+            <span style="color:var(--t3);margin-left:6px">${ago(autoSync.last_sync)}</span>
+          </span>
+        </div>` : ''}
       </div>
       <div class="admin-section">
         <h3>Data</h3>
@@ -1169,6 +1222,9 @@ async function renderAdmin(){
     </div>`;
 }
 function saveAnKey(){const k=document.getElementById('adminKey')?.value?.trim();if(!k)return;localStorage.setItem('apex-anthropic-key',k);toast('Key saved','ok');renderAdmin();}
+async function toggleAutoSync(enabled){try{await req('PATCH','/settings/auto-sync',{enabled});toast(enabled?'Auto-sync enabled':'Auto-sync disabled','ok');renderAdmin();}catch(e){toast('Failed: '+e.message,'err');}}
+async function updateAutoSyncInterval(){const v=parseInt(document.getElementById('autoSyncInterval')?.value)||10;try{await req('PATCH','/settings/auto-sync',{interval_minutes:v});toast(`Interval set to ${v} min`,'ok');}catch(e){toast('Failed','err');}}
+async function toggleAutoProcess(on){try{await req('PATCH','/settings/auto-sync',{auto_process:on});toast(on?'Auto-process on':'Auto-process off','ok');renderAdmin();}catch(e){toast('Failed','err');}}
 async function disconnectGoogle(){if(!confirm('Disconnect Google?'))return;try{await req('GET','/auth/google/disconnect');toast('Disconnected');renderAdmin();}catch(e){toast('Failed: '+e.message,'err');}}
 async function syncGmailNow(){
   toast('Syncing Gmail…');

@@ -431,9 +431,10 @@ app.get('/auth/google/disconnect', auth, (req, res) => {
   res.json({ ok: true });
 });
 
-app.post('/inbox/sync', auth, async (req, res) => {
+// Standalone sync function — used by endpoint AND background loop
+async function doGmailSync() {
   if (!googleTokens && db.settings.google_tokens) googleTokens = db.settings.google_tokens;
-  if (!googleTokens) return res.status(401).json({ error: 'Google not connected. Connect in Admin.' });
+  if (!googleTokens) throw new Error('Google not connected');
 
   // Refresh token if expired
   if (Date.now() > googleTokens.expiry_date && googleTokens.refresh_token) {
@@ -442,10 +443,8 @@ app.post('/inbox/sync', auth, async (req, res) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-          client_id: GOOGLE_CLIENT_ID,
-          client_secret: GOOGLE_CLIENT_SECRET,
-          refresh_token: googleTokens.refresh_token,
-          grant_type: 'refresh_token'
+          client_id: GOOGLE_CLIENT_ID, client_secret: GOOGLE_CLIENT_SECRET,
+          refresh_token: googleTokens.refresh_token, grant_type: 'refresh_token'
         })
       });
       const refreshed = await refreshRes.json();
@@ -457,80 +456,77 @@ app.post('/inbox/sync', auth, async (req, res) => {
     } catch(e) { console.error('Token refresh failed:', e.message); }
   }
 
-  try {
-    const listRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&labelIds=INBOX', {
-      headers: { Authorization: `Bearer ${googleTokens.access_token}` }
-    });
-    const listData = await listRes.json();
-    if (listData.error) return res.status(400).json({ error: listData.error.message });
+  const listRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&labelIds=INBOX', {
+    headers: { Authorization: `Bearer ${googleTokens.access_token}` }
+  });
+  const listData = await listRes.json();
+  if (listData.error) throw new Error(listData.error.message);
 
-    const messages = listData.messages || [];
-    const emails = [];
+  const messages = listData.messages || [];
+  const emails = [];
 
-    for (const msg of messages.slice(0, 30)) {
-      try {
-        const msgRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
-          headers: { Authorization: `Bearer ${googleTokens.access_token}` }
-        });
-        const msgData = await msgRes.json();
-        const headers = msgData.payload?.headers || [];
-        const get = (name) => headers.find(h => h.name.toLowerCase() === name.toLowerCase())?.value || '';
-        const fromRaw = get('From');
-        const fromMatch = fromRaw.match(/^(.*?)\s*<(.+)>$/) || [null, fromRaw, fromRaw];
-        // Extract body from payload
-        let body = '';
-        function extractBody(part) {
-          if (part.body?.data) {
-            const decoded = Buffer.from(part.body.data, 'base64url').toString('utf8');
-            if (part.mimeType === 'text/plain') body = decoded;
-            else if (!body && part.mimeType === 'text/html') body = decoded.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-          }
-          if (part.parts) part.parts.forEach(extractBody);
+  for (const msg of messages.slice(0, 30)) {
+    try {
+      const msgRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
+        headers: { Authorization: `Bearer ${googleTokens.access_token}` }
+      });
+      const msgData = await msgRes.json();
+      const headers = msgData.payload?.headers || [];
+      const get = (name) => headers.find(h => h.name.toLowerCase() === name.toLowerCase())?.value || '';
+      const fromRaw = get('From');
+      const fromMatch = fromRaw.match(/^(.*?)\s*<(.+)>$/) || [null, fromRaw, fromRaw];
+      let body = '';
+      function extractBody(part) {
+        if (part.body?.data) {
+          const decoded = Buffer.from(part.body.data, 'base64url').toString('utf8');
+          if (part.mimeType === 'text/plain') body = decoded;
+          else if (!body && part.mimeType === 'text/html') body = decoded.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
         }
-        extractBody(msgData.payload || {});
-        emails.push({
-          id: msg.id,
-          thread_id: msgData.threadId || '',
-          from_name: (fromMatch[1] || '').trim().replace(/"/g, ''),
-          from: fromMatch[2] || fromRaw,
-          to: get('To'),
-          subject: get('Subject') || '(no subject)',
-          snippet: msgData.snippet || '',
-          body: body || msgData.snippet || '',
-          date: get('Date'),
-          unread: (msgData.labelIds || []).includes('UNREAD'),
-          labels: msgData.labelIds || [],
-          created_at: new Date().toISOString()
-        });
-      } catch(e) { /* skip */ }
-    }
+        if (part.parts) part.parts.forEach(extractBody);
+      }
+      extractBody(msgData.payload || {});
+      emails.push({
+        id: msg.id, thread_id: msgData.threadId || '',
+        from_name: (fromMatch[1] || '').trim().replace(/"/g, ''),
+        from: fromMatch[2] || fromRaw, to: get('To'),
+        subject: get('Subject') || '(no subject)',
+        snippet: msgData.snippet || '', body: body || msgData.snippet || '',
+        date: get('Date'), unread: (msgData.labelIds || []).includes('UNREAD'),
+        labels: msgData.labelIds || [], created_at: new Date().toISOString()
+      });
+    } catch(e) { /* skip */ }
+  }
 
-    // Upsert into in-memory store — preserve existing tags and reid_processed flag
-    const byId = {};
-    db.inboxEmails.forEach(e => { byId[e.id] = e; });
-    emails.forEach(e => {
-      const existing = byId[e.id] || {};
-      byId[e.id] = { ...e, from_email: e.from, tags: existing.tags || [], reid_processed: existing.reid_processed || false, reid_draft_id: existing.reid_draft_id || null };
-    });
-    db.inboxEmails = Object.values(byId)
-      .sort((a, b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at))
-      .slice(0, 500);
-    save();
+  const byId = {};
+  db.inboxEmails.forEach(e => { byId[e.id] = e; });
+  emails.forEach(e => {
+    const existing = byId[e.id] || {};
+    byId[e.id] = { ...e, from_email: e.from, tags: existing.tags || [], reid_processed: existing.reid_processed || false, reid_draft_id: existing.reid_draft_id || null };
+  });
+  db.inboxEmails = Object.values(byId)
+    .sort((a, b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at))
+    .slice(0, 500);
+  save();
+  return emails.length;
+}
 
-    res.json({ ok: true, synced: emails.length });
+app.post('/inbox/sync', auth, async (req, res) => {
+  try {
+    const synced = await doGmailSync();
+    res.json({ ok: true, synced });
   } catch(e) {
-    res.status(500).json({ error: e.message });
+    res.status(e.message.includes('not connected') ? 401 : 500).json({ error: e.message });
   }
 });
 
 // ─── REID AUTO-PROCESS INBOX ─────────────────────────────────────────────────
-app.post('/inbox/auto-process', auth, async (req, res) => {
+// Standalone process function — used by endpoint AND background loop
+async function doAutoProcess() {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
-  if (!anthropicKey) return res.status(500).json({ error: 'Anthropic API key not configured.' });
+  if (!anthropicKey) throw new Error('Anthropic API key not configured.');
 
-  // Find unprocessed emails
   const unprocessed = db.inboxEmails.filter(e => !e.reid_processed);
-  if (!unprocessed.length) return res.json({ processed: 0, message: 'All emails already processed' });
+  if (!unprocessed.length) return { processed: 0 };
 
   const prospectList = db.prospects.map(p => `${p.name} <${p.email}> — ${p.status} — ${p.platform}`).join('\n');
   let processed = 0;
@@ -626,7 +622,16 @@ Priority: "high" = needs response today, "medium" = within 2 days, "low" = whene
   }
 
   save();
-  res.json({ processed, total_unprocessed: db.inboxEmails.filter(e => !e.reid_processed).length });
+  return { processed, total_unprocessed: db.inboxEmails.filter(e => !e.reid_processed).length };
+}
+
+app.post('/inbox/auto-process', auth, async (req, res) => {
+  try {
+    const result = await doAutoProcess();
+    res.json(result);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ─── FOLLOW-UPS ─────────────────────────────────────────────────────────────
@@ -749,6 +754,77 @@ app.post('/inbox/send/:draftId', auth, async (req, res) => {
   }
 });
 
+// ─── AUTO-SYNC BACKGROUND LOOP ──────────────────────────────────────────────
+let autoSyncTimer = null;
+let autoSyncRunning = false;
+
+function getAutoSyncSettings() {
+  return {
+    enabled: db.settings.auto_sync_enabled || false,
+    interval_minutes: db.settings.auto_sync_interval || 10,
+    auto_process: db.settings.auto_sync_process !== false, // default true
+    last_sync: db.settings.last_auto_sync || null,
+    last_result: db.settings.last_auto_sync_result || null
+  };
+}
+
+async function runAutoSync() {
+  if (autoSyncRunning) return;
+  autoSyncRunning = true;
+  const now = new Date().toISOString();
+  console.log(`[Auto-Sync] Running at ${now}`);
+  try {
+    const synced = await doGmailSync();
+    console.log(`[Auto-Sync] Synced ${synced} emails`);
+    let processResult = { processed: 0 };
+    if (db.settings.auto_sync_process !== false) {
+      processResult = await doAutoProcess();
+      console.log(`[Auto-Sync] Processed ${processResult.processed} emails`);
+    }
+    db.settings.last_auto_sync = now;
+    db.settings.last_auto_sync_result = { synced, processed: processResult.processed, status: 'ok' };
+    save();
+  } catch(e) {
+    console.error('[Auto-Sync] Error:', e.message);
+    db.settings.last_auto_sync = now;
+    db.settings.last_auto_sync_result = { status: 'error', error: e.message };
+    save();
+  }
+  autoSyncRunning = false;
+}
+
+function startAutoSync() {
+  stopAutoSync();
+  const settings = getAutoSyncSettings();
+  if (!settings.enabled) return;
+  const ms = Math.max(settings.interval_minutes, 2) * 60 * 1000;
+  console.log(`[Auto-Sync] Started — every ${settings.interval_minutes} min`);
+  // Run immediately on start, then on interval
+  setTimeout(() => runAutoSync(), 5000);
+  autoSyncTimer = setInterval(runAutoSync, ms);
+}
+
+function stopAutoSync() {
+  if (autoSyncTimer) { clearInterval(autoSyncTimer); autoSyncTimer = null; }
+}
+
+// Settings endpoints
+app.get('/settings/auto-sync', auth, (req, res) => {
+  res.json(getAutoSyncSettings());
+});
+
+app.patch('/settings/auto-sync', auth, (req, res) => {
+  const { enabled, interval_minutes, auto_process } = req.body;
+  if (enabled !== undefined) db.settings.auto_sync_enabled = !!enabled;
+  if (interval_minutes !== undefined) db.settings.auto_sync_interval = Math.max(parseInt(interval_minutes) || 10, 2);
+  if (auto_process !== undefined) db.settings.auto_sync_process = !!auto_process;
+  save();
+  // Restart or stop the loop
+  if (db.settings.auto_sync_enabled) startAutoSync();
+  else stopAutoSync();
+  res.json(getAutoSyncSettings());
+});
+
 // ─── STATIC / HEALTH ─────────────────────────────────────────────────────────
 app.get('/health', (req,res) => res.json({ ok:true, prospects:db.prospects.length, deals:db.deals.length, ts:new Date().toISOString() }));
 
@@ -758,4 +834,11 @@ if (fs.existsSync(publicDir)) {
   app.get('*', (req,res) => { if(!req.path.startsWith('/api')) res.sendFile(path.join(publicDir,'index.html')); });
 }
 
-app.listen(PORT, () => console.log(`Apex CRM on :${PORT} | DB: ${DB_PATH}.json`));
+app.listen(PORT, () => {
+  console.log(`Apex CRM on :${PORT} | DB: ${DB_PATH}.json`);
+  // Start auto-sync if it was enabled
+  if (db.settings.auto_sync_enabled) {
+    console.log('[Auto-Sync] Resuming from saved settings');
+    startAutoSync();
+  }
+});
