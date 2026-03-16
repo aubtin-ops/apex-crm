@@ -537,10 +537,18 @@ app.post('/inbox/auto-process', auth, async (req, res) => {
 
   for (const email of unprocessed.slice(0, 15)) {
     try {
-      const prompt = `Process this email from the inbox. Do TWO things:
+      const prompt = `Process this email from the inbox. Do THREE things:
 
 1. TAG IT: Pick the best CRM tag from: Lead, Qualified, Call Booked, Follow Up, Closed Won, Closed Lost, Ignore. "Ignore" means spam/newsletter/automated.
-2. DRAFT A REPLY: Write a reply in Aubtin's voice (short, direct, Dan Martell style). If it's spam/newsletter, set draft to "SKIP".
+2. FOLLOW-UP CHECK: Determine if this email needs a follow-up. Set "needs_follow_up" to true if:
+   - They asked a question we haven't answered
+   - They showed interest but no next step is scheduled
+   - They went quiet after a previous conversation (stale thread)
+   - They said "let me think about it" or similar soft stalls
+   - A previous outreach got no reply and it's been 3+ days
+   Set "follow_up_reason" to a short explanation (e.g. "Asked about pricing, no reply yet", "Showed interest 5 days ago, went quiet").
+   Set "follow_up_date" to when the follow-up should happen: "today", "tomorrow", "3_days", "1_week".
+3. DRAFT A REPLY: Write a reply in Aubtin's voice (short, direct, Dan Martell style). If it's spam/newsletter, set draft to "SKIP".
 
 EMAIL:
 From: ${email.from_name} <${email.from}>
@@ -552,7 +560,7 @@ KNOWN CRM CONTACTS:
 ${prospectList || '(none yet)'}
 
 Respond ONLY in this exact JSON format, nothing else:
-{"tag":"Lead","draft_subject":"Re: ${email.subject}","draft_body":"the reply text","priority":"high","summary":"one line summary of what this email is about","should_reply":true}
+{"tag":"Lead","draft_subject":"Re: ${email.subject}","draft_body":"the reply text","priority":"high","summary":"one line summary of what this email is about","should_reply":true,"needs_follow_up":false,"follow_up_reason":"","follow_up_date":""}
 
 If should_reply is false (spam, newsletter, no-reply), set draft_body to "" and tag to "Ignore".
 Priority: "high" = needs response today, "medium" = within 2 days, "low" = whenever.`;
@@ -578,6 +586,10 @@ Priority: "high" = needs response today, "medium" = within 2 days, "low" = whene
       email.reid_processed = true;
       email.reid_priority = result.priority || 'medium';
       email.reid_summary = result.summary || '';
+      email.needs_follow_up = result.needs_follow_up || false;
+      email.follow_up_reason = result.follow_up_reason || '';
+      email.follow_up_date = result.follow_up_date || '';
+      email.follow_up_done = email.follow_up_done || false;
 
       // Create draft if should_reply
       if (result.should_reply && result.draft_body) {
@@ -615,6 +627,28 @@ Priority: "high" = needs response today, "medium" = within 2 days, "low" = whene
 
   save();
   res.json({ processed, total_unprocessed: db.inboxEmails.filter(e => !e.reid_processed).length });
+});
+
+// ─── FOLLOW-UPS ─────────────────────────────────────────────────────────────
+app.get('/inbox/follow-ups', auth, (req, res) => {
+  const followUps = db.inboxEmails
+    .filter(e => e.needs_follow_up && !e.follow_up_done)
+    .sort((a, b) => {
+      const order = { today: 0, tomorrow: 1, '3_days': 2, '1_week': 3 };
+      return (order[a.follow_up_date] ?? 4) - (order[b.follow_up_date] ?? 4);
+    });
+  res.json(followUps);
+});
+
+app.patch('/inbox/emails/:id/follow-up', auth, (req, res) => {
+  const email = db.inboxEmails.find(e => e.id === req.params.id);
+  if (!email) return res.status(404).json({ error: 'Not found' });
+  if (req.body.follow_up_done !== undefined) email.follow_up_done = req.body.follow_up_done;
+  if (req.body.needs_follow_up !== undefined) email.needs_follow_up = req.body.needs_follow_up;
+  if (req.body.follow_up_reason !== undefined) email.follow_up_reason = req.body.follow_up_reason;
+  if (req.body.follow_up_date !== undefined) email.follow_up_date = req.body.follow_up_date;
+  save();
+  res.json({ ok: true });
 });
 
 // ─── DRAFTS ─────────────────────────────────────────────────────────────────

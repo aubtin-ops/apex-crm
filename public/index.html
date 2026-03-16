@@ -271,6 +271,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .processing-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
 .processing-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:30px 40px;text-align:center;box-shadow:var(--shd)}
 .processing-card .spin{width:24px;height:24px;margin:0 auto 12px}
+.inbox-follow-up{background:var(--orb);border-left:3px solid var(--or)}
 </style>
 </head>
 <body>
@@ -715,7 +716,7 @@ function renderTable(){
 }
 
 // ─── INBOX ──────────────────────────────────────────────────
-let inboxFilter = 'all'; // all, unread, drafts, high, sent
+let inboxFilter = 'all'; // all, unread, drafts, high, sent, follow_ups
 
 function updateInboxBadge() {
   const unread = inboxEmails.filter(e => e.unread).length;
@@ -732,6 +733,7 @@ function renderInbox(){
   const draftCount = emailDrafts.filter(d => d.status === 'draft').length;
   const highCount = inboxEmails.filter(e => e.reid_priority === 'high').length;
   const sentCount = emailDrafts.filter(d => d.status === 'sent').length;
+  const followUpCount = inboxEmails.filter(e => e.needs_follow_up && !e.follow_up_done).length;
   const unprocessedCount = inboxEmails.filter(e => !e.reid_processed).length;
 
   let emails = [...inboxEmails].sort((a,b) => new Date(b.date||b.created_at) - new Date(a.date||a.created_at));
@@ -741,6 +743,7 @@ function renderInbox(){
   else if (inboxFilter === 'drafts') emails = emails.filter(e => emailDrafts.some(d => d.email_id === e.id && d.status === 'draft'));
   else if (inboxFilter === 'high') emails = emails.filter(e => e.reid_priority === 'high');
   else if (inboxFilter === 'sent') emails = emails.filter(e => emailDrafts.some(d => d.email_id === e.id && d.status === 'sent'));
+  else if (inboxFilter === 'follow_ups') emails = emails.filter(e => e.needs_follow_up && !e.follow_up_done);
 
   const reidBar = `
     <div class="reid-inbox-bar">
@@ -751,6 +754,7 @@ function renderInbox(){
           <div class="stat"><span class="num">${unreadCount}</span> unread</div>
           <div class="stat"><span class="num" style="color:var(--ac)">${draftCount}</span> drafts ready</div>
           <div class="stat"><span class="num" style="color:var(--rd)">${highCount}</span> high priority</div>
+          <div class="stat"><span class="num" style="color:var(--or)">${followUpCount}</span> follow-ups</div>
           <div class="stat"><span class="num" style="color:var(--gr)">${sentCount}</span> sent</div>
         </div>
       </div>
@@ -766,6 +770,7 @@ function renderInbox(){
       <button class="inbox-filter-btn ${inboxFilter==='unread'?'on':''}" onclick="setInboxFilter('unread')">Unread (${unreadCount})</button>
       <button class="inbox-filter-btn ${inboxFilter==='drafts'?'on':''}" onclick="setInboxFilter('drafts')">Drafts (${draftCount})</button>
       <button class="inbox-filter-btn ${inboxFilter==='high'?'on':''}" onclick="setInboxFilter('high')">High Priority (${highCount})</button>
+      <button class="inbox-filter-btn ${inboxFilter==='follow_ups'?'on':''}" onclick="setInboxFilter('follow_ups')">🔄 Follow-ups (${followUpCount})</button>
       <button class="inbox-filter-btn ${inboxFilter==='sent'?'on':''}" onclick="setInboxFilter('sent')">Sent (${sentCount})</button>
     </div>`;
 
@@ -786,6 +791,8 @@ function renderInbox(){
           ${e.reid_summary ? `<div class="inbox-summary">${e.reid_summary}</div>` : `<div class="isnip">${(e.snippet||e.body||'').slice(0,80)}</div>`}
           <div style="display:flex;gap:3px;margin-top:3px;flex-wrap:wrap;align-items:center">
             ${(e.tags||[]).map(t=>`<span class="etag ${TAG_CLASSES[t]||''}" style="font-size:10px">${t}</span>`).join('')}
+            ${e.needs_follow_up && !e.follow_up_done ? `<span style="font-size:10px;color:var(--or);font-weight:600;cursor:pointer" onclick="event.stopPropagation()" title="${escHtml(e.follow_up_reason||'')}">🔄 Follow up ${e.follow_up_date === 'today' ? 'today' : e.follow_up_date === 'tomorrow' ? 'tomorrow' : e.follow_up_date === '3_days' ? 'in 3 days' : e.follow_up_date === '1_week' ? 'in 1 week' : ''}</span>` : ''}
+            ${e.follow_up_done ? '<span style="font-size:10px;color:var(--gr)">✅ Followed up</span>' : ''}
             ${sentDraft ? '<span style="font-size:10px;color:var(--gr);font-weight:600">✅ Replied</span>' : ''}
             ${!e.reid_processed ? '<span style="font-size:10px;color:var(--t3)">⏳ Pending</span>' : ''}
           </div>
@@ -933,6 +940,12 @@ function showEmail(id){
       ${e.reid_priority ? `<div style="margin-top:4px"><span class="inbox-priority ${e.reid_priority}">${e.reid_priority} priority</span></div>` : ''}
       ${e.reid_summary ? `<div style="font-size:12px;color:var(--t2);margin-top:4px;font-style:italic">${e.reid_summary}</div>` : ''}
       ${e.prospect_name ? `<div style="margin-top:4px"><span class="inbox-prospect-link">${e.prospect_name} — in CRM</span></div>` : ''}
+      ${e.needs_follow_up ? `
+      <div style="margin-top:6px;background:var(--orb);border-radius:var(--r);padding:8px 10px">
+        <div style="font-size:11px;font-weight:600;color:var(--or);display:flex;align-items:center;gap:4px">🔄 Follow-up ${e.follow_up_date === 'today' ? 'Today' : e.follow_up_date === 'tomorrow' ? 'Tomorrow' : e.follow_up_date === '3_days' ? 'In 3 Days' : e.follow_up_date === '1_week' ? 'In 1 Week' : ''}</div>
+        <div style="font-size:12px;color:var(--t2);margin-top:2px">${e.follow_up_reason || ''}</div>
+        ${!e.follow_up_done ? `<button class="btn bg xsm" style="margin-top:6px" onclick="markFollowUpDone('${e.id}')">✅ Mark Followed Up</button>` : '<div style="font-size:11px;color:var(--gr);margin-top:4px;font-weight:600">✅ Done</div>'}
+      </div>` : ''}
       ${renderEmailTags(e.id, e.tags || [])}
     </div>
     <div class="dpb">
@@ -970,6 +983,17 @@ async function reidDraftSingle(emailId) {
     renderInbox();
     toast('Draft ready!', 'ok');
   } catch(e) { toast('Failed: ' + e.message, 'err'); }
+}
+
+async function markFollowUpDone(emailId) {
+  try {
+    await req('PATCH', '/inbox/emails/' + emailId + '/follow-up', { follow_up_done: true });
+    const email = inboxEmails.find(e => e.id === emailId);
+    if (email) email.follow_up_done = true;
+    showEmail(emailId);
+    renderInbox();
+    toast('Marked as followed up', 'ok');
+  } catch(e) { toast('Failed', 'err'); }
 }
 
 // ─── ASK REID — Real Chat ───────────────────────────────────
