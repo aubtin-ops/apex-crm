@@ -735,23 +735,23 @@ Priority: "high" = needs response today, "medium" = within 2 days, "low" = whene
       email.follow_up_date = result.follow_up_date || '';
       email.follow_up_done = email.follow_up_done || false;
 
-      // Create draft for EVERY real person
-      if (result.should_reply && result.draft_body && !isSpam) {
-        const draftId = crypto.randomUUID();
-        db.emailDrafts.push({
-          id: draftId,
-          email_id: email.id,
-          thread_id: email.thread_id || '',
-          to: email.from,
-          to_name: email.from_name || '',
-          subject: result.draft_subject || `Re: ${email.subject}`,
-          body: result.draft_body,
-          status: 'draft',
-          priority: result.priority || 'medium',
-          created_at: new Date().toISOString()
-        });
-        email.reid_draft_id = draftId;
-      }
+      // Create a draft for EVERY email — real people get actionable drafts, spam gets flagged
+      const draftBody = result.draft_body || (isSpam ? '(spam — no reply needed)' : `Hey ${email.from_name || 'there'}\n\nThanks for reaching out.\n\nReid`);
+      const draftId = crypto.randomUUID();
+      db.emailDrafts.push({
+        id: draftId,
+        email_id: email.id,
+        thread_id: email.thread_id || '',
+        to: email.from,
+        to_name: email.from_name || '',
+        subject: result.draft_subject || `Re: ${email.subject}`,
+        body: draftBody,
+        status: isSpam ? 'spam' : 'draft',
+        is_spam: isSpam,
+        priority: result.priority || 'medium',
+        created_at: new Date().toISOString()
+      });
+      email.reid_draft_id = draftId;
 
       // Auto-link to CRM prospect if email matches
       const matchingProspect = db.prospects.find(p =>
@@ -801,6 +801,20 @@ app.post('/inbox/auto-process', auth, async (req, res) => {
   try {
     const result = await doAutoProcess();
     res.json(result);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Force reprocess all emails (clears processed flag and drafts)
+app.post('/inbox/reprocess', auth, async (req, res) => {
+  // Clear all processed flags and remove old drafts
+  db.inboxEmails.forEach(e => { e.reid_processed = false; e.reid_draft_id = null; });
+  db.emailDrafts = [];
+  save();
+  try {
+    const result = await doAutoProcess();
+    res.json({ reset: true, ...result });
   } catch(e) {
     res.status(500).json({ error: e.message });
   }

@@ -876,6 +876,7 @@ function renderInbox(){
       <div style="display:flex;gap:6px">
         <button class="btn bg sm" onclick="syncAndProcess()" id="syncProcessBtn">🔄 Sync Gmail</button>
         <button class="btn bp sm" onclick="reidProcessInbox()" id="processBtn" ${unprocessedCount === 0 ? 'disabled style="opacity:.5"' : ''}>🧠 Reid Process${unprocessedCount > 0 ? ' ('+unprocessedCount+')' : ''}</button>
+        <button class="btn bg sm" onclick="reprocessAll()" title="Force Reid to reprocess all emails and generate new drafts">♻️ Reprocess All</button>
       </div>
     </div>`;
 
@@ -958,6 +959,19 @@ async function syncAndProcess() {
     renderInbox();
   } catch(e) { toast('Sync failed: ' + e.message, 'err'); }
   if (btn) { btn.disabled = false; btn.textContent = '🔄 Sync Gmail'; }
+}
+
+async function reprocessAll() {
+  if (!confirm('Reprocess all emails? This will clear existing drafts and have Reid re-analyze everything.')) return;
+  const ov = document.createElement('div');
+  ov.className = 'processing-overlay'; ov.id = 'processingOv';
+  ov.innerHTML = `<div class="processing-card"><div class="spin" style="border-width:3px"></div><div style="font-size:15px;font-weight:600;margin-bottom:4px">Reid is reprocessing all emails...</div><div style="font-size:12px;color:var(--t3)">Generating drafts for every email</div></div>`;
+  document.body.appendChild(ov);
+  try {
+    const r = await req('POST', '/inbox/reprocess', {});
+    [inboxEmails, emailDrafts] = await Promise.all([req('GET', '/inbox/emails'), req('GET', '/inbox/drafts')]);
+    setTimeout(() => { ov.remove(); renderInbox(); toast('Reprocessed! ' + r.processed + ' emails, drafts generated', 'ok'); }, 1200);
+  } catch(e) { ov.remove(); toast('Failed: ' + e.message, 'err'); }
 }
 
 async function reidProcessInbox() {
