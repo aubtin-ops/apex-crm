@@ -449,7 +449,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
 <script>
 const API = window.location.origin;
 const KEY = 'apex-reid-09cb60b5048e1df0';
-let prospects=[], filtered=[], inboxEmails=[], playbook=[], chatHistory=[], emailDrafts=[];
+let prospects=[], filtered=[], inboxEmails=[], playbook=[], chatHistory=[], emailDrafts=[], bookings=[];
 let page='dashboard', sub='table', editId=null, dragId=null;
 
 const STAGES = {
@@ -484,11 +484,12 @@ function nowStr(){return new Date().toLocaleTimeString('en-US',{hour:'numeric',m
 
 async function loadAll(){
   try{
-    [prospects,inboxEmails,playbook,emailDrafts]=await Promise.all([
+    [prospects,inboxEmails,playbook,emailDrafts,bookings]=await Promise.all([
       req('GET','/prospects'),
       req('GET','/inbox/emails'),
       req('GET','/playbook'),
-      req('GET','/inbox/drafts')
+      req('GET','/inbox/drafts'),
+      req('GET','/bookings').catch(()=>[])
     ]);
     setStatus(true);applyFilters();updateInboxBadge();render();
   }catch(e){setStatus(false);document.getElementById('main').innerHTML=`<div class="empty"><div class="ei">⚠️</div><h3>Can't reach server</h3><p style="color:var(--rd)">${e.message}</p><button class="btn bp" onclick="loadAll()">Retry</button></div>`;}
@@ -659,7 +660,39 @@ function renderDash(){
             <div style="font-size:10px;color:var(--t3);flex-shrink:0">${ago(e.date||e.created_at)}</div>
           </div>`).join(''):`<div style="padding:24px;text-align:center;color:var(--t3);font-size:12px">No emails yet. Connect Gmail in Admin to get started.</div>`}
       </div>
+    </div>
+    <div style="padding:0 24px 20px;margin-top:14px">
+      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+        Upcoming Calls
+        <button class="btn bg xsm" onclick="syncCalNow()">🔄 Sync Cal.com</button>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden">
+        ${bookings.filter(b=>new Date(b.start_time)>=new Date()&&b.status==='ACCEPTED').slice(0,6).length?bookings.filter(b=>new Date(b.start_time)>=new Date()&&b.status==='ACCEPTED').sort((a,b)=>new Date(a.start_time)-new Date(b.start_time)).slice(0,6).map(b=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--bd)">
+            <div style="width:34px;height:34px;border-radius:8px;background:rgba(10,132,255,.12);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--ac);flex-shrink:0">${new Date(b.start_time).toLocaleDateString('en-US',{day:'numeric'})}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:600">${b.guest_name||'Unknown'}</div>
+              <div style="font-size:11px;color:var(--t3)">${b.guest_email||''}</div>
+            </div>
+            <span class="badge bd-call_booked">📞 Call Booked</span>
+            <div style="font-size:11px;color:var(--t2);flex-shrink:0">${new Date(b.start_time).toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${new Date(b.start_time).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</div>
+            ${b.meet_url?`<a href="${b.meet_url}" target="_blank" class="btn bg xsm" onclick="event.stopPropagation()" style="text-decoration:none">Join</a>`:''}
+          </div>`).join(''):`<div style="padding:24px;text-align:center;color:var(--t3);font-size:12px">No upcoming calls. Booking link: cal.com/aubtin-sharifpour-apex/30min</div>`}
+      </div>
     </div>`;
+}
+
+function fmtCallDate(d){if(!d)return'';const dt=new Date(d);return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
+
+async function syncCalNow(){
+  toast('Syncing Cal.com...');
+  try{
+    const r=await req('POST','/bookings/sync',{});
+    bookings=await req('GET','/bookings').catch(()=>[]);
+    prospects=await req('GET','/prospects');
+    toast('Synced '+r.synced+' bookings'+(r.new?' ('+r.new+' new)':''),'ok');
+    applyFilters();render();
+  }catch(e){toast('Cal sync failed: '+e.message,'err');}
 }
 
 // ─── ANALYTICS ──────────────────────────────────────────────

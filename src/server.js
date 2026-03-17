@@ -12,15 +12,17 @@ const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../data/apex.db');
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || '';
+const CALCOM_API_KEY = process.env.CALCOM_API_KEY || '';
 
-let db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], emailDrafts:[], settings:{}, nextId:1 };
+let db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], emailDrafts:[], bookings:[], settings:{}, nextId:1 };
 let googleTokens = null; // { access_token, refresh_token, expiry_date }
 
 function loadData() {
   try {
     if (fs.existsSync(DB_PATH + '.json')) {
       const raw = JSON.parse(fs.readFileSync(DB_PATH + '.json', 'utf8'));
-      db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], emailDrafts:[], settings:{}, nextId:1, ...raw };
+      db = { prospects:[], deals:[], inboxEmails:[], reidMessages:[], activityLog:[], playbook:[], emailDrafts:[], bookings:[], settings:{}, nextId:1, ...raw };
+      if (!db.bookings) db.bookings = [];
       if (!db.emailDrafts) db.emailDrafts = [];
       if (!db.settings) db.settings = {};
       // Restore Google tokens from persistent storage
@@ -934,6 +936,99 @@ app.post('/inbox/send/:draftId', auth, async (req, res) => {
   }
 });
 
+// ─── CAL.COM BOOKINGS ───────────────────────────────────────────────────────
+async function doCalSync() {
+  if (!CALCOM_API_KEY) throw new Error('Cal.com API key not configured');
+
+  const bookings = [];
+  for (const status of ['upcoming', 'past']) {
+    try {
+      const res = await fetch(`https://api.cal.com/v2/bookings?status=${status}&take=50`, {
+        headers: { Authorization: `Bearer ${CALCOM_API_KEY}` }
+      });
+      const data = await res.json();
+      if (data.status === 'success' && data.data?.bookings) {
+        bookings.push(...data.data.bookings);
+      }
+    } catch(e) { console.error(`Cal.com ${status} fetch error:`, e.message); }
+  }
+
+  // Dedupe by id
+  const byId = {};
+  db.bookings.forEach(b => { byId[b.id] = b; });
+
+  let newCount = 0;
+  for (const b of bookings) {
+    const isNew = !byId[b.id];
+    const responses = b.responses || {};
+    byId[b.id] = {
+      id: b.id,
+      uid: b.uid,
+      title: b.title || '',
+      guest_name: responses.name || '',
+      guest_email: responses.email || '',
+      start_time: b.startTime,
+      end_time: b.endTime,
+      status: b.status,
+      location: b.location || '',
+      meet_url: b.metadata?.videoCallUrl || '',
+      created_at: b.createdAt,
+      synced_at: new Date().toISOString()
+    };
+
+    // Auto-match to prospect and upgrade to call_booked
+    if (responses.email) {
+      const prospect = db.prospects.find(p =>
+        p.email && p.email.toLowerCase() === responses.email.toLowerCase()
+      );
+      if (prospect) {
+        byId[b.id].prospect_id = prospect.id;
+        byId[b.id].prospect_name = prospect.name;
+        if (isNew && !['call_booked', 'follow_up', 'closed_won'].includes(prospect.status)) {
+          prospect.status = 'call_booked';
+          prospect.updated_at = new Date().toISOString();
+          logActivity(prospect.id, 'call_booked', `Cal.com: ${b.title}`);
+        }
+      } else if (isNew) {
+        // Auto-create prospect from booking
+        const newId = crypto.randomUUID();
+        const now = new Date().toISOString();
+        db.prospects.push({
+          id: newId, name: responses.name || responses.email.split('@')[0],
+          email: responses.email, phone: '', platform: 'Other', handle: '',
+          profile_url: '', audience_size: 0, total_score: 0, outreach_type: 'inbound',
+          source: 'cal.com', notes: `Booked: ${b.title}`,
+          status: 'call_booked', content_focus: '', priority: 1, type: 'affiliate',
+          deal_value: 0, commission_pct: 10, lead_type: 'Potential Affiliate Partner',
+          outreach_sent_date: '', response_date: now, created_at: now, updated_at: now
+        });
+        byId[b.id].prospect_id = newId;
+        byId[b.id].prospect_name = responses.name;
+        logActivity(newId, 'auto_created', `Cal.com booking: ${responses.name} <${responses.email}>`);
+      }
+    }
+
+    if (isNew) newCount++;
+  }
+
+  db.bookings = Object.values(byId).sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
+  save();
+  return { synced: bookings.length, new: newCount };
+}
+
+app.get('/bookings', auth, (req, res) => {
+  res.json([...db.bookings].sort((a, b) => new Date(a.start_time) - new Date(b.start_time)));
+});
+
+app.post('/bookings/sync', auth, async (req, res) => {
+  try {
+    const result = await doCalSync();
+    res.json(result);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ─── AUTO-SYNC BACKGROUND LOOP ──────────────────────────────────────────────
 let autoSyncTimer = null;
 let autoSyncRunning = false;
@@ -961,8 +1056,14 @@ async function runAutoSync() {
       processResult = await doAutoProcess();
       console.log(`[Auto-Sync] Processed ${processResult.processed} emails`);
     }
+    // Sync Cal.com bookings
+    let calResult = { synced: 0 };
+    if (CALCOM_API_KEY) {
+      try { calResult = await doCalSync(); console.log(`[Auto-Sync] Cal.com: ${calResult.new} new bookings`); }
+      catch(e) { console.error('[Auto-Sync] Cal.com error:', e.message); }
+    }
     db.settings.last_auto_sync = now;
-    db.settings.last_auto_sync_result = { synced, processed: processResult.processed, status: 'ok' };
+    db.settings.last_auto_sync_result = { synced, processed: processResult.processed, bookings: calResult.new || 0, status: 'ok' };
     save();
   } catch(e) {
     console.error('[Auto-Sync] Error:', e.message);
