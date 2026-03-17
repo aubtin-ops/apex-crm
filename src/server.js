@@ -700,7 +700,7 @@ async function doAutoProcess() {
   const prospectList = db.prospects.map(p => `${p.name} <${p.email}> — ${p.status} — ${p.platform}`).join('\n');
   let processed = 0;
 
-  for (const email of unprocessed.slice(0, 15)) {
+  for (const email of unprocessed.slice(0, 30)) {
     try {
       const prompt = `Process this email from the inbox. Do THREE things:
 
@@ -941,10 +941,13 @@ app.post('/inbox/send/:draftId', auth, async (req, res) => {
   if (!tokenOk) return res.status(401).json({ error: 'Google token refresh failed — reconnect in Admin' });
 
   // Build raw email
+  // Detect if body contains HTML tags
+  const isHtml = /<[a-z][\s\S]*>/i.test(draft.body);
   const rawEmail = [
     `To: ${draft.to}`,
     `Subject: ${draft.subject}`,
-    `Content-Type: text/plain; charset=utf-8`,
+    `MIME-Version: 1.0`,
+    `Content-Type: ${isHtml ? 'text/html' : 'text/plain'}; charset=utf-8`,
     ``,
     draft.body
   ].join('\r\n');

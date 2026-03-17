@@ -857,6 +857,9 @@ function renderInbox(){
   else if (inboxFilter === 'high') emails = emails.filter(e => e.reid_priority === 'high');
   else if (inboxFilter === 'sent') emails = emails.filter(e => emailDrafts.some(d => d.email_id === e.id && d.status === 'sent'));
   else if (inboxFilter === 'follow_ups') emails = emails.filter(e => e.needs_follow_up && !e.follow_up_done);
+  else if (inboxFilter === 'leads') emails = emails.filter(e => (e.tags||[]).includes('Lead'));
+  else if (inboxFilter === 'qualified') emails = emails.filter(e => (e.tags||[]).includes('Qualified'));
+  else if (inboxFilter === 'call_booked') emails = emails.filter(e => (e.tags||[]).includes('Call Booked'));
   else if (inboxFilter === 'spam') emails = emails.filter(e => e.is_spam);
 
   const reidBar = `
@@ -885,9 +888,12 @@ function renderInbox(){
       <button class="inbox-filter-btn ${inboxFilter==='all'?'on':''}" onclick="setInboxFilter('all')">All (${inboxEmails.length})</button>
       <button class="inbox-filter-btn ${inboxFilter==='unread'?'on':''}" onclick="setInboxFilter('unread')">Unread (${unreadCount})</button>
       <button class="inbox-filter-btn ${inboxFilter==='drafts'?'on':''}" onclick="setInboxFilter('drafts')">Drafts (${draftCount})</button>
+      <button class="inbox-filter-btn ${inboxFilter==='leads'?'on':''}" onclick="setInboxFilter('leads')">🔥 Leads (${inboxEmails.filter(e=>(e.tags||[]).includes('Lead')).length})</button>
       <button class="inbox-filter-btn ${inboxFilter==='high'?'on':''}" onclick="setInboxFilter('high')">High Priority (${highCount})</button>
       <button class="inbox-filter-btn ${inboxFilter==='follow_ups'?'on':''}" onclick="setInboxFilter('follow_ups')">🔄 Follow-ups (${followUpCount})</button>
       <button class="inbox-filter-btn ${inboxFilter==='sent'?'on':''}" onclick="setInboxFilter('sent')">Sent (${sentCount})</button>
+      <button class="inbox-filter-btn ${inboxFilter==='qualified'?'on':''}" onclick="setInboxFilter('qualified')">⭐ Qualified (${inboxEmails.filter(e=>(e.tags||[]).includes('Qualified')).length})</button>
+      <button class="inbox-filter-btn ${inboxFilter==='call_booked'?'on':''}" onclick="setInboxFilter('call_booked')">📞 Call Booked (${inboxEmails.filter(e=>(e.tags||[]).includes('Call Booked')).length})</button>
       <button class="inbox-filter-btn ${inboxFilter==='spam'?'on':''}" onclick="setInboxFilter('spam')">🚫 Spam (${inboxEmails.filter(e=>e.is_spam).length})</button>
     </div>`;
 
