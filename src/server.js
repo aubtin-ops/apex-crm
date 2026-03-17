@@ -47,7 +47,7 @@ function save() {
 
 loadData();
 app.use(cors());
-app.use(express.json({ limit:'4mb' }));
+app.use(express.json({ limit:'10mb' }));
 
 const auth = (req,res,next) => {
   if (req.headers['x-api-key'] !== API_KEY) return res.status(401).json({ error:'Unauthorized' });
@@ -430,6 +430,52 @@ Draft email:
 <<END_ACTION>>
 
 After actions, confirm naturally in chat.`;
+
+// ─── SCREENSHOT EXTRACTION ───────────────────────────────────────────────────
+app.post('/extract-contact', auth, async (req, res) => {
+  const { image } = req.body; // base64 image data
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  if (!anthropicKey) return res.status(500).json({ error: 'Anthropic API key not configured.' });
+  if (!image) return res.status(400).json({ error: 'No image provided' });
+
+  try {
+    // Extract media type and base64 data
+    const match = image.match(/^data:(image\/[^;]+);base64,(.+)$/);
+    if (!match) return res.status(400).json({ error: 'Invalid image format' });
+    const mediaType = match[1];
+    const imageData = match[2];
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': anthropicKey, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 1024,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: imageData } },
+            { type: 'text', text: `Extract ALL contact information from this screenshot. Look for: name, email address, phone number, Instagram URL, TikTok URL, YouTube URL, LinkedIn URL, Twitter URL, website URL, company name, bio/description, follower count/audience size.
+
+Return ONLY valid JSON in this exact format, nothing else:
+{"name":"","email":"","phone":"","platform":"Instagram|TikTok|YouTube|LinkedIn|Twitter|Other","profile_url":"","audience_size":0,"notes":"any relevant bio or context","source":"screenshot"}
+
+Fill in whatever you can find. Leave empty string for fields not visible. For platform, pick the primary one shown. For profile_url, use the full URL if visible. For audience_size, parse follower counts (e.g. "52.3K" = 52300, "1.2M" = 1200000).` }
+          ]
+        }]
+      })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    const text = data.content?.[0]?.text || '';
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return res.json({ extracted: {}, raw: text });
+    const extracted = JSON.parse(jsonMatch[0]);
+    res.json({ extracted });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 app.post('/analyze', auth, async (req, res) => {
   const { prompt, context } = req.body;

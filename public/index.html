@@ -392,6 +392,10 @@ tr:hover td{background:rgba(255,255,255,.03)}
 <div class="ov" id="addMod">
   <div class="modal">
     <div class="mh"><div class="mt" id="mTitle">Add Contact</div><button class="mc" onclick="closeMod('addMod')">×</button></div>
+    <div id="screenshotDrop" style="margin:16px 24px 0;border:2px dashed var(--bd);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02)" onclick="document.getElementById('screenshotInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--ac)';this.style.background='rgba(10,132,255,.06)'" ondragleave="this.style.borderColor='var(--bd)';this.style.background='rgba(255,255,255,.02)'" ondrop="event.preventDefault();this.style.borderColor='var(--bd)';this.style.background='rgba(255,255,255,.02)';handleScreenshot(event.dataTransfer.files[0])">
+      <div id="screenshotStatus" style="font-size:13px;color:var(--t3)">📸 Drop a screenshot here or click to upload<br><span style="font-size:11px">AI will extract name, email, phone, social URLs automatically</span></div>
+      <input type="file" id="screenshotInput" accept="image/*" style="display:none" onchange="handleScreenshot(this.files[0])">
+    </div>
     <div class="mb">
       <div class="fr">
         <div class="fi"><label>Name *</label><input id="fn" placeholder="Name or brand"></div>
@@ -429,12 +433,16 @@ tr:hover td{background:rgba(255,255,255,.03)}
       <div class="msep"></div>
       <div class="fr">
         <div class="fi"><label>Deal Value ($)</label><input id="fdv" type="number" placeholder="0" min="0"></div>
+        <div class="fi"><label>Commission %</label><input id="fcom" type="number" placeholder="10" min="0" max="100"></div>
+      </div>
+      <div class="fr">
         <div class="fi"><label>Audience Size</label>
           <div style="display:flex;gap:6px;align-items:center">
             <input id="faud" type="number" placeholder="50000" style="flex:1;min-width:0">
             <button type="button" class="btn bg xsm" id="fetchAudBtn" onclick="fetchAudience()">Fetch</button>
           </div>
         </div>
+        <div class="fi"><label>Source</label><input id="fsrc" placeholder="cal.com, linkedin, etc."></div>
       </div>
       <div class="fi"><label>Notes</label><textarea id="fno" placeholder="Context, source, next steps…"></textarea></div>
     </div>
@@ -1433,7 +1441,7 @@ function openAdd(st='prospect'){
   editId=null;
   document.getElementById('mTitle').textContent='Add Contact';
   document.getElementById('savBtn').textContent='Add Contact';
-  ['fn','fem','fphone','faud','furl','fno','fdv'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
+  ['fn','fem','fphone','faud','furl','fno','fdv','fcom','fsrc'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
   document.getElementById('fst').value=st;
   document.getElementById('fpri').value='3';
   document.getElementById('fp').value='';
@@ -1457,8 +1465,39 @@ function openEdit(id){
   document.getElementById('fp').value=p.platform||'';
   document.getElementById('flt').value=p.lead_type||'Potential Affiliate Partner';
   document.getElementById('fdv').value=p.deal_value||'';
+  document.getElementById('fcom').value=p.commission_pct||10;
+  document.getElementById('fsrc').value=p.source||'';
   document.getElementById('addMod').classList.add('on');
 }
+async function handleScreenshot(file) {
+  if (!file || !file.type.startsWith('image/')) { toast('Please drop an image file', 'err'); return; }
+  const status = document.getElementById('screenshotStatus');
+  status.innerHTML = '<div class="spin" style="margin:0 auto 8px"></div><div style="font-size:13px;color:var(--ac)">Extracting contact info...</div>';
+  try {
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+    const r = await req('POST', '/extract-contact', { image: base64 });
+    const c = r.extracted || {};
+    if (c.name) document.getElementById('fn').value = c.name;
+    if (c.email) document.getElementById('fem').value = c.email;
+    if (c.phone) document.getElementById('fphone').value = c.phone;
+    if (c.profile_url) document.getElementById('furl').value = c.profile_url;
+    if (c.audience_size) document.getElementById('faud').value = c.audience_size;
+    if (c.platform) document.getElementById('fp').value = c.platform;
+    if (c.notes) document.getElementById('fno').value = c.notes;
+    if (c.source) document.getElementById('fsrc').value = c.source;
+    const found = [c.name, c.email, c.phone, c.profile_url].filter(Boolean);
+    status.innerHTML = `<div style="font-size:13px;color:var(--gr)">✅ Extracted ${found.length} fields</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${found.join(' · ')}</div>`;
+    toast('Contact info extracted!', 'ok');
+  } catch(e) {
+    status.innerHTML = '📸 Drop a screenshot here or click to upload<br><span style="font-size:11px">AI will extract contact info automatically</span>';
+    toast('Extraction failed: ' + e.message, 'err');
+  }
+}
+
 async function fetchAudience(){
   const url=document.getElementById('furl').value.trim();
   if(!url){toast('Enter a profile URL first','err');return;}
@@ -1499,6 +1538,8 @@ async function saveContact(){
     status:document.getElementById('fst').value,
     priority:parseInt(document.getElementById('fpri').value)||3,
     deal_value:parseFloat(document.getElementById('fdv').value)||0,
+    commission_pct:parseFloat(document.getElementById('fcom').value)||10,
+    source:document.getElementById('fsrc').value.trim(),
   };
   const btn=document.getElementById('savBtn');btn.disabled=true;btn.textContent='Saving…';
   try{
