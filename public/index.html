@@ -824,6 +824,7 @@ function renderInbox(){
   else if (inboxFilter === 'high') emails = emails.filter(e => e.reid_priority === 'high');
   else if (inboxFilter === 'sent') emails = emails.filter(e => emailDrafts.some(d => d.email_id === e.id && d.status === 'sent'));
   else if (inboxFilter === 'follow_ups') emails = emails.filter(e => e.needs_follow_up && !e.follow_up_done);
+  else if (inboxFilter === 'spam') emails = emails.filter(e => e.is_spam);
 
   const reidBar = `
     <div class="reid-inbox-bar">
@@ -853,6 +854,7 @@ function renderInbox(){
       <button class="inbox-filter-btn ${inboxFilter==='high'?'on':''}" onclick="setInboxFilter('high')">High Priority (${highCount})</button>
       <button class="inbox-filter-btn ${inboxFilter==='follow_ups'?'on':''}" onclick="setInboxFilter('follow_ups')">🔄 Follow-ups (${followUpCount})</button>
       <button class="inbox-filter-btn ${inboxFilter==='sent'?'on':''}" onclick="setInboxFilter('sent')">Sent (${sentCount})</button>
+      <button class="inbox-filter-btn ${inboxFilter==='spam'?'on':''}" onclick="setInboxFilter('spam')">🚫 Spam (${inboxEmails.filter(e=>e.is_spam).length})</button>
     </div>`;
 
   const emailList = emails.length ? emails.map(e => {
@@ -875,6 +877,7 @@ function renderInbox(){
             ${e.needs_follow_up && !e.follow_up_done ? `<span style="font-size:10px;color:var(--or);font-weight:600;cursor:pointer" onclick="event.stopPropagation()" title="${escHtml(e.follow_up_reason||'')}">🔄 Follow up ${e.follow_up_date === 'today' ? 'today' : e.follow_up_date === 'tomorrow' ? 'tomorrow' : e.follow_up_date === '3_days' ? 'in 3 days' : e.follow_up_date === '1_week' ? 'in 1 week' : ''}</span>` : ''}
             ${e.follow_up_done ? '<span style="font-size:10px;color:var(--gr)">✅ Followed up</span>' : ''}
             ${sentDraft ? '<span style="font-size:10px;color:var(--gr);font-weight:600">✅ Replied</span>' : ''}
+            ${e.is_spam ? '<span style="font-size:10px;color:var(--t3);font-weight:500">🚫 Spam</span>' : ''}
             ${!e.reid_processed ? '<span style="font-size:10px;color:var(--t3)">⏳ Pending</span>' : ''}
           </div>
         </div>
@@ -1266,6 +1269,7 @@ async function renderAdmin(){
           <span class="lbl">Interval</span>
           <span style="display:flex;align-items:center;gap:6px">
             <select class="fs" id="autoSyncInterval" onchange="updateAutoSyncInterval()" style="min-width:100px">
+              <option value="1" ${autoSync.interval_minutes===1?'selected':''}>1 min</option>
               <option value="2" ${autoSync.interval_minutes===2?'selected':''}>2 min</option>
               <option value="5" ${autoSync.interval_minutes===5?'selected':''}>5 min</option>
               <option value="10" ${autoSync.interval_minutes===10?'selected':''}>10 min</option>

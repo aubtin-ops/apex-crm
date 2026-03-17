@@ -29,7 +29,7 @@ function loadData() {
         console.log('Restored Google tokens from storage');
       }
       if (db.settings.auto_sync_enabled === undefined) db.settings.auto_sync_enabled = true;
-      if (db.settings.auto_sync_interval === undefined) db.settings.auto_sync_interval = 10;
+      if (db.settings.auto_sync_interval === undefined) db.settings.auto_sync_interval = 1;
       if (db.settings.auto_sync_process === undefined) db.settings.auto_sync_process = true;
       console.log(`Loaded: ${db.prospects.length} prospects, ${db.deals.length} deals, ${db.inboxEmails.length} emails`);
     }
@@ -675,7 +675,8 @@ async function doAutoProcess() {
     try {
       const prompt = `Process this email from the inbox. Do THREE things:
 
-1. TAG IT: Pick the best CRM tag from: Lead, Qualified, Call Booked, Follow Up, Closed Won, Closed Lost, Ignore. "Ignore" means spam/newsletter/automated.
+1. TAG IT: Pick the best CRM tag from: Lead, Qualified, Call Booked, Follow Up, Closed Won, Closed Lost, Ignore. "Ignore" means spam/newsletter/automated/no-reply-address.
+   Also set "is_spam" to true if this is spam, a newsletter, an automated notification, a no-reply address, or any non-human email. Set "is_spam" to false if this is a real person writing a real email.
 2. FOLLOW-UP CHECK: Determine if this email needs a follow-up. Set "needs_follow_up" to true if:
    - They asked a question we haven't answered
    - They showed interest but no next step is scheduled
@@ -696,9 +697,12 @@ KNOWN CRM CONTACTS:
 ${prospectList || '(none yet)'}
 
 Respond ONLY in this exact JSON format, nothing else:
-{"tag":"Lead","draft_subject":"Re: ${email.subject}","draft_body":"the reply text","priority":"high","summary":"one line summary of what this email is about","should_reply":true,"needs_follow_up":false,"follow_up_reason":"","follow_up_date":""}
+{"tag":"Lead","draft_subject":"Re: ${email.subject}","draft_body":"the reply text","priority":"high","summary":"one line summary of what this email is about","should_reply":true,"is_spam":false,"needs_follow_up":false,"follow_up_reason":"","follow_up_date":""}
 
-If should_reply is false (spam, newsletter, no-reply), set draft_body to "" and tag to "Ignore".
+Rules:
+- If is_spam is true: set should_reply=false, draft_body="", tag="Ignore"
+- If is_spam is false (real person): ALWAYS set should_reply=true and draft a reply. Every real person gets a draft.
+- Every real person who emails us is at minimum a "Lead". Tag them as Lead unless they clearly qualify for a higher stage.
 Priority: "high" = needs response today, "medium" = within 2 days, "low" = whenever.`;
 
       const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -716,19 +720,21 @@ Priority: "high" = needs response today, "medium" = within 2 days, "low" = whene
       const result = JSON.parse(jsonMatch[0]);
 
       // Auto-tag the email
+      const isSpam = result.is_spam || result.tag === 'Ignore';
       if (result.tag && result.tag !== 'Ignore') {
         email.tags = [...new Set([...(email.tags || []), result.tag])];
       }
       email.reid_processed = true;
       email.reid_priority = result.priority || 'medium';
       email.reid_summary = result.summary || '';
+      email.is_spam = isSpam;
       email.needs_follow_up = result.needs_follow_up || false;
       email.follow_up_reason = result.follow_up_reason || '';
       email.follow_up_date = result.follow_up_date || '';
       email.follow_up_done = email.follow_up_done || false;
 
-      // Create draft if should_reply
-      if (result.should_reply && result.draft_body) {
+      // Create draft for EVERY real person
+      if (result.should_reply && result.draft_body && !isSpam) {
         const draftId = crypto.randomUUID();
         db.emailDrafts.push({
           id: draftId,
@@ -738,7 +744,7 @@ Priority: "high" = needs response today, "medium" = within 2 days, "low" = whene
           to_name: email.from_name || '',
           subject: result.draft_subject || `Re: ${email.subject}`,
           body: result.draft_body,
-          status: 'draft', // draft | approved | sent
+          status: 'draft',
           priority: result.priority || 'medium',
           created_at: new Date().toISOString()
         });
@@ -752,6 +758,30 @@ Priority: "high" = needs response today, "medium" = within 2 days, "low" = whene
       if (matchingProspect) {
         email.prospect_id = matchingProspect.id;
         email.prospect_name = matchingProspect.name;
+        // Auto-upgrade to "lead" if they're still a prospect (they responded = they're a lead)
+        if (matchingProspect.status === 'prospect' || matchingProspect.status === 'outreach_sent') {
+          matchingProspect.status = 'lead';
+          matchingProspect.updated_at = new Date().toISOString();
+          logActivity(matchingProspect.id, 'auto_upgraded', 'Reid auto-tagged as Lead (responded to email)');
+        }
+      }
+
+      // Auto-create contact for unknown real senders
+      if (!matchingProspect && !isSpam && email.from) {
+        const newId = crypto.randomUUID();
+        const now = new Date().toISOString();
+        db.prospects.push({
+          id: newId, name: email.from_name || email.from.split('@')[0] || 'Unknown',
+          email: email.from, phone: '', platform: 'Other', handle: '',
+          profile_url: '', audience_size: 0, total_score: 0, outreach_type: 'inbound',
+          source: 'gmail-inbox', notes: `Auto-added by Reid. First email: "${email.subject}"`,
+          status: 'lead', content_focus: '', priority: 2, type: 'affiliate',
+          deal_value: 0, commission_pct: 10, lead_type: 'Potential Affiliate Partner',
+          outreach_sent_date: '', response_date: now, created_at: now, updated_at: now
+        });
+        email.prospect_id = newId;
+        email.prospect_name = email.from_name || email.from.split('@')[0];
+        logActivity(newId, 'auto_created', `Reid auto-added from inbox: ${email.from}`);
       }
 
       processed++;
@@ -947,7 +977,7 @@ function startAutoSync() {
   stopAutoSync();
   const settings = getAutoSyncSettings();
   if (!settings.enabled) return;
-  const ms = Math.max(settings.interval_minutes, 2) * 60 * 1000;
+  const ms = Math.max(settings.interval_minutes, 1) * 60 * 1000;
   console.log(`[Auto-Sync] Started — every ${settings.interval_minutes} min`);
   // Run immediately on start, then on interval
   setTimeout(() => runAutoSync(), 5000);
@@ -966,7 +996,7 @@ app.get('/settings/auto-sync', auth, (req, res) => {
 app.patch('/settings/auto-sync', auth, (req, res) => {
   const { enabled, interval_minutes, auto_process } = req.body;
   if (enabled !== undefined) db.settings.auto_sync_enabled = !!enabled;
-  if (interval_minutes !== undefined) db.settings.auto_sync_interval = Math.max(parseInt(interval_minutes) || 10, 2);
+  if (interval_minutes !== undefined) db.settings.auto_sync_interval = Math.max(parseInt(interval_minutes) || 1, 1);
   if (auto_process !== undefined) db.settings.auto_sync_process = !!auto_process;
   save();
   // Restart or stop the loop
