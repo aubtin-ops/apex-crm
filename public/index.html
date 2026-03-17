@@ -305,6 +305,37 @@ tr:hover td{background:rgba(255,255,255,.03)}
 .processing-card{background:var(--bg2);border:1px solid var(--bd2);border-radius:20px;padding:36px 48px;text-align:center;box-shadow:var(--shd)}
 .processing-card .spin{width:28px;height:28px;margin:0 auto 16px;border-width:2.5px}
 .inbox-follow-up{background:var(--orb);border-left:3px solid var(--or)}
+/* ─── Mobile ─── */
+@media(max-width:768px){
+  .mobile-only{display:inline-flex!important}
+  .sb{position:fixed;left:-260px;top:0;bottom:0;z-index:60;transition:left .25s cubic-bezier(.4,0,.2,1);box-shadow:none}
+  .sb.open{left:0;box-shadow:16px 0 48px rgba(0,0,0,.5)}
+  .main{width:100%}
+  .topbar{padding:0 14px}
+  .sinp{width:120px}
+  .dp{width:100%;position:fixed;inset:0;z-index:50;border:none}
+  .modal{width:100%;max-width:100%;border-radius:12px 12px 0 0;max-height:85vh}
+  .ov{align-items:flex-end}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);padding:14px;gap:10px}
+  .charts{grid-template-columns:1fr}
+  .kb{padding:10px}
+  .kc{flex:0 0 170px}
+  .reid-inbox-bar{flex-wrap:wrap;padding:10px 14px}
+  .reid-inbox-stats{gap:8px;font-size:11px}
+  .inbox-filter-bar{padding:8px 14px;gap:4px}
+  .inbox-header{padding:10px 14px}
+  .inbox-draft{padding:8px 14px 8px 44px}
+  .funnel-bar{padding:14px}
+  .tbar{padding:8px 14px}
+  table{font-size:12px}
+  th,td{padding:6px 8px}
+}
+@media(max-width:480px){
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+  .kpi-val{font-size:22px}
+  .tb-title{font-size:14px}
+  .btn{padding:5px 10px;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -340,6 +371,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
 
 <div class="main">
   <div class="topbar">
+    <button class="btn bg xsm mobile-only" onclick="toggleMobileNav()" style="display:none">☰</button>
     <div class="tb-title" id="pgtitle">Dashboard</div>
     <div class="tb-sp"></div>
     <div class="swrap">
@@ -394,8 +426,8 @@ tr:hover td{background:rgba(255,255,255,.03)}
   <div class="modal">
     <div class="mh"><div class="mt" id="mTitle">Add Contact</div><button class="mc" onclick="closeMod('addMod')">×</button></div>
     <div id="screenshotDrop" style="margin:16px 24px 0;border:2px dashed var(--bd);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02)" onclick="document.getElementById('screenshotInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--ac)';this.style.background='rgba(10,132,255,.06)'" ondragleave="this.style.borderColor='var(--bd)';this.style.background='rgba(255,255,255,.02)'" ondrop="event.preventDefault();this.style.borderColor='var(--bd)';this.style.background='rgba(255,255,255,.02)';handleScreenshot(event.dataTransfer.files[0])">
-      <div id="screenshotStatus" style="font-size:13px;color:var(--t3)">📸 Drop a screenshot here or click to upload<br><span style="font-size:11px">AI will extract name, email, phone, social URLs automatically</span></div>
-      <input type="file" id="screenshotInput" accept="image/*" style="display:none" onchange="handleScreenshot(this.files[0])">
+      <div id="screenshotStatus" style="font-size:13px;color:var(--t3)">📸 Tap to take a photo or choose from camera roll<br><span style="font-size:11px">AI extracts name, email, phone, social URLs automatically</span></div>
+      <input type="file" id="screenshotInput" accept="image/*" capture="environment" style="display:none" onchange="handleScreenshot(this.files[0])">
     </div>
     <div class="mb">
       <div class="fr">
@@ -465,6 +497,11 @@ tr:hover td{background:rgba(255,255,255,.03)}
         <div style="font-size:12px;color:var(--t3);margin-top:4px">IG profiles, LinkedIn pages, business cards, websites</div>
         <div style="font-size:12px;color:var(--t3);margin-top:2px">AI extracts name, email, phone, URLs from each one</div>
         <input type="file" id="bulkFileInput" accept="image/*" multiple style="display:none" onchange="handleBulkScreenshots(this.files)">
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+          <button class="btn bg sm" onclick="event.stopPropagation();document.getElementById('bulkCameraInput').click()">📷 Take Photo</button>
+          <button class="btn bg sm" onclick="event.stopPropagation();document.getElementById('bulkFileInput').click()">🖼 Camera Roll</button>
+        </div>
+        <input type="file" id="bulkCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleBulkScreenshots(this.files)">
       </div>
       <div id="bulkResults" style="margin-top:12px"></div>
     </div>
@@ -1701,6 +1738,9 @@ function exportCSV(){
 
 // ─── KEYBOARD ────────────────────────────────────────────────
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
+function toggleMobileNav(){const sb=document.querySelector('.sb');sb.classList.toggle('open');}
+// Close mobile nav when clicking a nav item
+document.querySelectorAll('.ni').forEach(b=>{b.addEventListener('click',()=>{document.querySelector('.sb').classList.remove('open');});});
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){document.querySelectorAll('.ov.on').forEach(m=>m.classList.remove('on'));closeDP();}
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();document.getElementById('srch').focus();}

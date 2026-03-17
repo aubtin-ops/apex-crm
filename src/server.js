@@ -1028,15 +1028,21 @@ app.post('/inbox/send/:draftId', auth, async (req, res) => {
 
   // Build raw email
   // Detect if body contains HTML tags
+  // Find the original email to get Message-ID for threading
+  const originalEmail = draft.email_id ? db.inboxEmails.find(e => e.id === draft.email_id) : null;
   const isHtml = /<[a-z][\s\S]*>/i.test(draft.body);
-  const rawEmail = [
+  const headers = [
     `To: ${draft.to}`,
     `Subject: ${draft.subject}`,
     `MIME-Version: 1.0`,
-    `Content-Type: ${isHtml ? 'text/html' : 'text/plain'}; charset=utf-8`,
-    ``,
-    draft.body
-  ].join('\r\n');
+    `Content-Type: ${isHtml ? 'text/html' : 'text/plain'}; charset=utf-8`
+  ];
+  // Add threading headers so reply stays in the same thread
+  if (originalEmail?.id) {
+    headers.push(`In-Reply-To: <${originalEmail.id}@mail.gmail.com>`);
+    headers.push(`References: <${originalEmail.id}@mail.gmail.com>`);
+  }
+  const rawEmail = [...headers, '', draft.body].join('\r\n');
 
   const encodedEmail = Buffer.from(rawEmail).toString('base64url');
 
@@ -1044,7 +1050,7 @@ app.post('/inbox/send/:draftId', auth, async (req, res) => {
     const sendRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
       method: 'POST',
       headers: { Authorization: `Bearer ${googleTokens.access_token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ raw: encodedEmail, threadId: draft.thread_id || undefined })
+      body: JSON.stringify({ raw: encodedEmail, threadId: draft.thread_id || originalEmail?.thread_id || undefined })
     });
     const sendData = await sendRes.json();
     if (sendData.error) throw new Error(sendData.error.message);
