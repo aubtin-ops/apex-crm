@@ -1590,11 +1590,18 @@ async function addEmailTag(emailId, tag) {
   if (!email) return;
   const tags = [...new Set([...(email.tags||[]), tag])];
   try {
-    await req('PATCH', '/inbox/emails/' + emailId + '/tags', { tags });
+    const r = await req('PATCH', '/inbox/emails/' + emailId + '/tags', { tags });
     email.tags = tags;
     const container = document.getElementById('etags-' + emailId);
     if (container) container.outerHTML = renderEmailTags(emailId, tags);
-    toast(tag + ' tag added', 'ok');
+    // Refresh prospects if pipeline stage was updated
+    if (r.prospect_updated) {
+      prospects = await req('GET', '/prospects');
+      applyFilters();
+      toast(tag + ' tag added — prospect moved to ' + tag, 'ok');
+    } else {
+      toast(tag + ' tag added', 'ok');
+    }
   } catch(e) { toast('Failed', 'err'); }
 }
 

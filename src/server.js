@@ -172,8 +172,35 @@ app.patch('/inbox/emails/:id/tags', auth, (req, res) => {
   const email = db.inboxEmails.find(e => e.id === req.params.id);
   if (!email) return res.status(404).json({ error: 'Not found' });
   email.tags = tags;
+
+  // Sync tag to prospect pipeline stage
+  const tagToStage = { 'Lead': 'lead', 'Qualified': 'qualified', 'Call Booked': 'call_booked', 'Follow Up': 'follow_up', 'Closed Won': 'closed_won', 'Closed Lost': 'closed_lost' };
+  const prospect = email.prospect_id ? db.prospects.find(p => p.id === email.prospect_id) :
+    db.prospects.find(p => p.email && email.from && p.email.toLowerCase() === (email.from_email || email.from || '').toLowerCase());
+  if (prospect) {
+    // Use the highest-priority tag to set the stage
+    const stageOrder = ['lead', 'qualified', 'call_booked', 'follow_up', 'closed_won', 'closed_lost'];
+    for (const tag of tags) {
+      const stage = tagToStage[tag];
+      if (stage) {
+        const currentIdx = stageOrder.indexOf(prospect.status);
+        const newIdx = stageOrder.indexOf(stage);
+        // Always update — user explicitly tagged it
+        prospect.status = stage;
+        prospect.updated_at = new Date().toISOString();
+        logActivity(prospect.id, 'tag_sync', `Inbox tag "${tag}" → pipeline stage "${stage}"`);
+        break; // Use first matching tag
+      }
+    }
+    // Link email to prospect if not already linked
+    if (!email.prospect_id) {
+      email.prospect_id = prospect.id;
+      email.prospect_name = prospect.name;
+    }
+  }
+
   save();
-  res.json({ ok: true, tags });
+  res.json({ ok: true, tags, prospect_updated: !!prospect });
 });
 
 app.patch('/inbox/emails/:id/read', auth, (req, res) => {
