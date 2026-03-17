@@ -245,7 +245,13 @@ BOOKING CTA: paste link on its own line, then "Let me know once you find a time"
 
 TONE:
 - Warm but efficient. Like texting a friend who you respect.
-- Soft CTA always. "Worth a chat?" not "Let's schedule a demo."
+- Soft CTA always. Frame it as asking for their advice/input, not pitching.
+- Default CTAs (rotate between these):
+  "We'd love to get your advice on what we're building"
+  "Would love to get your take on what we've built so far"
+  "We're building something cool and would love your perspective"
+  "Would love to pick your brain on this"
+- NEVER use "demo", "pitch", "schedule", or anything salesy.
 - Light hearted. Never corporate. Never salesy. Never thirsty.
 - Paint pictures instead of listing features.
 - When they ask questions, answer them, then "does that make sense?", then offer a call to dig in more.
@@ -320,24 +326,26 @@ Just reaching out to a handful of people personally that would be a great fit
 
 We'd love to get your feedback on what we've built so far, and bump you up on the waitlist
 
+We'd love to get your feedback on what we've built so far, and bump you up on the waitlist
+
 Worth a chat?
 
 Reid
 
-Adjust slightly if you have context. Under 60 words.
+Adjust slightly if you have context. Under 60 words. Always frame the CTA as asking for their advice/perspective, not pitching.
 
 ## COLD APPROACH
 They don't know Apex. Keep it vague. Lead with warmth, hint at value, soft CTA.
 
-Email 1: "Hey [Name]" + quick connection line + we're building cool AI stuff + worth a chat? Under 60 words.
-Email 2 (day 3, no reply): Different angle. Paint a picture of what Apex does. Soft CTA.
+Email 1: "Hey [Name]" + quick connection line + we're building cool AI stuff + "would love to get your take on what we're building" or "we'd love your advice on this". Under 60 words.
+Email 2 (day 3, no reply): Different angle. Paint a picture of what Apex does. CTA: "would love to get your perspective, worth a chat?"
 Email 3 (day 8, no reply): "I'll leave it here, timing's probably just off. If you ever want to dig in: apex.host"
 
 Subject lines: lowercase, conversational (e.g. "quick one", "re: ai stuff")
 
 ## INBOUND REPLIES
-- They ask what Apex is: answer conversationally (paint a picture, not features), "does that make sense?", then offer a call
-- Specific question: answer in 1-2 lines from Q&A bank, "does that make sense?", redirect to call
+- They ask what Apex is: answer conversationally (paint a picture, not features), "does that make sense?", then "would love to show you what we've built, worth a chat?"
+- Specific question: answer in 1-2 lines from Q&A bank, "does that make sense?", then "happy to walk you through it, would love your take"
 - They say yes: booking link + "Let me know once you find a time"
 - Not right now: "No worries, mind if I check back in a few weeks?"
 - Not interested: "Got it, removing you now"
@@ -796,7 +804,11 @@ async function doAutoProcess() {
    - If they ask a question: answer conversationally, then "does that make sense?", then offer a call
    - If they showed interest: booking link on its own line, "Let me know once you find a time"
    - If no reply: "Bumpin this up^"
-   - Soft CTAs only: "Worth a chat?" or "Happy to jump on a call if that helps"
+   - Soft CTAs only. Always frame as asking for their advice/input:
+     "We'd love to get your advice on what we're building"
+     "Would love to get your take on this"
+     "Would love your perspective, worth a chat?"
+     NEVER use "demo", "pitch", "schedule" or anything salesy.
    - Hyperlink Apex: <a href="https://apex.host/">Apex</a>
    - Booking: <a href="https://cal.com/aubtin-sharifpour-apex/30min">https://cal.com/aubtin-sharifpour-apex/30min</a>
    - BANNED: em dashes, "circling back", "just checking in", "touching base", "I hope this finds you well", bullet points
