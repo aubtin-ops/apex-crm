@@ -347,6 +347,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
       <input class="sinp" id="srch" placeholder="Search…" oninput="applyFilters()">
     </div>
     <button class="btn bp" id="addBtn" onclick="openAdd()" style="display:none">+ Add Contact</button>
+    <button class="btn bg" id="bulkBtn" onclick="openBulkScreenshot()" style="display:none">📸 Bulk Add</button>
   </div>
   <div class="tbar" id="tbar" style="display:none">
     <select class="fs" id="fLeadType" onchange="applyFilters()">
@@ -453,6 +454,27 @@ tr:hover td{background:rgba(255,255,255,.03)}
   </div>
 </div>
 
+<!-- BULK SCREENSHOT MODAL -->
+<div class="ov" id="bulkMod">
+  <div class="modal" style="width:640px">
+    <div class="mh"><div class="mt">Bulk Add from Screenshots</div><button class="mc" onclick="closeMod('bulkMod')">×</button></div>
+    <div style="padding:16px 24px">
+      <div id="bulkDrop" style="border:2px dashed var(--bd);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02);min-height:120px" onclick="document.getElementById('bulkFileInput').click()" ondragover="event.preventDefault();this.style.borderColor='var(--ac)';this.style.background='rgba(10,132,255,.06)'" ondragleave="this.style.borderColor='var(--bd)';this.style.background='rgba(255,255,255,.02)'" ondrop="event.preventDefault();this.style.borderColor='var(--bd)';this.style.background='rgba(255,255,255,.02)';handleBulkScreenshots(event.dataTransfer.files)">
+        <div style="font-size:32px;margin-bottom:8px">📸</div>
+        <div style="font-size:14px;color:var(--t2);font-weight:500">Drop multiple screenshots here</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:4px">IG profiles, LinkedIn pages, business cards, websites</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:2px">AI extracts name, email, phone, URLs from each one</div>
+        <input type="file" id="bulkFileInput" accept="image/*" multiple style="display:none" onchange="handleBulkScreenshots(this.files)">
+      </div>
+      <div id="bulkResults" style="margin-top:12px"></div>
+    </div>
+    <div class="mf" id="bulkActions" style="display:none">
+      <button class="btn bg" onclick="closeMod('bulkMod')">Cancel</button>
+      <button class="btn bp" onclick="saveBulkContacts()">Add All to Pipeline</button>
+    </div>
+  </div>
+</div>
+
 <div class="toasts" id="toasts"></div>
 <script>
 const API = window.location.origin;
@@ -537,6 +559,7 @@ function go(pg){
   const showTbar=['pipeline','globaldata'].includes(pg);
   document.getElementById('tbar').style.display=showTbar?'flex':'none';
   document.getElementById('addBtn').style.display=pg==='pipeline'?'flex':'none';
+  document.getElementById('bulkBtn').style.display=pg==='pipeline'?'flex':'none';
   document.getElementById('vtoggle').style.display=pg==='pipeline'?'flex':'none';
   if(pg==='pipeline'){if(sub!=='kanban'&&sub!=='table')sub='table';updateVbtns();}
   // Refresh data when navigating to dashboard or analytics
@@ -1469,6 +1492,88 @@ function openEdit(id){
   document.getElementById('fsrc').value=p.source||'';
   document.getElementById('addMod').classList.add('on');
 }
+let bulkExtracted = [];
+
+function openBulkScreenshot() {
+  bulkExtracted = [];
+  document.getElementById('bulkResults').innerHTML = '';
+  document.getElementById('bulkActions').style.display = 'none';
+  document.getElementById('bulkMod').classList.add('on');
+}
+
+async function handleBulkScreenshots(files) {
+  const results = document.getElementById('bulkResults');
+  const actions = document.getElementById('bulkActions');
+
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) continue;
+
+    const itemId = 'bulk-' + Date.now() + Math.random().toString(36).slice(2,6);
+    results.innerHTML += `<div id="${itemId}" style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--bd);border-radius:10px;margin-bottom:8px;background:rgba(255,255,255,.03)">
+      <div class="spin" style="flex-shrink:0"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--t2)">${file.name}</div>
+        <div style="font-size:11px;color:var(--t3)">Extracting...</div>
+      </div>
+    </div>`;
+
+    try {
+      const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+      });
+      const r = await req('POST', '/extract-contact', { image: base64 });
+      const c = r.extracted || {};
+      bulkExtracted.push(c);
+
+      const el = document.getElementById(itemId);
+      if (el) el.innerHTML = `
+        <div style="width:34px;height:34px;border-radius:8px;background:rgba(48,209,88,.12);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">✅</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600">${c.name || 'Unknown'}</div>
+          <div style="font-size:11px;color:var(--t3)">${[c.email, c.phone, c.platform, c.profile_url ? 'has URL' : ''].filter(Boolean).join(' · ') || 'minimal info extracted'}</div>
+          ${c.audience_size ? '<div style="font-size:11px;color:var(--ac)">'+fmt(c.audience_size)+' followers</div>' : ''}
+        </div>
+        <button class="btn bd2 xsm" onclick="bulkExtracted=bulkExtracted.filter(x=>x!==bulkExtracted[${bulkExtracted.length-1}]);this.closest('div[id^=bulk]').remove();if(!bulkExtracted.length)document.getElementById('bulkActions').style.display='none'">✕</button>`;
+    } catch(e) {
+      const el = document.getElementById(itemId);
+      if (el) el.innerHTML = `
+        <div style="width:34px;height:34px;border-radius:8px;background:var(--rdb);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">❌</div>
+        <div style="flex:1"><div style="font-size:13px;color:var(--rd)">${file.name} — failed</div><div style="font-size:11px;color:var(--t3)">${e.message}</div></div>`;
+    }
+  }
+
+  if (bulkExtracted.length) actions.style.display = 'flex';
+}
+
+async function saveBulkContacts() {
+  const records = bulkExtracted.map(c => ({
+    name: c.name || 'Unknown',
+    email: c.email || '',
+    phone: c.phone || '',
+    platform: c.platform || 'Other',
+    profile_url: c.profile_url || '',
+    audience_size: c.audience_size || 0,
+    notes: c.notes || '',
+    source: 'screenshot',
+    status: 'prospect',
+    priority: 3,
+    lead_type: 'Potential Affiliate Partner'
+  })).filter(r => r.name && r.name !== 'Unknown' || r.email);
+
+  if (!records.length) { toast('No valid contacts to add', 'err'); return; }
+
+  try {
+    const r = await req('POST', '/prospects/bulk', { records });
+    prospects = await req('GET', '/prospects');
+    closeMod('bulkMod');
+    applyFilters(); render();
+    toast('Added ' + r.added + ' contacts from screenshots!', 'ok');
+    bulkExtracted = [];
+  } catch(e) { toast('Failed: ' + e.message, 'err'); }
+}
+
 async function handleScreenshot(file) {
   if (!file || !file.type.startsWith('image/')) { toast('Please drop an image file', 'err'); return; }
   const status = document.getElementById('screenshotStatus');
