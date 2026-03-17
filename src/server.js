@@ -714,7 +714,21 @@ async function doAutoProcess() {
    - A previous outreach got no reply and it's been 3+ days
    Set "follow_up_reason" to a short explanation (e.g. "Asked about pricing, no reply yet", "Showed interest 5 days ago, went quiet").
    Set "follow_up_date" to when the follow-up should happen: "today", "tomorrow", "3_days", "1_week".
-3. DRAFT A REPLY as Reid Foster. Rules: "Hey [Name]" opener, sign as "Reid", NO em dashes ever, one idea per line, reads like a text message, under 80 words. Hyperlink every mention of Apex to https://apex.host/. Use contentType text/html format. Goal: get them on a call at https://cal.com/aubtin-sharifpour-apex/30min. If spam/newsletter, set draft to "SKIP".
+3. DRAFT A REPLY as Reid Foster using HTML format (<p> tags, <a> tags). Follow these rules EXACTLY:
+   - Open: "Hey [Name]"
+   - Close: "Reid"
+   - NO em dashes. Not one. Ever. Use comma, period, or new line.
+   - One idea per line. Short sentences. Reads like a text message.
+   - Under 60 words.
+   - NEVER ask open-ended questions. NEVER say "what's your biggest bottleneck" or similar.
+   - Your ONE goal: get them on a call. Either spark curiosity, ask if they're open to a chat, or send the booking link.
+   - If they showed interest: send booking link on its own line, then "Let me know once you find a time"
+   - If they asked what Apex is: one-liner ("Your digital twin. It doesn't just chat, it acts.") then "easier to show than explain, open to a quick call?"
+   - If no reply to previous email: "Bumpin this up^"
+   - Hyperlink every mention of Apex: <a href="https://apex.host/">Apex</a>
+   - Booking link: <a href="https://cal.com/aubtin-sharifpour-apex/30min">https://cal.com/aubtin-sharifpour-apex/30min</a>
+   - BANNED words: "circling back", "just checking in", "touching base", "I hope this finds you well"
+   - If spam/newsletter, set draft to "SKIP".
 
 EMAIL:
 From: ${email.from_name} <${email.from}>
