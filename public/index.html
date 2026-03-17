@@ -531,6 +531,8 @@ function go(pg){
   document.getElementById('addBtn').style.display=pg==='pipeline'?'flex':'none';
   document.getElementById('vtoggle').style.display=pg==='pipeline'?'flex':'none';
   if(pg==='pipeline'){if(sub!=='kanban'&&sub!=='table')sub='table';updateVbtns();}
+  // Refresh data when navigating to dashboard or analytics
+  if(pg==='dashboard'||pg==='analytics'){req('GET','/prospects').then(p=>{prospects=p;applyFilters();render();}).catch(()=>{});}
   applyFilters();render();
 }
 
@@ -1423,7 +1425,7 @@ async function openDetail(id){
     </div>`;
 }
 function closeDP(){document.getElementById('dp').classList.remove('on');document.getElementById('dp').innerHTML='';}
-async function quickSt(id,st){try{await req('PATCH','/prospects/'+id,{status:st});const p=prospects.find(x=>x.id===id);if(p)p.status=st;toast('Stage updated','ok');applyFilters();}catch{toast('Failed','err');}}
+async function quickSt(id,st){try{await req('PATCH','/prospects/'+id,{status:st});const p=prospects.find(x=>x.id===id);if(p)p.status=st;toast('Stage updated','ok');applyFilters();render();}catch{toast('Failed','err');}}
 async function saveNotes(id){const n=document.getElementById('nta_'+id)?.value||'';try{await req('PATCH','/prospects/'+id,{notes:n});const p=prospects.find(x=>x.id===id);if(p)p.notes=n;toast('Saved ✓','ok');}catch{toast('Failed','err');}}
 
 // ─── ADD/EDIT ────────────────────────────────────────────────
