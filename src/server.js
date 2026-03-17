@@ -28,6 +28,9 @@ function loadData() {
         googleTokens = db.settings.google_tokens;
         console.log('Restored Google tokens from storage');
       }
+      if (db.settings.auto_sync_enabled === undefined) db.settings.auto_sync_enabled = true;
+      if (db.settings.auto_sync_interval === undefined) db.settings.auto_sync_interval = 10;
+      if (db.settings.auto_sync_process === undefined) db.settings.auto_sync_process = true;
       console.log(`Loaded: ${db.prospects.length} prospects, ${db.deals.length} deals, ${db.inboxEmails.length} emails`);
     }
   } catch(e) { console.log('Fresh start:', e.message); }
@@ -169,6 +172,14 @@ app.patch('/inbox/emails/:id/tags', auth, (req, res) => {
   email.tags = tags;
   save();
   res.json({ ok: true, tags });
+});
+
+app.patch('/inbox/emails/:id/read', auth, (req, res) => {
+  const email = db.inboxEmails.find(e => e.id === req.params.id);
+  if (!email) return res.status(404).json({ error: 'Not found' });
+  if (req.body.unread !== undefined) email.unread = !!req.body.unread;
+  save();
+  res.json({ ok: true, unread: email.unread });
 });
 
 // ─── AI ANALYZE ──────────────────────────────────────────────────────────────
@@ -358,7 +369,14 @@ Only include fields you actually know. Always include name. After the action blo
 You can also UPDATE a contact's stage if the user says something like "move X to qualified":
 <<ACTION:update_contact>>
 {"name": "Name", "status": "qualified"}
-<<END_ACTION>>`;
+<<END_ACTION>>
+
+You can also DRAFT an email when asked. Use:
+<<ACTION:draft_email>>
+{"to": "email@example.com", "to_name": "Their Name", "subject": "subject line", "body": "email body in html"}
+<<END_ACTION>>
+
+After the action block, show the draft naturally in chat. Always use contentType text/html. Hyperlink every mention of Apex to https://apex.host/. No em dashes.`;
 
 app.post('/analyze', auth, async (req, res) => {
   const { prompt, context } = req.body;
@@ -779,6 +797,16 @@ app.patch('/inbox/emails/:id/follow-up', auth, (req, res) => {
 });
 
 // ─── DRAFTS ─────────────────────────────────────────────────────────────────
+app.post('/inbox/drafts', auth, (req, res) => {
+  const { to, to_name, subject, body, email_id, thread_id } = req.body;
+  if (!to || !body) return res.status(400).json({ error: 'to and body required' });
+  const id = crypto.randomUUID();
+  const draft = { id, email_id: email_id || '', thread_id: thread_id || '', to, to_name: to_name || '', subject: subject || '', body, status: 'draft', priority: 'medium', created_at: new Date().toISOString() };
+  db.emailDrafts.push(draft);
+  save();
+  res.json(draft);
+});
+
 app.get('/inbox/drafts', auth, (req, res) => {
   res.json([...db.emailDrafts].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
 });

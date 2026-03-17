@@ -621,6 +621,44 @@ function renderDash(){
             <div style="font-size:11px;color:var(--t3)">${ago(p.created_at)}</div>
           </div>`).join(''):`<div class="empty" style="padding:28px"><p>No contacts yet — <button class="btn bp sm" onclick="go('pipeline');setTimeout(openAdd,100)">Add First</button></p></div>`}
       </div>
+    </div>
+    <div style="padding:0 24px 6px;margin-top:14px">
+      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+        Inbox
+        <button class="btn bg xsm" onclick="go('inbox')">View All →</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px">
+        <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;text-align:center">
+          <div style="font-size:22px;font-weight:700;color:var(--ac)">${inboxEmails.filter(e=>e.unread).length}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:2px">Unread</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;text-align:center">
+          <div style="font-size:22px;font-weight:700;color:var(--pu)">${emailDrafts.filter(d=>d.status==='draft').length}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:2px">Drafts</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;text-align:center">
+          <div style="font-size:22px;font-weight:700;color:var(--or)">${inboxEmails.filter(e=>e.needs_follow_up&&!e.follow_up_done).length}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:2px">Follow-ups</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;text-align:center">
+          <div style="font-size:22px;font-weight:700;color:var(--rd)">${inboxEmails.filter(e=>e.reid_priority==='high').length}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:2px">High Priority</div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden">
+        ${inboxEmails.slice(0,5).length?inboxEmails.slice(0,5).map(e=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--bd);cursor:pointer" onclick="go('inbox');setTimeout(()=>showEmail('${e.id}'),50)">
+            <div style="width:8px;height:8px;border-radius:50%;background:${e.unread?'var(--ac)':'transparent'};border:1px solid ${e.unread?'var(--ac)':'var(--bd)'};flex-shrink:0;cursor:pointer" onclick="event.stopPropagation();toggleReadStatus('${e.id}')" title="Click to mark as ${e.unread?'read':'unread'}"></div>
+            <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--t2);flex-shrink:0">${(e.from_name||e.from||'?')[0].toUpperCase()}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:${e.unread?'600':'400'};color:${e.unread?'var(--t)':'var(--t2)'}">${e.from_name||e.from||'Unknown'}</div>
+              <div style="font-size:11px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.subject||'(no subject)'}</div>
+            </div>
+            <div style="display:flex;gap:3px;flex-shrink:0;flex-wrap:wrap">${(e.tags||[]).map(t=>`<span class="etag ${TAG_CLASSES[t]||''}" style="font-size:9px">${t}</span>`).join('')}</div>
+            ${e.reid_priority?'<span class="inbox-priority '+e.reid_priority+'" style="font-size:9px">'+e.reid_priority+'</span>':''}
+            <div style="font-size:10px;color:var(--t3);flex-shrink:0">${ago(e.date||e.created_at)}</div>
+          </div>`).join(''):`<div style="padding:24px;text-align:center;color:var(--t3);font-size:12px">No emails yet. Connect Gmail in Admin to get started.</div>`}
+      </div>
     </div>`;
 }
 
@@ -758,6 +796,15 @@ function updateInboxBadge() {
     badge.style.display = unread > 0 ? 'inline-block' : 'none';
     badge.textContent = unread;
   }
+}
+
+async function toggleReadStatus(id) {
+  const e = inboxEmails.find(x => x.id === id);
+  if (!e) return;
+  e.unread = !e.unread;
+  updateInboxBadge();
+  render();
+  try { await req('PATCH', `/inbox/emails/${id}/read`, { unread: e.unread }); } catch(err) { console.warn('Failed to sync read status:', err); }
 }
 
 function renderInbox(){
@@ -1047,7 +1094,7 @@ function renderReid(){
         <div class="chat-msg reid">
           <div class="chat-avatar reid">R</div>
           <div>
-            <div class="chat-bubble">hey. reid here. drop me an email to review, or ask me to draft outreach for someone in the pipeline.</div>
+            <div class="chat-bubble">hey. reid here. i can draft outreach, bump threads, check your inbox, or add contacts. what do you need?</div>
             <div class="chat-meta">${nowStr()}</div>
           </div>
         </div>`}
@@ -1057,11 +1104,12 @@ function renderReid(){
         <button class="chat-send" id="chatSend" onclick="sendChat()">Send</button>
       </div>
       <div style="padding:0 18px 10px;display:flex;gap:6px;flex-wrap:wrap">
-        <button class="btn bg xsm" onclick="quickChat('Draft a cold outreach email to a TikTok creator in the business space')">✍️ Draft outreach</button>
-        <button class="btn bg xsm" onclick="quickChat('Add a contact: [Name], [Platform], [Profile URL]')">➕ Add contact</button>
-        <button class="btn bg xsm" onclick="quickChat('What\'s a good subject line for reaching out to an Instagram creator about Apex?')">📧 Subject line</button>
+        <button class="btn bg xsm" onclick="quickChat('Draft a waitlist outreach to [Name] who signed up for Apex')">✍️ Waitlist outreach</button>
+        <button class="btn bg xsm" onclick="quickChat('Draft a cold email to [Name] at [Company] who is building with AI')">❄️ Cold outreach</button>
+        <button class="btn bg xsm" onclick="quickChat('Write a bump for [Name] who hasn\'t replied in 3 days')">🔄 Bump</button>
         <button class="btn bg xsm" onclick="quickChat('Analyze my inbox and tell me what needs a reply')">📬 Inbox check</button>
-        <button class="btn bg xsm" onclick="quickChat('Write a follow-up for someone who hasn\'t responded in 5 days')">🔄 Follow-up</button>
+        <button class="btn bg xsm" onclick="quickChat('Add a contact: [Name], [Email], [Platform]')">➕ Add contact</button>
+        <button class="btn bg xsm" onclick="quickChat('Send booking link to [Name] who said yes to a call')">📅 Book call</button>
       </div>
     </div>`;
   const msgs=document.getElementById('chatMsgs');if(msgs)msgs.scrollTop=msgs.scrollHeight;
@@ -1091,8 +1139,8 @@ async function sendChat(){
   // Show typing indicator
   const typingId='typing-'+Date.now();
   if(msgs){msgs.innerHTML+=`<div class="chat-msg reid" id="${typingId}"><div class="chat-avatar reid">R</div><div><div class="chat-bubble"><div class="typing"><span></span><span></span><span></span></div></div></div></div>`;msgs.scrollTop=msgs.scrollHeight;}
-  const stats={total:prospects.length,active:prospects.filter(p=>p.lead_type==='Active Affiliate Partner').length,stages:Object.entries(STAGES).map(([k])=>({stage:k,count:prospects.filter(p=>p.status===k).length})),totalDealValue:prospects.reduce((s,p)=>s+(p.deal_value||0),0)};
-  const fullPrompt=`[CRM Context: ${prospects.length} total prospects, ${stats.active} active affiliates, $${stats.totalDealValue} total deal value]\n\n${chatHistory.slice(-6).map(m=>(m.role==='user'?'Aubtin':'Reid')+': '+m.text).join('\n')}\n\nAubtin: ${msg}`;
+  const stats={total:prospects.length,active:prospects.filter(p=>['qualified','call_booked','follow_up'].includes(p.status)).length,stages:Object.entries(STAGES).map(([k])=>({stage:k,count:prospects.filter(p=>p.status===k).length})),totalDealValue:prospects.reduce((s,p)=>s+(p.deal_value||0),0)};
+  const fullPrompt=`[CRM Context: ${prospects.length} total prospects, ${stats.active} active leads, $${stats.totalDealValue} total deal value]\n\n${chatHistory.slice(-6).map(m=>(m.role==='user'?'Aubtin':'Reid')+': '+m.text).join('\n')}\n\nAubtin: ${msg}`;
   try{
     const r=await req('POST','/analyze',{
       prompt:fullPrompt
@@ -1546,6 +1594,16 @@ async function executeReidActions(responseText) {
           applyFilters();
           toast('Updated ' + p.name, 'ok');
         }
+      }
+      if (action.type === 'draft_email') {
+        const r = await req('POST', '/inbox/drafts', {
+          to: data.to || '',
+          to_name: data.to_name || '',
+          subject: data.subject || '',
+          body: data.body || ''
+        });
+        emailDrafts.unshift(r);
+        toast('Draft saved to Inbox', 'ok');
       }
     } catch(e) {
       console.error('Reid action failed:', action.type, e.message);
