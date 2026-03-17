@@ -863,6 +863,7 @@ function renderInbox(){
     return `
     <div class="inbox-email">
       <div class="inbox-header" onclick="showEmail('${e.id}')">
+        <div style="width:10px;height:10px;border-radius:50%;background:${e.unread?'var(--ac)':'transparent'};border:1px solid ${e.unread?'var(--ac)':'var(--bd)'};flex-shrink:0;cursor:pointer;margin-top:12px" onclick="event.stopPropagation();toggleReadStatus('${e.id}')" title="Mark as ${e.unread?'read':'unread'}"></div>
         <div class="iav" style="${e.unread ? 'border:2px solid var(--ac)' : ''}">${(e.from_name||e.from||'?')[0].toUpperCase()}</div>
         <div class="ib" style="flex:1;min-width:0">
           <div style="display:flex;align-items:center;gap:6px">
@@ -1060,6 +1061,9 @@ function showEmail(id){
       <div style="margin-top:8px">
         <button class="btn bg sm" onclick="reidDraftSingle('${e.id}')">🤖 Ask Reid to Draft Reply</button>
       </div>`}
+      <div style="margin-top:10px;display:flex;gap:6px">
+        <button class="btn bg xsm" onclick="toggleReadStatus('${e.id}');showEmail('${e.id}')">${e.unread ? '📖 Mark Read' : '📩 Mark Unread'}</button>
+      </div>
     </div>`;
 }
 
